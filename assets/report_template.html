@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{TITLE}}</title>
+<style>
+  :root {
+    --bg: #fbfbfa; --fg: #1c1c1a; --muted: #6b6b66; --line: #e3e3df;
+    --card: #fff; --accent: #b5541f; --good: #2f6f3e; --warn: #8a6d1f;
+    --radius: 8px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #17171a; --fg: #e8e8e4; --muted: #9a9a93; --line: #2e2e33;
+      --card: #1e1e22; --accent: #e08a52; --good: #7fbe8d; --warn: #d4b163;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #17171a; --fg: #e8e8e4; --muted: #9a9a93; --line: #2e2e33;
+    --card: #1e1e22; --accent: #e08a52; --good: #7fbe8d; --warn: #d4b163;
+  }
+  :root[data-theme="light"] {
+    --bg: #fbfbfa; --fg: #1c1c1a; --muted: #6b6b66; --line: #e3e3df;
+    --card: #fff; --accent: #b5541f; --good: #2f6f3e; --warn: #8a6d1f;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 2.5rem 1.25rem 4rem; background: var(--bg); color: var(--fg);
+    font: 15px/1.6 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  .wrap { max-width: 60rem; margin: 0 auto; }
+  header { border-bottom: 2px solid var(--fg); padding-bottom: .9rem; margin-bottom: 2rem; }
+  h1 { font-size: 1.6rem; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  .sub { color: var(--muted); font-size: .92rem; }
+  h2 {
+    font-size: 1.12rem; margin: 2.4rem 0 .9rem; padding-bottom: .35rem;
+    border-bottom: 1px solid var(--line);
+  }
+  h3 { font-size: .98rem; margin: 1.5rem 0 .5rem; }
+  p { margin: .6rem 0; }
+  .pick {
+    background: var(--card); border: 1px solid var(--line);
+    border-left: 3px solid var(--accent); border-radius: var(--radius);
+    padding: 1rem 1.15rem; margin: 1rem 0;
+  }
+  .pick .name { font-weight: 650; font-size: 1.05rem; }
+  .pick .price { color: var(--accent); font-weight: 650; }
+  .pick .offer { color: var(--muted); font-size: .9rem; margin-top: .15rem; }
+  /* The condition under which this pick is the right one ("best if ...").
+     It follows the product and price; it never leads the card. */
+  .pick .when { color: var(--muted); font-size: .88rem; margin-top: .55rem; }
+  /* Model codes, part numbers, EANs: set apart from prose. */
+  code { font: .86em ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+         background: color-mix(in srgb, var(--line) 45%, transparent);
+         padding: .05rem .3rem; border-radius: 4px; }
+  /* Long tails (remaining qualifying options): present but out of the way. */
+  details.rest summary { cursor: pointer; color: var(--muted); margin: .4rem 0; }
+  .tablewrap { overflow-x: auto; margin: 1rem 0; }
+  table { border-collapse: collapse; width: 100%; font-size: .9rem; }
+  th, td { text-align: left; padding: .5rem .65rem; border-bottom: 1px solid var(--line); }
+  th { font-weight: 600; color: var(--muted); font-size: .78rem;
+       text-transform: uppercase; letter-spacing: .04em; white-space: nowrap; }
+  /* .num = right-align + tabular figures + nowrap, so values compare down a
+     column. Short numeric values only (prices, counts). The nowrap makes a
+     cell unshrinkable — never put sentences or unit-strings in it. */
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  tbody tr:hover { background: color-mix(in srgb, var(--line) 35%, transparent); }
+  /* Label/value facts about one thing (spec summary, budget breakdown, store
+     info). Use this, not a table — tables compare products down columns. */
+  dl.kv { display: grid; grid-template-columns: max-content 1fr; gap: .35rem 1.25rem; margin: 1rem 0; }
+  dl.kv dt { color: var(--muted); }
+  dl.kv dd { margin: 0; }
+  .tag {
+    display: inline-block; font-size: .72rem; padding: .1rem .45rem; border-radius: 4px;
+    border: 1px solid var(--line); color: var(--muted); white-space: nowrap;
+  }
+  .tag.good { color: var(--good); border-color: currentColor; }
+  .tag.warn { color: var(--warn); border-color: currentColor; }
+  ul { margin: .5rem 0; padding-left: 1.2rem; }
+  li { margin: .3rem 0; }
+  .note { color: var(--muted); font-size: .88rem; }
+  a { color: var(--accent); }
+  footer { margin-top: 3rem; padding-top: .9rem; border-top: 1px solid var(--line);
+           color: var(--muted); font-size: .82rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>{{TITLE}}</h1>
+  <div class="sub">{{SUBTITLE}}</div>
+</header>
+
+<!-- Lead with the decision. One .pick card per recommendation: product and
+     price first, then where to buy (link text = shop name), the reasoning, and
+     finally the condition under which it's the right choice in .when. -->
+<h2>Recommendation</h2>
+<div class="pick">
+  <!-- PICK_PRICE: the price with its condition if it needs one (membership,
+       supplier wait, campaign end date). -->
+  <div class="name">{{PICK_NAME}} — <span class="price">{{PICK_PRICE}}</span></div>
+  <div class="offer"><a href="{{PICK_URL}}">{{PICK_SHOP}}</a> · {{PICK_AVAILABILITY}} · <code>{{PICK_CODE}}</code></div>
+  <p>{{PICK_REASONING}}</p>
+  <div class="when">{{PICK_WHEN}}</div>
+</div>
+
+<!-- Close alternatives: one row per product (never per listing, never a merged
+     range). "Notes" holds whatever helps the reader place each option for this
+     query - leave it out if there is nothing useful to say. Other shops selling
+     the same product go in "Also at" as linked "Shop price" pairs, cheapest
+     first. Adapt the columns to the product type. -->
+<h2>Also worth considering</h2>
+<div class="tablewrap">
+<table>
+  <thead>
+    <tr>
+      <th>Model</th><th>Key spec</th><th>Best offer</th><th class="num">Price</th>
+      <th>Availability</th><th>Notes</th><th>Also at</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{ROWS}}
+  </tbody>
+</table>
+</div>
+
+<!-- Optional: every shop's offer for one product (e.g. the top pick), cheapest
+     first, when it sells in several shops. Drop when the tables already say it.
+<h2>Where to buy {{PRODUCT}}</h2>
+<div class="tablewrap">
+<table>
+  <thead><tr><th>Shop</th><th class="num">Price</th><th>Availability</th><th>Warranty</th><th>Notes</th></tr></thead>
+  <tbody>{{OFFER_ROWS}}</tbody>
+</table>
+</div>
+-->
+
+<!-- For label/value facts about one thing, use the kv list, not a table:
+<dl class="kv">
+  <dt>Warranty</dt><dd>24 months</dd>
+  <dt>Availability</dt><dd>14 stores + warehouse</dd>
+</dl>
+-->
+
+<!-- Only what bears on the decision, one point per item. Group warnings at the
+     level they apply (brand/line, characteristic, specific listing). -->
+<h2>Worth knowing</h2>
+{{CAVEATS}}
+
+<!-- The rest of the qualifying options: complete, compact, last. -->
+<h2>Other qualifying options</h2>
+<details class="rest">
+  <summary>{{REST_SUMMARY}}</summary>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>Model</th><th>Key spec</th><th>Best offer</th><th class="num">Price</th><th>Availability</th></tr></thead>
+    <tbody>{{REST_ROWS}}</tbody>
+  </table>
+  </div>
+</details>
+
+<!-- FOOTER: shops checked, any that could not be checked, the scope walked,
+     and when the data was read. -->
+<footer>{{FOOTER}}</footer>
+
+</div>
+</body>
+</html>
