@@ -673,6 +673,8 @@ def resolve_category(arg):
 
 
 def category_path(pcs):
+    if not pcs:   # nothing to name: don't fetch the tree for it
+        return None
     tree = load_tree()
     best = None
     for pc in pcs or []:
