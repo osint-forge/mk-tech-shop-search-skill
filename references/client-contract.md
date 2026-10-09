@@ -2,7 +2,7 @@
 
 Every store has one self-contained client at `scripts/stores/<key>.py`
 (Python 3 standard library plus `requests` and `bs4`; no imports between
-store files, except `setec.py` on its `setec_core.py`). `scripts/mkshop.py`
+store files). `scripts/mkshop.py`
 drives them all through this contract, so a client that deviates breaks
 cross-store search silently. Read this before fixing a client or adding a
 store.
@@ -11,7 +11,7 @@ store.
 
 | key | shop | client |
 |---|---|---|
-| `setec` | setec.mk | `setec.py` (adapter over `setec_core.py`) |
+| `setec` | setec.mk | `setec.py` |
 | `anhoch` | anhoch.com | `anhoch.py` |
 | `neksio` | g.store.neksio.mk | `neksio.py` |
 | `ddstore` | ddstore.mk | `ddstore.py` |

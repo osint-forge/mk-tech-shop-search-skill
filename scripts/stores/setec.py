@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Setec (setec.mk) store client - contract adapter over setec_core.py.
+"""Setec (setec.mk) store client.
 
 Implements references/client-contract.md on top of the two public JSON
 backends the storefront itself uses (see references/setec.md):
@@ -10,9 +10,6 @@ backends the storefront itself uses (see references/setec.md):
                warranty months, per-location stock
   Category tree GET https://setec.mk/api/strapi/category?locale=mk-MK&withSubcategories=true
   Web config   GET  https://setec.mk/api/medusa/web-config   (low-stock threshold)
-
-setec_core.py (the original Setec skill script, kept verbatim) supplies the
-search key and category-handle decoding.
 
 CLI (contract):
   setec.py info
@@ -30,7 +27,6 @@ Setec-only extras:
 import argparse
 import datetime as _dt
 import json
-import os
 import re
 import sys
 import time
@@ -38,27 +34,28 @@ from urllib.parse import unquote, urlparse
 
 import requests
 
-sys.dont_write_bytecode = True   # importing setec_core must not leave a __pycache__ in the skill
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import setec_core as core  # noqa: E402  (verbatim Setec skill script, same directory)
-
 STORE = "setec"
 NAME = "Setec"
 BASE = "https://setec.mk"
 UA = ("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
       "(KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36")
 
-# Search host and key come from setec_core; they can be re-discovered at runtime
-# from the site's JS bundle if the key is ever rotated (see _rediscover_key).
-SEARCH_BASE = core.SEARCH_URL.split("/indexes/")[0]
-SEARCH_KEY = core.SEARCH_KEY
+# Public client-side search key, shipped in setec.mk's JS bundle to every visitor.
+# _rediscover_key re-reads host and key from that bundle if the key is rotated.
+SEARCH_BASE = "https://search.sp.solslab.dev"
+SEARCH_KEY = "c0424dab588b8cbbbe0a4809fc10b5f1c0c7d183b5b28ebe799f3fbf583ab358"
 TREE_URL = BASE + "/api/strapi/category?locale=mk-MK&withSubcategories=true"
 CONFIG_URL = BASE + "/api/medusa/web-config"
 DETAIL_URL = BASE + "/api/medusa/products-with-details-web"
 
-CAP = core.MAX_TOTAL_HITS      # Meilisearch maxTotalHits: no query returns more
+# Meilisearch returns at most this many hits for one query, whatever the limit
+# (observed 2026-10-09). Facet counts are not capped, so totals come from facets
+# and listings past the ceiling are fetched in brand/price windows.
+CAP = 1000
 PAGE = 500                     # hits per request inside one query window
 PACE_S = 0.35                  # min gap between requests to the same host
+# Both backends normally answer in well under a second; the generous timeout only
+# matters when a host is cold or struggling.
 TIMEOUT = 45
 MAX_TRIES = 4
 DEFAULT_ORDER_THRESHOLD = 3    # web-config order_threshold at time of writing
@@ -66,7 +63,9 @@ DEFAULT_ORDER_THRESHOLD = 3    # web-config order_threshold at time of writing
 PRICE = "variants.calculated_price.calculated_amount"
 BASE_FILTERS = ["status = 'published'", "is_web_active = 'true'"]  # what the site adds
 IN_STOCK = "total_web_quantity > 0"                                 # the site's "Достапно"
-WAREHOUSE = core.WAREHOUSE     # "Главен Магацин": central warehouse, not a walk-in store
+# The central warehouse ships online orders but cannot be visited; it never counts
+# as a store, so "N stores" always means places a buyer can walk into.
+WAREHOUSE = "Главен Магацин"
 NON_WALK_IN = {WAREHOUSE, "СЕТЕК Web"}
 # Outlet store: its units are walk-in only and are NOT counted in total_web_quantity
 # (per-location sum minus total_web_quantity == the outlet's quantity, checked 2026-10-03).
@@ -108,6 +107,8 @@ def warn(msg):
 _session = None
 _last = {}
 _key_rediscovered = [False]
+# The search client's constructor call in the site's JS: ("https://<host>/","<64 hex key>").
+_KEY_RE = re.compile(r'\("(https://[a-z0-9.-]+)/?","([0-9a-f]{64})"\)')
 
 
 def session():
@@ -219,16 +220,13 @@ def _rediscover_key():
         for c in re.findall(r'/_next/static/chunks/[^"\\ ]+\.js', html):
             if c not in chunks:
                 chunks.append(c)
-    pat = re.compile(r'\("(https://[a-z0-9.-]+)/?","([0-9a-f]{64})"\)')
     for c in chunks[:60]:
         js = _request("GET", BASE + c, expect_json=False)
-        hit = pat.search(js)
+        hit = _KEY_RE.search(js)
         if hit:
             SEARCH_BASE, SEARCH_KEY = hit.group(1), hit.group(2)
-            core.SEARCH_URL = SEARCH_BASE + "/indexes/products/search"
-            core.SEARCH_KEY = SEARCH_KEY
             warn(f"using search host {SEARCH_BASE} with key {SEARCH_KEY[:8]}... "
-                 "(update SEARCH_URL/SEARCH_KEY in setec_core.py)")
+                 "(update SEARCH_BASE/SEARCH_KEY in setec.py)")
             return True
     return False
 
@@ -322,6 +320,19 @@ def loose(s):
     for a, b in _LOOSE:
         s = s.replace(a, b)
     return s
+
+
+# Category handles encode non-ASCII and punctuation as -<hex> escapes, so
+# "Напојувања" becomes "napo-d1-98uvanja-29" (-d1-98 is ј, trailing -29 is the
+# category id). Decoding is lossy but good enough to name an off-menu category.
+_HANDLE_SUBS = [("-d1-98", "j"), ("-d1-9f", "dz"), ("-d1-9c", "kj"), ("-d1-9b", "gj"),
+                ("-20", " "), ("-2f", "/"), ("-26", "&"), ("-2c", ","), ("-2b", "+")]
+
+
+def decode_handle(h):
+    for a, b in _HANDLE_SUBS:
+        h = h.replace(a, b)
+    return h
 
 
 # Words added to a category's --grep haystack when its name contains the stem, so
@@ -571,7 +582,7 @@ def all_categories():
     # holding >=50% of its products, preferring one that holds all of them).
     info = {}
     for h, r in zip(off, res[len(parents):]):
-        name, cid = core.decode_handle(h), None
+        name, cid = decode_handle(h), None
         for hit in r.get("hits") or []:
             for pc in hit.get("product_categories") or []:
                 if pc.get("handle") == h:
@@ -589,7 +600,7 @@ def all_categories():
             if cur in by_slug:
                 trail.insert(0, by_slug[cur]["path"])
                 break
-            trail.insert(0, info.get(cur, {}).get("name", core.decode_handle(cur)))
+            trail.insert(0, info.get(cur, {}).get("name", decode_handle(cur)))
             cur = info.get(cur, {}).get("parent_slug")
         ps = i["parent_slug"]
         parent_id = by_slug[ps]["id"] if ps in by_slug else (info[ps]["id"] if ps in info else None)
@@ -619,7 +630,7 @@ def resolve_category(arg):
         return node["path"], expr, node
     fd = handle_counts()
     if a in fd:
-        return core.decode_handle(a), f"product_categories.handle = {q(a)}", None
+        return decode_handle(a), f"product_categories.handle = {q(a)}", None
     if a.startswith("pcat_"):
         expr = f"product_categories.id = {q(a)}"
         if count(BASE_FILTERS + [expr]):
@@ -1062,7 +1073,7 @@ def cmd_categories(a):
         except re.error as e:
             raise UsageError(f"bad --grep regex: {e}")
         def hit(r):
-            fields = [r["name"], r["path"], r["slug"], core.decode_handle(r["slug"]), en_tags(r["name"])]
+            fields = [r["name"], r["path"], r["slug"], decode_handle(r["slug"]), en_tags(r["name"])]
             return any(pat.search(f) or (lpat and lpat.search(loose(f))) for f in fields if f)
         recs = [r for r in recs if hit(r)]
         if not recs:
@@ -1306,9 +1317,8 @@ def cmd_detail(a):
 
 
 # --- setec-only commands ------------------------------------------------------
-# gaps, brands and stores run on this client's own HTTP layer (pacing, block
-# detection, base filters, parent categories expanded like `list`, no 1000-hit
-# ceiling) rather than setec_core's urllib versions.
+# gaps, brands and stores: Setec-only extras on the same HTTP layer, category
+# resolution and base filters as `list`.
 
 def cmd_gaps(a):
     """Products in a category with no value for one attribute: a value filter on

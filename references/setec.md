@@ -1,7 +1,6 @@
 # Setec (setec.mk): store reference
 
-Client: `scripts/stores/setec.py`. It takes the search key and handle decoding from the verbatim
-`setec_core.py` (the original setec-search script) and does everything else itself.
+Client: `scripts/stores/setec.py`.
 Read only when you need Setec specifics. Numbers were checked on 2026-10-03 and will drift.
 
 ## What it sells, and when to use it
@@ -17,7 +16,7 @@ electronics or appliance question, and for per-store pickup.
 
 All public JSON; no cookies or login.
 - **Catalogue (Meilisearch).** `POST https://search.sp.solslab.dev/indexes/products/search`
-  with `Authorization: Bearer <setec_core.SEARCH_KEY>`, the public key from the site's JS.
+  with `Authorization: Bearer <SEARCH_KEY>` (`setec.py`), the public key from the site's JS.
   Body: `q`, `filter`, `facets`, `sort`, `limit`/`offset`, `attributesToRetrieve`.
   `POST /multi-search` batches queries.
 - **Detail.** `GET https://setec.mk/api/medusa/products-with-details-web?handle=<slug>`
@@ -190,7 +189,8 @@ and block detection as `list`.
 - **Unknown category (exit 2):** `categories --grep` with an English word or a Macedonian
   stem (`laptop|prenosni`, `washing|перење`); only ids, slugs, URLs or exact names work.
 - **Filter returns 0:** copy the token verbatim from `facets` (`8кг`, `24"`), then run `gaps`.
-- **401 / `invalid_api_key`:** key rotated; the client re-reads it from the site JS once. Update `setec_core.py`.
+- **401 / `invalid_api_key`:** key rotated; the client re-reads it from the site JS once and says so on
+  stderr. Update `SEARCH_KEY` (and `SEARCH_BASE` if the host moved) in `setec.py`.
 - **"expected N, collected M":** the index changed mid-run; rerun.
 - **Detail fails, search finds it:** the record keeps index data plus `extra.detail_error`.
 - **Unrelated hits:** descriptions are searched; narrow with `list <cat> --filter`.
