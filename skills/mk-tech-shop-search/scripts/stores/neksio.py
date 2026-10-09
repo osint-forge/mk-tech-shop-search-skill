@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# /// script
+# requires-python = ">=3.9"
+# dependencies = ["requests>=2.28", "beautifulsoup4>=4.11"]
+# ///
 """Neksio (https://g.store.neksio.mk) catalogue client. See references/client-contract.md
 and references/neksio.md.
 

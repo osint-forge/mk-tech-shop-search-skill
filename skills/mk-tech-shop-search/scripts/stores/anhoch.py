@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# /// script
+# requires-python = ">=3.9"
+# dependencies = ["requests>=2.28", "beautifulsoup4>=4.11"]
+# ///
 """Anhoch (www.anhoch.com) catalogue client. See references/client-contract.md.
 
 Anhoch runs FleetCart (Laravel + Vue storefront, LiteSpeed origin behind Cloudflare).

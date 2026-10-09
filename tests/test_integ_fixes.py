@@ -1,3 +1,7 @@
+# /// script
+# requires-python = ">=3.9"
+# dependencies = ["requests>=2.28", "beautifulsoup4>=4.11"]
+# ///
 """Offline regression tests for mkshop.py and the store clients, from the fixes made during the
 live integration runs (2026-10-03 onwards). Titles are real listings seen in those runs.
 Run: python3 -B tests/test_integ_fixes.py"""

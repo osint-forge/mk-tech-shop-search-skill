@@ -1,3 +1,7 @@
+# /// script
+# requires-python = ">=3.9"
+# dependencies = ["requests>=2.28", "beautifulsoup4>=4.11"]
+# ///
 """Regression tests for mkshop.py against the fake store clients in tests/fake_stores and
 tests/fake_alt (offline). Run: python3 -B tests/test_mkshop.py"""
 import csv, io, json, os, subprocess, sys, time

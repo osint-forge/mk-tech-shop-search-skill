@@ -1,3 +1,7 @@
+# /// script
+# requires-python = ">=3.9"
+# dependencies = ["requests>=2.28", "beautifulsoup4>=4.11"]
+# ///
 """Offline checks that the skill's docs match its code: SKILL.md frontmatter, every shop has a
 reference and a table row, and every command and --flag the docs name exists in mkshop.py or
 the store client the doc is about. Run: python3 -B tests/test_docs.py"""
@@ -120,6 +124,19 @@ for ref in sorted(refs - {"client-contract"}):
     problems = doc_problems(read(f"references/{ref}.md"), allowed)
     check(f"references/{ref}.md names only real commands and flags of mkshop.py and {client}", not problems, problems)
 
+
+# ---- every script declares its dependencies the same way (PEP 723), so `uv run` works on each and
+# they all share one cached environment
+_hdr_re = re.compile(r"^# /// script\n((?:#.*\n)*?)# ///$", re.M)
+_headers = {}
+for _p in [os.path.join(SKILL, "scripts", "mkshop.py")] + sorted(glob.glob(os.path.join(SKILL, "scripts", "stores", "*.py"))):
+    with open(_p, encoding="utf-8") as f:
+        _m = _hdr_re.search(f.read())
+    _headers[os.path.basename(_p)] = _m.group(1) if _m else None
+check("every script has a PEP 723 header", all(_headers.values()), [k for k, v in _headers.items() if not v])
+check("the headers are identical and name requests and beautifulsoup4",
+      len(set(_headers.values())) == 1 and all(d in next(iter(_headers.values())) or "" for d in ("requests", "beautifulsoup4")),
+      set(_headers.values()))
 
 # ---- no hidden text: invisible format/bidi characters, variation selectors or Unicode tags in the
 # skill's instructions and code, or in the tests (write them as \u escapes)

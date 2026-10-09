@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# /// script
+# requires-python = ">=3.9"
+# dependencies = ["requests>=2.28", "beautifulsoup4>=4.11"]
+# ///
 """
 mkshop.py - search, list and compare products across North Macedonian shops.
 
@@ -2489,8 +2493,8 @@ def cmd_stores(ctx, a):
     if missing:
         n = sum(1 for r in failed if "No module named" in (r["client_message"] or ""))
         warn(f"mkshop: {n} of {len(rows)} store clients cannot start: missing Python module(s) "
-             f"{', '.join(sorted(missing))}. Install requests and beautifulsoup4 for {ctx.python} "
-             "(a virtualenv works), or set MKSHOP_PYTHON to an interpreter that has them.")
+             f"{', '.join(sorted(missing))}. Run mkshop with `uv run` (it installs them), install requests and "
+             f"beautifulsoup4 for {ctx.python}, or set MKSHOP_PYTHON to an interpreter that has them.")
     if a.json is not None:
         write_json(rows, a.json)
         if a.json != "-":

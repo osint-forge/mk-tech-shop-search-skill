@@ -29,26 +29,18 @@ Copy or symlink `skills/mk-tech-shop-search/` into your agent's skills folder, f
 
 ## Requirements
 
-- Python 3.9 or newer, with `requests` and `beautifulsoup4`.
+- [uv](https://docs.astral.sh/uv/). The scripts declare their dependencies, so `uv run` installs them, and a suitable Python if needed, the first time it runs.
 - Network access to the shops (see [Network access](#network-access)).
 
-### Installing the Python packages
+### Without uv
+
+Use Python 3.9 or newer and install the two packages yourself:
 
 ```bash
 python3 -m pip install requests beautifulsoup4
 ```
 
-If your system's Python doesn't allow that, use a virtualenv and point the skill at it:
-
-```bash
-python3 -m venv ~/.venvs/mkshop
-~/.venvs/mkshop/bin/pip install requests beautifulsoup4
-export MKSHOP_PYTHON=~/.venvs/mkshop/bin/python
-```
-
-`MKSHOP_PYTHON` has to be set in the environment your agent runs commands in.
-
-On Windows, use `python` (or `py -3`) instead of `python3`. A virtualenv's interpreter is then `Scripts\python.exe` instead of `bin/python`.
+Then run the commands with `python3` instead of `uv run` (on Windows, `python` or `py -3`).
 
 ## Network access
 
@@ -73,6 +65,8 @@ If your agent runs with a network allowlist, allow these hosts:
 
 Setec and Ananas search through public, search-only keys that their own sites send to every visitor. If a shop changes its key or search host, the clients pick up the new one from the site.
 
+The first `uv run` also downloads the packages from PyPI, and Python itself if no suitable version is installed.
+
 ## Files it writes
 
 - Each task's JSON and HTML report go into a folder the agent creates for that task.
@@ -85,9 +79,9 @@ Setec and Ananas search through public, search-only keys that their own sites se
 The tests run offline against fake shop clients. CI runs them on Python 3.9 and 3.14.
 
 ```bash
-python3 -B tests/test_docs.py         # docs match the code
-python3 -B tests/test_integ_fixes.py  # mkshop.py and the shop clients
-python3 -B tests/test_mkshop.py       # mkshop.py end to end against fake clients
+uv run tests/test_docs.py         # docs match the code
+uv run tests/test_integ_fixes.py  # mkshop.py and the shop clients
+uv run tests/test_mkshop.py       # mkshop.py end to end against fake clients
 ```
 
 ### Shop clients

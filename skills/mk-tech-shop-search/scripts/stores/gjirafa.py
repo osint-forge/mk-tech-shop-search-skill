@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# /// script
+# requires-python = ">=3.9"
+# dependencies = ["requests>=2.28", "beautifulsoup4>=4.11"]
+# ///
 """Gjirafa50 (https://gjirafa50.mk) and ZirafaMall (https://zirafamall.mk) catalogue client.
 See references/client-contract.md and references/gjirafa.md.
 

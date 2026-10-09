@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# /// script
+# requires-python = ">=3.9"
+# dependencies = ["requests>=2.28", "beautifulsoup4>=4.11"]
+# ///
 """DDStore (https://ddstore.mk) catalogue client.
 
 Contract: references/client-contract.md. Store details: references/ddstore.md.

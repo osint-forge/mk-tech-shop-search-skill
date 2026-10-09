@@ -2,7 +2,7 @@
 name: mk-tech-shop-search
 description: Search, compare and price-check products across North Macedonian online shops (Setec, Neptun, Tehnomarket, Anhoch, Neksio, DDStore, Hivetec, Gjirafa50, ZirafaMall, Setra and the Ananas marketplace) through their structured catalogue backends instead of scraping pages. Use this whenever the user wants to find, shortlist, compare, price-check or deal-hunt anything to buy in Macedonia, such as TVs, phones, laptops, PC parts, monitors, peripherals, appliances, kitchen and home electronics, gaming, anything. That includes "where is X cheapest", "who has X in stock", "which store can I pick it up from", "how long is the warranty", "is this a good price", "can I get it this week", a question about just one of these shops, a pasted product link from any of them, or a product category with requirements and a budget in денари/MKD, even when no shop is named.
 license: MIT
-compatibility: Python 3.9+ with requests and beautifulsoup4, and outbound HTTPS to the shops' sites and their search APIs. Does not work where code runs without network access.
+compatibility: uv (or Python 3.9+ with requests and beautifulsoup4), and outbound HTTPS to the shops' sites and their search APIs. Does not work where code runs without network access.
 ---
 
 # Macedonian shop search
@@ -23,13 +23,14 @@ the user's project directory if they named one, otherwise something like
 absolute paths, since shell variables don't survive between tool calls.
 
 ```bash
-python3 scripts/mkshop.py --help
-python3 scripts/mkshop.py stores          # who sells what, and what data each shop exposes
+uv run scripts/mkshop.py --help
+uv run scripts/mkshop.py stores          # who sells what, and what data each shop exposes
 ```
 
-Needs Python 3.9+ with `requests` and `beautifulsoup4`, and HTTPS access to
-the shops. On Windows, run the commands with `python` (or `py -3`) instead
-of `python3`.
+The scripts declare their dependencies, so `uv run` installs `requests` and
+`beautifulsoup4` (and a suitable Python) on first use. Without uv, run the
+commands with `python3` (on Windows `python` or `py -3`) and install those
+two packages. Either way the shops must be reachable over HTTPS.
 
 ## Before you answer
 
@@ -92,7 +93,7 @@ covered and which couldn't be checked; the answer will need to say so in a
 line.
 
 If the user limits the question to one shop, answer for that shop, using its
-client's extras where they help (e.g. `python3 scripts/stores/setec.py stores
+client's extras where they help (e.g. `uv run scripts/stores/setec.py stores
 <url>` for per-store stock, `setec.py gaps` for blank attributes; see "Reference"
 below). For "is this a good price", still `match` the product across the other
 shops: a struck-through price is not a deal signal.
@@ -100,7 +101,7 @@ shops: a struck-through price is not a deal signal.
 ### 2. Sweep with cross-store search
 
 ```bash
-python3 scripts/mkshop.py search "<brand> <model>" --q "<model code>" --q "<Macedonian product noun>" \
+uv run scripts/mkshop.py search "<brand> <model>" --q "<model code>" --q "<Macedonian product noun>" \
   --max-price <budget> --json <out>/sweep.json
 ```
 
@@ -144,10 +145,10 @@ Search is for recall. Membership comes from step 3.
 ### 3. Walk the categories
 
 ```bash
-python3 scripts/mkshop.py categories --grep '<macedonian stem>|<english stem>'   # every shop's matching categories
-python3 scripts/mkshop.py list --store <key> <category-id-or-url> --json <out>/<key>_list.json
-python3 scripts/mkshop.py facets --store <key> <category>                          # where the shop has structured attributes
-python3 scripts/mkshop.py list --store <key> <category> --filter '<token from facets>' --json <out>/filtered.json
+uv run scripts/mkshop.py categories --grep '<macedonian stem>|<english stem>'   # every shop's matching categories
+uv run scripts/mkshop.py list --store <key> <category-id-or-url> --json <out>/<key>_list.json
+uv run scripts/mkshop.py facets --store <key> <category>                          # where the shop has structured attributes
+uv run scripts/mkshop.py list --store <key> <category> --filter '<token from facets>' --json <out>/filtered.json
 ```
 
 Category handles differ per shop (numeric ids, slugs, URLs, transliterated
@@ -181,10 +182,10 @@ Silence reads as "nothing was missed", which is the one claim you can't make.
 ### 5. Recognise the same product across shops
 
 ```bash
-python3 scripts/mkshop.py match "<product URL from any covered shop>"
-python3 scripts/mkshop.py match <EAN>
-python3 scripts/mkshop.py match "<brand> <model>"
-python3 scripts/mkshop.py group <out>/sweep.json <out>/<key>_list.json ...   # one row per product across saved runs
+uv run scripts/mkshop.py match "<product URL from any covered shop>"
+uv run scripts/mkshop.py match <EAN>
+uv run scripts/mkshop.py match "<brand> <model>"
+uv run scripts/mkshop.py group <out>/sweep.json <out>/<key>_list.json ...   # one row per product across saved runs
 ```
 
 `match` searches every shop for one product by EAN, model code / MPN and
@@ -215,7 +216,7 @@ it rather than merging rows by hand. The joins and variant splits of both
 ### 6. Get detail on the shortlist
 
 ```bash
-python3 scripts/mkshop.py detail <url> <url> ... --json <out>/detail.json
+uv run scripts/mkshop.py detail <url> <url> ... --json <out>/detail.json
 ```
 
 Only for the handful you'll actually recommend. URLs route to the right shop
@@ -347,9 +348,9 @@ reservation empties it, so say so when recommending a trip.
 Retry a failed shop once on its own (`--stores <key>` for search/match,
 `--store <key>` for list/facets). For a timeout, raise `--timeout` or narrow
 the listing (`--filter`, `--limit`); very large categories take minutes. If
-shops fail with `ModuleNotFoundError`, install `requests` and
-`beautifulsoup4` (in a virtualenv, or as system packages) and set
-`MKSHOP_PYTHON` to that interpreter.
+shops fail with `ModuleNotFoundError`, run the commands with `uv run`, or
+install `requests` and `beautifulsoup4` for the interpreter running them
+(`MKSHOP_PYTHON` sets the one that runs the shop clients).
 If a shop still fails, say in the answer that it could not be checked. The
 per-shop reference files have troubleshooting notes.
 
@@ -491,7 +492,7 @@ question. A single-product answer may be one table and a verdict.
 - Flags and commands in a shop reference that `mkshop.py` lacks
   (`--category`, `--counts`, `--deep`, `--phrase`, Setec's `gaps` for blank
   attributes, ...) belong to that shop's client: run
-  `python3 scripts/stores/<key>.py <command> ...` (Gjirafa sites:
+  `uv run scripts/stores/<key>.py <command> ...` (Gjirafa sites:
   `gjirafa.py --site gjirafa50|zirafamall <command> ...`).
 - `references/client-contract.md`: the interface every store client
   implements. Read it before fixing a client or adding a shop.
