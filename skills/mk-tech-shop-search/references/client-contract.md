@@ -131,6 +131,9 @@ store-specific data such as alternative supplier offers).
   on stderr. For `list`, exit 2.
 - **Prices:** integers in MKD. Parse `6.130 ден.`, `6,130`, `5990,00`, minor
   units and so on. Never return a regular price as the current price.
+- **Encoding:** write UTF-8 to stdout and stderr on every platform
+  (reconfigure both at the start of `main`; Windows pipes default to a
+  legacy code page).
 - **Text:** pass shop text through as the shop gives it (whitespace
   collapsed). `mkshop.py` strips invisible control, zero-width, bidi and
   Unicode-tag characters from every string, and HTML tags from titles.

@@ -2,7 +2,7 @@
 name: mk-tech-shop-search
 description: Search, compare and price-check products across North Macedonian online shops (Setec, Neptun, Tehnomarket, Anhoch, Neksio, DDStore, Hivetec, Gjirafa50, ZirafaMall, Setra and the Ananas marketplace) through their structured catalogue backends instead of scraping pages. Use this whenever the user wants to find, shortlist, compare, price-check or deal-hunt anything to buy in Macedonia, such as TVs, phones, laptops, PC parts, monitors, peripherals, appliances, kitchen and home electronics, gaming, anything. That includes "where is X cheapest", "who has X in stock", "which store can I pick it up from", "how long is the warranty", "is this a good price", "can I get it this week", a question about just one of these shops, a pasted product link from any of them, or a product category with requirements and a budget in денари/MKD, even when no shop is named.
 license: MIT
-compatibility: Python 3.9+ with requests and beautifulsoup4, outbound HTTPS to the shops' sites and their search APIs, Linux or macOS. Does not work where code runs without network access.
+compatibility: Python 3.9+ with requests and beautifulsoup4, and outbound HTTPS to the shops' sites and their search APIs. Does not work where code runs without network access.
 ---
 
 # Macedonian shop search
@@ -28,7 +28,8 @@ python3 scripts/mkshop.py stores          # who sells what, and what data each s
 ```
 
 Needs Python 3.9+ with `requests` and `beautifulsoup4`, and HTTPS access to
-the shops.
+the shops. On Windows, run the commands with `python` (or `py -3`) instead
+of `python3`.
 
 ## Before you answer
 

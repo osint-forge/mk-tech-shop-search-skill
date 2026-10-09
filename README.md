@@ -30,7 +30,6 @@ Copy or symlink `skills/mk-tech-shop-search/` into your agent's skills folder, f
 ## Requirements
 
 - Python 3.9 or newer, with `requests` and `beautifulsoup4`.
-- Linux or macOS.
 - Network access to the shops (see [Network access](#network-access)).
 
 ### Installing the Python packages
@@ -48,6 +47,8 @@ export MKSHOP_PYTHON=~/.venvs/mkshop/bin/python
 ```
 
 `MKSHOP_PYTHON` has to be set in the environment your agent runs commands in.
+
+On Windows, use `python` (or `py -3`) instead of `python3`. A virtualenv's interpreter is then `Scripts\python.exe` instead of `bin/python`.
 
 ## Network access
 

@@ -1478,6 +1478,11 @@ def info(site):
 
 
 def main(argv=None):
+    for _stream in (sys.stdout, sys.stderr):   # UTF-8 output on every platform, even when piped
+        try:
+            _stream.reconfigure(encoding="utf-8")
+        except (AttributeError, ValueError):
+            pass
     common = argparse.ArgumentParser(add_help=False)
     common.add_argument("--site", choices=sorted(SITES), default=argparse.SUPPRESS,
                         help="which shop (also record['store'])")

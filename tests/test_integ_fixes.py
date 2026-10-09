@@ -1431,5 +1431,33 @@ _r = m.clean_record({"title": "x", "extra": {"offers": [{"seller": "S\u200bX", "
 check("clean_record: nested values and dict keys are scrubbed",
       _r["extra"] == {"offers": [{"seller": "SX", "stock_note": "ab"}]} and _r["attributes"] == {"Boја": "v"}, _r)
 
+
+# ==== Windows paths, simulated on any OS (2026-10-09) ====
+# Stopping a client without process groups (Windows) ends it with Popen.kill().
+import time as _time  # noqa: E402
+_proc = _sp.Popen([sys.executable, "-c", "import time; time.sleep(60)"])
+_saved_pg = m._PROCESS_GROUPS
+m._PROCESS_GROUPS = False
+_t0 = _time.monotonic()
+m._kill(_proc)
+m._PROCESS_GROUPS = _saved_pg
+check("_kill without process groups stops the client with Popen.kill()",
+      _proc.poll() is not None and _time.monotonic() - _t0 < 3, _proc.poll())
+# A Windows pipe defaults to a legacy code page; every client must still write UTF-8.
+_bad = []
+for _c in sorted(os.listdir(_STORES)):
+    if not _c.endswith(".py"):
+        continue
+    _argv = [sys.executable, "-B", os.path.join(_STORES, _c)] + (["--site", "zirafamall"] if _c == "gjirafa.py" else []) + ["info"]
+    _res = _sp.run(_argv, capture_output=True, env=dict(os.environ, PYTHONIOENCODING="cp1252", PYTHONDONTWRITEBYTECODE="1"),
+                   timeout=60)
+    try:
+        json.loads(_res.stdout.decode("utf-8"))
+        if _res.returncode:
+            _bad.append((_c, _res.returncode, _res.stderr[-200:]))
+    except ValueError as _e:
+        _bad.append((_c, _res.returncode, str(_e)[:80], _res.stderr[-200:]))
+check("every client writes UTF-8 when its stdout uses a legacy code page (Windows pipes)", not _bad, _bad)
+
 print(f"\n{fails} failure(s)")
 sys.exit(1 if fails else 0)

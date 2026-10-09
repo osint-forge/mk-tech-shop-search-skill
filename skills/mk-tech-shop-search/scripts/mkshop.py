@@ -1731,18 +1731,29 @@ _live = set()
 _live_lock = threading.Lock()
 
 
+# Each client runs in its own process group, so a terminal Ctrl-C reaches mkshop alone and mkshop
+# stops the clients itself. POSIX has process groups and signals; Windows has neither, so there a
+# client gets a new console process group (Ctrl-C does not reach it) and is stopped with
+# TerminateProcess. Clients start no processes of their own, so ending the client is enough.
+_PROCESS_GROUPS = hasattr(os, "killpg")
+_SPAWN_GROUP = ({"start_new_session": True} if _PROCESS_GROUPS
+                else {"creationflags": getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0)})
+
+
 def _kill(p):
-    try:
-        os.killpg(p.pid, signal.SIGTERM)
-    except (ProcessLookupError, PermissionError, OSError):
-        pass
+    def stop(sig):
+        try:
+            if _PROCESS_GROUPS:
+                os.killpg(p.pid, sig)
+            else:
+                p.kill()   # TerminateProcess on Windows
+        except (ProcessLookupError, PermissionError, OSError):
+            pass
+    stop(signal.SIGTERM)
     try:
         p.wait(3)
     except subprocess.TimeoutExpired:
-        try:
-            os.killpg(p.pid, signal.SIGKILL)
-        except (ProcessLookupError, PermissionError, OSError):
-            pass
+        stop(getattr(signal, "SIGKILL", signal.SIGTERM))
         try:
             p.wait(3)
         except subprocess.TimeoutExpired:
@@ -1822,7 +1833,7 @@ class Ctx:
         with tempfile.TemporaryFile() as fo, tempfile.TemporaryFile() as fe:
             try:
                 p = subprocess.Popen(cmd, stdout=fo, stderr=fe, stdin=subprocess.DEVNULL,
-                                     cwd=self.stores_dir, env=env, start_new_session=True)
+                                     cwd=self.stores_dir, env=env, **_SPAWN_GROUP)
             except OSError as e:
                 res["message"] = f"cannot start client: {e}"
                 return res

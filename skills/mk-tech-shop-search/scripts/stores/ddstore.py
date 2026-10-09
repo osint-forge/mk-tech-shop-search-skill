@@ -1425,6 +1425,11 @@ def info():
 
 
 def main(argv=None):
+    for _stream in (sys.stdout, sys.stderr):   # UTF-8 output on every platform, even when piped
+        try:
+            _stream.reconfigure(encoding="utf-8")
+        except (AttributeError, ValueError):
+            pass
     common = argparse.ArgumentParser(add_help=False)
     common.add_argument("-v", "--verbose", action="store_true", help="log every request to stderr")
     common.add_argument("--quiet", action="store_true", help="no progress on stderr")
