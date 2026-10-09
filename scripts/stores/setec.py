@@ -1338,7 +1338,8 @@ def cmd_detail(a):
 
 def cmd_gaps(a):
     """Products in a category with no value for one attribute: a value filter on
-    that attribute silently drops them, so recover them from titles/specs."""
+    that attribute silently drops them. Each record carries the product description
+    as `specs`, where the missing value is usually stated."""
     if a.limit is not None and a.limit <= 0:
         raise UsageError("--limit must be positive")
     label, expr, _ = resolve_category(a.category)
@@ -1363,6 +1364,16 @@ def cmd_gaps(a):
     if a.in_stock:
         rows = [r for r in rows if r["in_stock"]]
     shown = rows[:a.limit] if a.limit else rows
+    desc = {}
+    ids = [r["id"] for r in shown]
+    for i in range(0, len(ids), 100):
+        part = ids[i:i + 100]
+        d = search_body({"q": "", "limit": len(part), "attributesToRetrieve": ["id", "description"],
+                         "filter": ["id IN [%s]" % ", ".join(q(x) for x in part)]})
+        for h in d.get("hits") or []:
+            desc[h["id"]] = re.sub(r"\s+", " ", h.get("description") or "").strip() or None
+    for r in shown:
+        r["specs"] = desc.get(r["id"])
     summary = (f"{label}: {total} products; {total - len(blank)} carry a usable {attr!r} value; "
                f"{len(blank)} have it blank or absent"
                + (f" ({len(rows)} of them in stock)" if a.in_stock else "")
@@ -1372,7 +1383,10 @@ def cmd_gaps(a):
         emit(shown, a.json)
     else:
         print(summary + ":")
-        emit(shown, None)
+        for r in shown:
+            emit([r], None)
+            if r["specs"]:
+                print(f"{'':>10}{r['specs'][:160]}")
     return 0
 
 

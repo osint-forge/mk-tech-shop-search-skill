@@ -64,7 +64,9 @@ All public JSON; no cookies or login.
   (`variants.calculated_price.calculated_amount < 20000`).
 
 Attributes settle membership, not completeness. 135 of 292 monitors lack `Тип на Екран`,
-so run `gaps` before trusting a value filter and recover the blanks from titles. Values
+so run `gaps` before trusting a value filter and recover the blanks from the `specs`
+(description) text it returns: on 2026-10-09, 15 of the 20 monitors with a blank Refresh
+Rate stated their Hz only there, none only in the title. Values
 are banded (`Батерија (mAh)::4000-4999`) and sometimes split across names
 (`Дубина`/`Длабочина`). Monitors also carry the TV attribute `Технологија на телевизор`.
 
@@ -177,7 +179,8 @@ These run on the client's own HTTP layer, with the same category resolution, bas
 and block detection as `list`.
 
 - `gaps <cat> --attr NAME [--in-stock] [--limit N] [--json PATH]`: products with the
-  attribute blank or absent, as contract records. Covers the whole category, children
+  attribute blank or absent, as contract records with the description as `specs`
+  (one extra request per 100 products shown). Covers the whole category, children
   included and past 1,000. An attribute name that never occurs exits 2 and lists the names
   that do.
 - `brands [<cat>] [--json PATH]`: brand counts, category expanded as in `list`.
