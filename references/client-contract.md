@@ -53,7 +53,7 @@ and notes go to stderr, never stdout.
 - Warnings that change how to read a result (truncation, OR fallback, partial
   data) go on an unindented stderr line containing `WARNING`. `mkshop.py`
   copies those into the shop's status note and treats indented lines as
-  progress (Setec's client is the exception: mkshop matches its keywords).
+  progress.
 - `categories`: the store's category tree as flat records
   `{id, slug, name, path, url, parent, count}`. `path` is the human
   breadcrumb ("Компјутери > Монитори"); `count` is the store-reported product

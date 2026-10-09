@@ -98,8 +98,20 @@ class StoreError(RuntimeError):
     pass
 
 
+QUIET = False
+VERBOSE = False
+
+
+def log(msg):
+    """Progress: indented, so mkshop.py treats it as progress, never as a result note."""
+    if not QUIET:
+        print(f"  {msg}", file=sys.stderr)
+
+
 def warn(msg):
-    print(f"[setec] {msg}", file=sys.stderr)
+    """A line that changes how the result must be read (truncation, fallback, partial data);
+    mkshop.py copies unindented WARNING lines into the shop's status note."""
+    print(f"WARNING: {msg}", file=sys.stderr)
 
 
 # --------------------------------------------------------------------------- HTTP
@@ -147,6 +159,8 @@ def _request(method, url, *, auth=False, expect_json=True, allow_404=False, **kw
         headers = dict(kw.pop("headers", {}) or {})
         if auth:
             headers["Authorization"] = "Bearer " + SEARCH_KEY
+        if VERBOSE:
+            log(f"{method} {url[:150]}")
         try:
             r = session().request(method, url, timeout=TIMEOUT, headers=headers, **kw)
         except (requests.ConnectionError, requests.Timeout) as e:
@@ -169,7 +183,7 @@ def _request(method, url, *, auth=False, expect_json=True, allow_404=False, **kw
                 sleep_for = max(float(ra), delay) if ra else delay
             except ValueError:
                 sleep_for = delay
-            warn(f"HTTP {r.status_code} from {host}; retrying in {sleep_for:.0f}s")
+            log(f"HTTP {r.status_code} from {host}; retrying in {sleep_for:.0f}s")
             time.sleep(sleep_for)
             delay *= 2
             kw["headers"] = headers
@@ -203,7 +217,7 @@ def _rediscover_key():
     if _key_rediscovered[0]:
         return False
     _key_rediscovered[0] = True
-    warn("search key rejected - re-reading it from setec.mk's JS bundle")
+    log("search key rejected - re-reading it from setec.mk's JS bundle")
     # The search client is bundled with the category listing page, so read a
     # category page's chunk list first, then the homepage's.
     home = _request("GET", BASE + "/", expect_json=False, headers={"Accept": "text/html"})
@@ -947,7 +961,7 @@ def fetch_all(filters, limit=None):
         return hits, total
     chunks = plan_chunks(filters, total)
     if len(chunks) > 1:
-        warn(f"{total} products exceed the index's {CAP}-hit ceiling; "
+        log(f"{total} products exceed the index's {CAP}-hit ceiling; "
              f"fetching in {len(chunks)} brand/price windows")
     seen, hits = set(), []
     for f, _ in chunks:
@@ -1051,13 +1065,13 @@ def cmd_search(a):
         added = new[:room] if room is not None else new
         out += added
         label = "query" if i == 0 else "transliteration"
-        warn(f"{label} {v!r}: {total} match(es), {len(added)} new")
+        log(f"{label} {v!r}: {total} match(es), {len(added)} new")
         if total > CAP and (a.limit is None or a.limit > CAP):
-            warn(f"  {v!r} matched {total} products but the index returns at most {CAP} "
+            warn(f"{v!r} matched {total} products but the index returns at most {CAP} "
                  "(relevance-ranked); narrow the query or use `list <category>`")
     recs = [record_from_hit(h, thr) for h in out]
     if not recs:
-        warn("0 products found (genuine zero from the store's search)")
+        log("0 products found (genuine zero from the store's search)")
     emit(recs, a.json)
     return 0
 
@@ -1077,13 +1091,13 @@ def cmd_categories(a):
             return any(pat.search(f) or (lpat and lpat.search(loose(f))) for f in fields if f)
         recs = [r for r in recs if hit(r)]
         if not recs:
-            warn(f"no category matches {a.grep!r}; try a Macedonian stem (e.g. 'телевиз|televiz')")
+            log(f"no category matches {a.grep!r}; try a Macedonian stem (e.g. 'телевиз|televiz')")
     if a.json:
         emit(recs, a.json)
     else:
         for r in recs:
             print(f"{r['count']:>6}  {r['path']}  [{r['slug']}]")
-        warn(f"{len(recs)} categories")
+        log(f"{len(recs)} categories")
     return 0
 
 
@@ -1096,7 +1110,7 @@ def cmd_list(a):
     hits, total = fetch_all(filters, a.limit)
     thr = order_threshold()
     recs = [record_from_hit(h, thr) for h in hits]
-    warn(f"{label}: {total} product(s) match, {len(recs)} returned")
+    log(f"{label}: {total} product(s) match, {len(recs)} returned")
     if not recs:
         if count(cat_filters) == 0:
             warn(f"category {a.category!r} exists but holds no products")
@@ -1115,7 +1129,7 @@ def cmd_list(a):
                 emit(recs, a.json)
                 raise UsageError(f"filter token(s) {bad} never occur in this category - "
                                  "copy tokens verbatim from `setec.py facets <category>`")
-        warn("category has products, but none pass --in-stock/--filter together "
+        log("category has products, but none pass --in-stock/--filter together "
              "(genuine zero)")
     emit(recs, a.json)
     return 0
@@ -1134,16 +1148,18 @@ def cmd_facets(a):
         if name.strip() and value.strip():
             rows.append({"name": name, "value": value, "count": n, "token": tok})
     rows.sort(key=lambda r: (r["name"], -r["count"], r["value"]))
+    if not total:
+        raise UsageError(f"{label} holds no products")
     if len(pairs) >= 4000:
         warn("facet list hit maxValuesPerFacet (4000) and may be truncated")
-    warn(f"{label}: {total} products, {len(rows)} attribute values "
+    log(f"{label}: {total} products, {len(rows)} attribute values "
          "(values are often blank on part of a category - see `gaps`)")
     if a.json:
         emit(rows, a.json)
     else:
         for r in rows:
             print(f"{r['count']:>6}  {r['token']}")
-    return 0 if total else 2
+    return 0
 
 
 def resolve_products(inputs):
@@ -1352,7 +1368,7 @@ def cmd_gaps(a):
                + (f" ({len(rows)} of them in stock)" if a.in_stock else "")
                + f" - a filter on {attr!r} drops these silently")
     if a.json:
-        warn(summary)
+        log(summary)
         emit(shown, a.json)
     else:
         print(summary + ":")
@@ -1373,7 +1389,7 @@ def cmd_brands(a):
     if not total:
         raise UsageError(f"{label} holds no products")
     unbranded = total - sum(n for _, n in brands)
-    warn(f"{label}: {total} products, {len(brands)} brands"
+    log(f"{label}: {total} products, {len(brands)} brands"
          + (f", {unbranded} without a brand_name" if unbranded > 0 else ""))
     rows = [{"brand": b, "count": n} for b, n in brands]
     if a.json:
@@ -1423,71 +1439,69 @@ def cmd_stores(a):
 # --------------------------------------------------------------------------- main
 
 def main(argv=None):
+    global QUIET, VERBOSE
+    common = argparse.ArgumentParser(add_help=False)
+    common.add_argument("--json", metavar="PATH", help="write a JSON list to PATH")
+    common.add_argument("--quiet", action="store_true", help="no progress on stderr")
+    common.add_argument("-v", "--verbose", action="store_true", help="log every request to stderr")
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)
-    sub.add_parser("info").set_defaults(fn=cmd_info)
+    sub.add_parser("info", parents=[common]).set_defaults(fn=cmd_info)
 
-    p = sub.add_parser("search")
+    p = sub.add_parser("search", parents=[common])
     p.add_argument("query")
     p.add_argument("--limit", type=int)
     p.add_argument("--in-stock", action="store_true")
-    p.add_argument("--json")
     p.set_defaults(fn=cmd_search)
 
-    p = sub.add_parser("categories")
+    p = sub.add_parser("categories", parents=[common])
     p.add_argument("--grep")
-    p.add_argument("--json")
     p.set_defaults(fn=cmd_categories)
 
-    p = sub.add_parser("list")
+    p = sub.add_parser("list", parents=[common])
     p.add_argument("category")
     p.add_argument("--in-stock", action="store_true")
     p.add_argument("--limit", type=int)
     p.add_argument("--filter", action="append", default=[],
                    help="'Name::Value' token from `facets`, or a raw Meilisearch filter")
-    p.add_argument("--json")
     p.set_defaults(fn=cmd_list)
 
-    p = sub.add_parser("detail")
+    p = sub.add_parser("detail", parents=[common])
     p.add_argument("inputs", nargs="+", help="product URL, prod_ id, handle, Шифра or EAN")
-    p.add_argument("--json")
     p.set_defaults(fn=cmd_detail)
 
-    p = sub.add_parser("facets")
+    p = sub.add_parser("facets", parents=[common])
     p.add_argument("category")
-    p.add_argument("--json")
     p.set_defaults(fn=cmd_facets)
 
-    p = sub.add_parser("gaps", help="products in a category with no value for an attribute")
+    p = sub.add_parser("gaps", parents=[common], help="products in a category with no value for an attribute")
     p.add_argument("category")
     p.add_argument("--attr", required=True)
     p.add_argument("--in-stock", action="store_true")
     p.add_argument("--limit", type=int, help="list at most N blank products")
-    p.add_argument("--json")
     p.set_defaults(fn=cmd_gaps)
 
-    p = sub.add_parser("brands", help="brand counts, optionally within a category")
+    p = sub.add_parser("brands", parents=[common], help="brand counts, optionally within a category")
     p.add_argument("category", nargs="?")
-    p.add_argument("--json")
     p.set_defaults(fn=cmd_brands)
 
-    p = sub.add_parser("stores", help="per-store stock rollup across products")
+    p = sub.add_parser("stores", parents=[common], help="per-store stock rollup across products")
     p.add_argument("inputs", nargs="+")
-    p.add_argument("--json")
     p.set_defaults(fn=cmd_stores)
 
     a = ap.parse_args(argv)
+    QUIET, VERBOSE = a.quiet, a.verbose and not a.quiet
     try:
         return a.fn(a)
     except Blocked as e:
         print(f"BLOCKED: {e}", file=sys.stderr)
         return 3
     except UsageError as e:
-        print(f"[setec] {e}", file=sys.stderr)
+        print(f"ERROR: {e}", file=sys.stderr)
         return 2
     except StoreError as e:
-        print(f"[setec] error: {e}", file=sys.stderr)
+        print(f"ERROR: {e}", file=sys.stderr)
         return 1
     except KeyboardInterrupt:
         return 130

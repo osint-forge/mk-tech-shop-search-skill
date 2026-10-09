@@ -95,10 +95,6 @@ STORE_GAP = 0.4
 #   anhoch: --all-words = every word in any order (title), plus genuine
 #   phrase hits; without it a multi-word query whose word order differs from
 #   the title silently falls back to OR-matching (hundreds of unrelated hits).
-# warn_style: how the client marks result-affecting stderr lines.
-#   "marker"  (default) a line containing WARNING; everything else is progress.
-#   "keyword" no marker (setec prints progress and warnings alike), so lines
-#             are classified by keywords (truncated, capped, fallback, ...).
 # `sells` is only a fallback: `stores` shows each client's own `info` text.
 REGISTRY = {
     "setec": dict(
@@ -107,7 +103,7 @@ REGISTRY = {
         sells="Large consumer-electronics and home chain: computers and PC parts, "
               "laptops, monitors, phones, TVs/audio, large and small home "
               "appliances, air conditioning, kitchenware, tools, garden, sport.",
-        ean_search=True, ean_listing=True, ean_detail=True, warn_style="keyword"),
+        ean_search=True, ean_listing=True, ean_detail=True),
     "anhoch": dict(
         name="Anhoch", script="anhoch.py", args=[],
         domains=["anhoch.com", "www.anhoch.com"],
@@ -1756,26 +1752,14 @@ def _kill_all():
 
 atexit.register(_kill_all)
 
-_WARN_RE = re.compile(
-    r"(?i)(warn|truncat|fallback|\bcap(ped|s)?\b|partial|incomplete|captcha|"
-    r"challenge|retry|retrying|\b429\b|\b503\b|skipp|could not|failed|or-match|"
-    r"layout change|soft.?block|"
-    # setec: 'only 1000 will come back', 'the index returns at most 1000',
-    # 'expected 1056 products, collected 1050'
-    r"will come back|returns at most|expected \d+ products?, collected)")
-
-
 _MARKER_RE = re.compile(r"(?i)\bwarn(ing)?\b")
 
 
 def is_warning_line(key, ln):
     """A client stderr line that affects results (truncation, OR fallback,
-    partial data), as opposed to progress. Clients mark these with WARNING;
-    a client with warn_style "keyword" has no marker, so keywords decide."""
+    partial data), as opposed to progress: unindented and marked WARNING."""
     if not ln or ln.lstrip().startswith(("Traceback", "BLOCKED")):
         return False
-    if REGISTRY.get(key, {}).get("warn_style") == "keyword":
-        return bool(_WARN_RE.search(ln))   # setec indents some real warnings
     return not ln[:1].isspace() and bool(_MARKER_RE.search(ln))
 
 
