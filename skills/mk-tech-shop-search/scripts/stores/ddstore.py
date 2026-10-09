@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""DDStore (https://ddstore.mk) catalogue client for mk-shop-search.
+"""DDStore (https://ddstore.mk) catalogue client.
 
 Contract: references/client-contract.md. Store details: references/ddstore.md.
 

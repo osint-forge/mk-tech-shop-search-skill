@@ -46,7 +46,7 @@ is the rendered card grid (there is no product JSON API):
 - Numeric ids (Gjirafa50 2160, ZirafaMall 14528); slugs are Macedonian transliterations on Gjirafa50
   (`monitor-dodatoci`, some with Cyrillic `ј`/`њ`: `kompјuter`) and often **Albanian** on ZirafaMall
   (`monitor-teknologji`, `tastiere-teknologji`). Names are Macedonian. `list` takes id, slug or URL.
-- Tree = home-page mega-menu + each truncated group's page, cached 24 h in `~/.cache/mk-shop-search/`
+- Tree = home-page mega-menu + each truncated group's page, cached 24 h in `~/.cache/mk-tech-shop-search/`
   (`MKSHOP_CACHE_DIR` overrides; `--refresh`): three complete levels, Gjirafa50 360 categories,
   ZirafaMall 554, of ~1,000 / ~3,500 in all. `categories --grep X --deep` fetches matching pages to
   name deeper children (≤40 per run, cached); `list` prints subcategories on stderr. Only department

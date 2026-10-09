@@ -317,7 +317,7 @@ def _cache_dir():
     d = os.environ.get("MKSHOP_CACHE_DIR")
     if not d:
         base = os.environ.get("XDG_CACHE_HOME") or os.path.join(os.path.expanduser("~"), ".cache")
-        d = os.path.join(base, "mk-shop-search")
+        d = os.path.join(base, "mk-tech-shop-search")
     return d
 
 

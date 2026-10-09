@@ -1,6 +1,6 @@
 ---
-name: mk-shop-search
-description: Search, compare and price-check products across North Macedonian online shops (Setec, Neptun, Tehnomarket, Anhoch, Neksio, DDStore, Hivetec, Gjirafa50, ZirafaMall, Setra and the Ananas marketplace) through their structured catalogue backends instead of scraping pages. Use this whenever the user wants to find, shortlist, compare, price-check or deal-hunt anything to buy in Macedonia, such as TVs, phones, laptops, PC parts, monitors, peripherals, appliances, kitchen and home electronics, gaming, anything. That includes "where is X cheapest", "who has X in stock", "is this a good price", "can I get it this week", a pasted product link from any of these shops, or a product category with requirements and a budget in денари/MKD, even when no shop is named. For questions that are purely about Setec, setec-search also works; prefer this skill whenever more than one shop could matter.
+name: mk-tech-shop-search
+description: Search, compare and price-check products across North Macedonian online shops (Setec, Neptun, Tehnomarket, Anhoch, Neksio, DDStore, Hivetec, Gjirafa50, ZirafaMall, Setra and the Ananas marketplace) through their structured catalogue backends instead of scraping pages. Use this whenever the user wants to find, shortlist, compare, price-check or deal-hunt anything to buy in Macedonia, such as TVs, phones, laptops, PC parts, monitors, peripherals, appliances, kitchen and home electronics, gaming, anything. That includes "where is X cheapest", "who has X in stock", "which store can I pick it up from", "how long is the warranty", "is this a good price", "can I get it this week", a question about just one of these shops, a pasted product link from any of them, or a product category with requirements and a budget in денари/MKD, even when no shop is named.
 ---
 
 # Macedonian shop search
@@ -55,6 +55,11 @@ Not every shop sells every department. Use the table above, or
 `mkshop.py stores`, to pick the relevant set. Keep track of which shops you
 covered and which couldn't be checked; the answer will need to say so in a
 line.
+
+If the user limits the question to one shop, answer for that shop, using its
+client's extras where they help (Setec: `stores`, `gaps`). For "is this a good
+price", still `match` the product across the other shops: a struck-through
+price is not a deal signal.
 
 ### 2. Sweep with cross-store search
 
