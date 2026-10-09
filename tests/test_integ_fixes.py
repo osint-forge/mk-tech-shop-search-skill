@@ -1406,5 +1406,30 @@ check("category paths are cut from the left so the leaf stays",
       m._path_tail(_long, 50) == "… > Монитори > Гејмерски монитори 27" and m._path_tail("Short > Path") == "Short > Path",
       m._path_tail(_long, 50))
 
+
+# ==== shop text is data: invisible characters and HTML tags are stripped (2026-10-09) ====
+_r = m.clean_record({"title": "Logitech G435, сина<br />", "specs": "Line 1\nLine 2\u200b\u202e reversed",
+                     "seller": "Shop\U000e0049\U000e0067\U000e006eName", "extra": {"note": "a\u200db\x07"},
+                     "attributes": {"Боја": "Сина\u00ad"}, "price_mkd": 100}, "zirafamall")
+check("clean_record strips invisible characters everywhere and HTML tags from titles",
+      (_r["title"], _r["specs"], _r["seller"], _r["extra"], _r["attributes"])
+      == ("Logitech G435, сина", "Line 1\nLine 2 reversed", "ShopName", {"note": "ab"}, {"Боја": "Сина"}), _r)
+check("clean_record leaves '<' that is not a tag alone",
+      m.clean_record({"title": 'Monitor <5ms 27" > fast'}, "setec")["title"] == 'Monitor <5ms 27" > fast')
+
+_t = {x: m.clean_record({"title": x}, "gjirafa50")["title"] for x in (
+    "Phone &#x202E;cba", "x&#8203;y&shy;z", "a&#917577;b", "сина&lt;br /&gt;", 'Monitor 27" <IPS 144Hz> black',
+    "Adapter <HDMI> to <VGA>", "55&quot; TV <p>new</p>", "Heart ❤\ufe0f ok")}
+check("clean_record: entity-encoded invisible characters and tags are removed after unescaping",
+      [_t["Phone &#x202E;cba"], _t["x&#8203;y&shy;z"], _t["a&#917577;b"], _t["сина&lt;br /&gt;"], _t["55&quot; TV <p>new</p>"]]
+      == ["Phone cba", "xyz", "ab", "сина", '55" TV new'], _t)
+check("clean_record: angle-bracket text that is not markup stays, emoji keep their selector",
+      _t['Monitor 27" <IPS 144Hz> black'] == 'Monitor 27" <IPS 144Hz> black'
+      and _t["Adapter <HDMI> to <VGA>"] == "Adapter <HDMI> to <VGA>" and _t["Heart ❤\ufe0f ok"] == "Heart ❤\ufe0f ok", _t)
+_r = m.clean_record({"title": "x", "extra": {"offers": [{"seller": "S\u200bX", "stock_note": "a\u202eb"}]},
+                     "attributes": {"Bo\u200bја": "v\ufe00"}}, "ddstore")
+check("clean_record: nested values and dict keys are scrubbed",
+      _r["extra"] == {"offers": [{"seller": "SX", "stock_note": "ab"}]} and _r["attributes"] == {"Boја": "v"}, _r)
+
 print(f"\n{fails} failure(s)")
 sys.exit(1 if fails else 0)

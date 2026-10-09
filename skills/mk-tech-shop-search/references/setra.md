@@ -147,23 +147,17 @@ nonces or login.
   "keyboard" (10) or "mouse" (10) also hit those PCs. The PowerCube Gaming Combo category is all bundles.
 - **Duplicates.** The same title can appear under two ids with different stock; colour variants are separate products.
 
-## Bot protection and politeness (evidence)
+## Bot protection and politeness (checked 2026-10-03)
 
-- **None triggered** on 2026-10-01/02/03. Today: 12 back-to-back **unpaced** Store API calls all returned 200 at 2.75–2.96 s
-  with no drift. The python-requests default, empty, `curl/8.5.0` and `Python-urllib` UAs all got 200 on the API and on
-  `/shop/`. 5 back-to-back uncached filtered HTML pages got 200 (3.3–4.0 s). There were no `Retry-After`,
-  `X-RateLimit-*`, `cf-*` or Wordfence cookies; the only cookie is `language=mk`. About 30 probe requests in total.
-- **Independent re-probe, 2026-10-03 (21 requests, sequential, unpaced):** 6 cache-busted product pages (`?nc=<random>`)
-  with a `Scrapy/2.11.2` UA and no Accept-Language: all 200 in 3.0–3.3 s, full pages, no markers. 8 uncached Store API
-  searches with the bare python-requests UA: all 200 in 3.3–4.7 s. `/wp-json/`, `/wp-json/wordfence/v1` and a HEAD on
-  `/shop/` answered 200; a Chrome-UA API call afterwards took 3.1 s (no throttling). No `Retry-After`, rate-limit or `cf-*`
-  headers; cookies only `language=mk` and `woocommerce_recently_viewed`. `wp-login.php` carries Wordfence and CAPTCHA
-  strings, which is why bare "wordfence"/"captcha" are not block markers.
-- **Concurrency hurts the origin.** Earlier: a 10-way burst queued to 3.4–4.2 s each; 5 concurrent uncached HTML searches
-  got **HTTP 500 after 40–62 s** (PHP overload). The client is sequential (0.5 s pacing) and retries 429/5xx with backoff.
+- **No block was triggered**, and there are no rate-limit or `cf-*` headers. Calls are slow: about 3 s each.
+- **Concurrency hurts the origin.** A 10-way burst queued to 3.4–4.2 s each, and 5 concurrent uncached HTML
+  searches got **HTTP 500 after 40–62 s** (PHP overload). The client is sequential (0.5 s pacing) and retries
+  429/5xx with backoff.
 - **Wordfence risk:** it can answer 503/403 "Your access to this site has been limited". The client exits **3** on
-  401/403, Wordfence/challenge text (no retry: lockouts escalate) or a persistent 429; `BLOCKED:` gives status, URL,
-  title and marker. Normal pages contain "Turnstile"/"reCAPTCHA" form strings, so those are not HTML block markers.
+  401/403, Wordfence/challenge text (no retry: lockouts escalate) or a persistent 429; `BLOCKED:` gives status,
+  URL, title and marker. Normal pages contain "Turnstile"/"reCAPTCHA" form strings and `wp-login.php` carries
+  Wordfence and CAPTCHA strings, so those words alone are not block markers.
+- There is no `robots.txt` (2026-10-09: the URL returns the site's "page not found" page).
 
 ## Troubleshooting
 

@@ -180,15 +180,12 @@ are banded (`Батерија (mAh)::4000-4999`) and sometimes split across name
 
 ## Bot protection and politeness
 
-None observed (2026-10-03, re-probed the same day with a different pattern): no Cloudflare/WAF
-and no `server`/`cf-ray`/rate-limit headers. python-requests, curl, empty and Googlebot user
-agents get 200 on HTML pages, the detail API, the Strapi tree and the search host; unpaced
-bursts (12 + 8 search, 8 + 6 detail) all 200; 401 without the key. Unknown product pages
-answer a soft 200, which does not matter because the client reads only the JSON APIs. The
-client still runs sequentially, 0.35 s per host, backs off on 429/5xx (honouring
-`Retry-After` up to 60 s), and exits 3 (`BLOCKED:`) on an HTML challenge, a 403, HTML where JSON
-was expected, or a 429 that persists after 4 tries on a call it cannot do without (a persistent
-429 on web-config, the category tree or one detail item falls back as for any other error).
+None observed (2026-10-03): no Cloudflare/WAF and no rate-limit headers; the search host answers 401 without the
+key. Unknown product pages answer a soft 200, which does not matter because the client reads only the JSON APIs.
+`robots.txt` (2026-10-09) allows everything. The client still runs sequentially, 0.35 s per host, backs off on
+429/5xx (honouring `Retry-After` up to 60 s), and exits 3 (`BLOCKED:`) on an HTML challenge, a 403, HTML where JSON
+was expected, or a 429 that persists after 4 tries on a call it cannot do without (a persistent 429 on web-config,
+the category tree or one detail item falls back as for any other error).
 
 ## Setec-only commands
 

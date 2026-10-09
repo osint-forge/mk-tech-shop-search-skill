@@ -45,6 +45,13 @@ check("description is 1-1024 characters", 0 < len(desc) <= 1024, len(desc))
 check("description has no angle brackets and no unquoted ': '",
       not re.search(r"[<>]", desc) and (": " not in desc or desc[:1] in "\"'"), desc[:80])
 check("SKILL.md body stays under 500 lines", skill_md.count("\n") < 500, skill_md.count("\n"))
+check("compatibility, when present, is 1-500 characters",
+      "compatibility" not in fields or 0 < len(fields["compatibility"]) <= 500, len(fields.get("compatibility", "")))
+_lic = os.path.join(os.path.dirname(os.path.dirname(os.path.normpath(SKILL))), "LICENSE")
+if "license" in fields and os.path.exists(_lic):
+    with open(_lic, encoding="utf-8") as f:
+        check("frontmatter license matches the repo's LICENSE file", f.readline().split()[0] == fields["license"],
+              fields["license"])
 
 # ---- every shop: a reference file and a row in SKILL.md's store table
 refs = {os.path.basename(p)[:-3] for p in glob.glob(os.path.join(SKILL, "references", "*.md"))}
@@ -112,6 +119,24 @@ for ref in sorted(refs - {"client-contract"}):
     allowed = set().union(*MKSHOP.values(), *CLIENTS.get(client, {}).values())
     problems = doc_problems(read(f"references/{ref}.md"), allowed)
     check(f"references/{ref}.md names only real commands and flags of mkshop.py and {client}", not problems, problems)
+
+
+# ---- no hidden text: invisible format/bidi characters, variation selectors or Unicode tags in the
+# skill's instructions and code, or in the tests (write them as \u escapes)
+import unicodedata  # noqa: E402
+_repo = os.path.dirname(os.path.dirname(os.path.normpath(SKILL)))
+_srcs = [p for p in glob.glob(os.path.join(SKILL, "**", "*"), recursive=True) if p.endswith((".md", ".py", ".html"))]
+_srcs += glob.glob(os.path.join(_repo, "tests", "*.py")) + [os.path.join(_repo, "README.md")]
+_hidden = []
+for _p in _srcs:
+    if not os.path.isfile(_p):
+        continue
+    with open(_p, encoding="utf-8") as f:
+        for _n, _line in enumerate(f, 1):
+            if any(unicodedata.category(c) == "Cf" or 0xFE00 <= ord(c) <= 0xFE0F or 0xE0100 <= ord(c) <= 0xE01EF
+                   for c in _line):
+                _hidden.append(f"{os.path.relpath(_p, _repo)}:{_n}")
+check("no invisible or bidi characters in the skill, its tests or the README", not _hidden, _hidden[:10])
 
 print(f"\n{fails} failure(s)")
 sys.exit(1 if fails else 0)

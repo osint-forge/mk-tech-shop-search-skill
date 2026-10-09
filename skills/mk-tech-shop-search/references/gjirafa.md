@@ -139,6 +139,8 @@ none (null). GjirafaFLEX (paid replacement) is not a warranty.
 
 ## Data-quality traps
 
+- Some titles carry raw HTML (`Logitech G435, сина<br />`, `<p>`); `mkshop.py` strips the tags,
+  direct client runs do not.
 - **Two monitor trees on Gjirafa50**: Додатоци > Монитор (2160, 3,845; 1,206 are accessories) is the
   real one; Компјутер, Лаптоп и Монитор > Монитор (5022) is a 162-item subset.
 - Gjirafa50 SSDs are spread over Диск > За лаптоп / За Компјутер / Екстерен: list `disk`, filter titles.
@@ -165,23 +167,16 @@ none (null). GjirafaFLEX (paid replacement) is not a warranty.
 - Outlet (id 1) and "Што има ново?" (id 2) are special listings: use their children. Prices and
   stock move during the day: re-check a shortlist with `detail`.
 
-## Bot protection and politeness (evidence 2026-10-03)
+## Bot protection and politeness (checked 2026-10-03)
 
-- Cloudflare in front (`server: cloudflare`, `cf-ray` …-SOF) but **no challenge, CAPTCHA, rate
-  limit or login wall**: Chrome, python-requests, empty and curl UAs all got 200 on pages and XHRs;
-  12 unpaced XHRs took 0.49-0.85 s, all 200; no `__cf_bm`, `cf-mitigated` or `retry-after`. ~3,000
-  paced requests on 2026-10-03 (~6,000 on 10-01/02) never saw a 403, 429 or 5xx.
-- The only UA effect is **language**: ZirafaMall serves Albanian (`lang="sq-MK"`, smaller XHRs) to
-  python-requests, curl and Googlebot UAs (Macedonian to Chrome, Firefox, Wget and an empty UA);
-  Gjirafa50 served Macedonian to all of them on 2026-10-03. The client sends a Chrome UA and refuses
-  Albanian pages; a stray `lang="en"` on some Macedonian pages is accepted.
-- Verifier re-probe (2026-10-03, different pattern): an unpaced burst of 10 product pages per site
-  (0.19-0.49 s each, all 200, `cf-ray` …-SOF, no `cf-mitigated` / `retry-after`), plus Googlebot,
-  Wget, python-requests, Firefox and empty UAs on product pages and a HEAD: all 200, no challenge.
-  About 1,900 paced verifier requests that day saw no 403, 429 or 5xx.
-- `robots.txt` disallows `/search?` and `/shoppingcart/*` (not used). The client paces 0.5 s, backs
-  off on 429/5xx and exits 3 (`BLOCKED:`) on `cf-mitigated`, 401/403, a challenge body (any status)
-  or a 429 that persists through 4 attempts.
+- Cloudflare is in front, but no challenge, CAPTCHA, rate limit or login wall was seen: about 3,000 paced
+  requests on 2026-10-03 got no 403, 429 or 5xx.
+- The user agent changes the **language**: ZirafaMall serves Albanian (`lang="sq-MK"`) to some non-browser user
+  agents. The client sends a desktop Chrome UA and refuses Albanian pages; a stray `lang="en"` on some Macedonian
+  pages is accepted.
+- `robots.txt` disallows `/search?` and `/shoppingcart/*` (not used). The client paces 0.5 s, backs off on
+  429/5xx and exits 3 (`BLOCKED:`) on `cf-mitigated`, 401/403, a challenge body (any status) or a 429 that
+  persists through 4 attempts.
 
 ## Troubleshooting
 

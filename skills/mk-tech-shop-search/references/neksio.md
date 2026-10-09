@@ -135,19 +135,15 @@ monitor arms, and every item in ПОТРОШЕН МАТЕРИЈАЛ), so `warran
 - Expect occasional price typos. An earlier example was a keyboard combo at 80,850 MKD (id 2238). Sanity-check outliers.
 - `/sitemap.xml` is stale (250 products). Do not use it.
 
-## Bot protection and politeness (evidence 2026-10-03)
+## Bot protection and politeness (checked 2026-10-03)
 
-- **No bot protection was found.** The `python-requests/2.32.5` UA and an empty UA got HTTP 200 JSON on the POST and a full 261 KB product
-  page. 12 back-to-back POSTs all returned 200 in 0.23–0.28 s, with no `Retry-After`, `X-RateLimit-*` or `cf-*` headers (only
-  `Server: Microsoft-IIS/10.0`, `X-Powered-By: ASP.NET` and HSTS). `robots.txt` returns 404. There is no CAPTCHA, JS challenge or login
-  wall. The antiforgery cookie is set but not enforced. About 200 requests were made on this date with no errors.
-- Verifier re-probe (same day, 19 requests, different pattern): `ClaudeBot`, `GPTBot` and `curl` UAs all got the full 265 KB product
-  page. 10 zero-delay sequential product GETs on one python-requests session were all 200 in 0.54–0.65 s with no drift. 3 concurrent
-  20-row POSTs took 0.73–0.79 s each, and a page past the end (99) returned 200 JSON with 0 cards. An `en-US` Accept-Language gets the same
-  Macedonian page and prices. Only `Server: Microsoft-IIS/10.0` and the antiforgery `Set-Cookie` came back, with no challenge or rate-limit headers.
-- **The origin has very little capacity.** In earlier probes (2026-10-01), 25 concurrent detail GETs each took 16–17 s,
-  against 0.6 s for a single request. Never parallelise. The client is sequential, waits 0.6 s between requests, retries
-  429/502/503/504 with backoff, and exits 3 on a 401/403, challenge markup, a redirect to `/Login`, or a persistent 429.
+- **No bot protection was found**: no CAPTCHA, JS challenge, rate-limit headers or login wall, and `robots.txt`
+  returns 404. The antiforgery cookie is set but not enforced. A page past the end returns 200 JSON with no cards:
+  an empty page, not a block.
+- **The origin has very little capacity.** 25 concurrent detail requests took 16–17 s each, against 0.6 s for
+  one (2026-10-01). Never parallelise. The client is sequential, waits 0.6 s between requests, retries
+  429/502/503/504 with backoff, and exits 3 on a 401/403, challenge markup, a redirect to `/Login`, or a
+  persistent 429.
 
 ## Troubleshooting
 

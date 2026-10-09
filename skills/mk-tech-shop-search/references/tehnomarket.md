@@ -165,22 +165,17 @@ There is no warranty field. `warranty` is filled only when the description text 
 - Titles mix languages and formats; specs are free text (`extra.attributes` is a best-effort split on
   ":"/tab). The detail page's second store list is an HTML comment; it is not real data.
 
-## Bot protection and politeness (evidence 2026-10-03)
+## Bot protection and politeness (checked 2026-10-03)
 
-- **LiteSpeed blocks the `python-requests` user agent** (GET and POST): 403, `server: LiteSpeed`,
-  title "403 Forbidden", "Access to this resource on the server is denied!", 787 bytes. It is a
-  case-insensitive substring match: `PYTHON-REQUESTS/2.0` and `Mozilla/5.0 python-requests/2.31` are
-  blocked too. Empty UA, `curl/8.5.0`, `Python-urllib/3.14`, a Googlebot UA, `python-httpx`, `Wget`,
-  `Scrapy`, `aiohttp` and `Go-http-client` all pass. There is no CAPTCHA, JS challenge, cookie wall
-  or login wall (reCAPTCHA exists only on account forms).
-- **No rate limiting seen:** 10 unpaced sequential listing POSTs all returned 200 in ~0.25 s, and 12
-  unpaced product-page GETs all returned 200 in ~1.3 s each (product pages are slow, 115–145 KB).
-  There were no `Retry-After` or `X-RateLimit` headers. robots.txt disallows only admin paths.
-- **The client** uses a desktop Chrome UA, strictly sequential requests 0.5 s apart, and backoff on
-  429/5xx (2, 4, 8, 16 s). On a block it exits 3 with `BLOCKED: HTTP 403 ... server=LiteSpeed
-  title='403 Forbidden'` (tested by forcing the python-requests UA). A 429 or 503 is a block at once
-  only when it carries a challenge (captcha, "Just a moment", cf-chl). A plain 429 is retried and
-  becomes a block only after 5 attempts; a plain 503 becomes exit 1 ("store down?").
+- **The LiteSpeed origin refuses the `python-requests` user agent** (403 "403 Forbidden", a case-insensitive
+  substring match). There is no CAPTCHA, JS challenge, cookie wall or login wall (reCAPTCHA exists only on
+  account forms). The client sends a desktop Chrome UA.
+- **No rate limiting seen:** unpaced listing POSTs took about 0.25 s and product pages about 1.3 s, with no
+  `Retry-After` or `X-RateLimit` headers. robots.txt disallows only admin paths.
+- **The client** uses strictly sequential requests 0.5 s apart and backoff on 429/5xx (2, 4, 8, 16 s). On a block
+  it exits 3 with `BLOCKED: HTTP 403 ... server=LiteSpeed title='403 Forbidden'`. A 429 or 503 is a block at once
+  only when it carries a challenge (captcha, "Just a moment", cf-chl). A plain 429 is retried and becomes a block
+  only after 5 attempts; a plain 503 becomes exit 1 ("store down?").
 
 ## Troubleshooting
 

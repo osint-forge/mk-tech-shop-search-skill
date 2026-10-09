@@ -19,7 +19,9 @@ Commands
   group       merge saved search/list/match/detail JSON into one row per product
               (EAN, then model codes / part numbers), offers sorted by price
 
-Run any command with -h for its flags. Standard library only.
+Run any command with -h for its flags. mkshop.py itself uses only the
+standard library; the store clients need Python 3.9+ with requests and
+beautifulsoup4 (MKSHOP_PYTHON picks the interpreter that runs them).
 
 Store keys: setec anhoch neksio ddstore neptun hivetec gjirafa50 zirafamall
 setra ananas tehnomarket (alias: gjirafa = gjirafa50,zirafamall).
@@ -1967,7 +1969,42 @@ def as_records(data):
     return []
 
 
+# Shop text is third-party data. Invisible characters can hide text from a reader but not from
+# a model: C0/C1 controls (tab, newline and carriage return kept), zero-width and bidi
+# controls, the BOM, the soft hyphen, and the Unicode tag block (U+E0000-E007F) that can carry
+# hidden instructions. Some shops also leave HTML tags in titles ('Logitech G435, сина<br />').
+# Variation selectors (U+FE0F kept for emoji) and Hangul fillers also render as nothing.
+_INVISIBLE_RE = re.compile("[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\x9f\u00ad\u061c\u115f\u1160\u180e"
+                           "\u200b-\u200f\u202a-\u202e\u2060-\u2064\u2066-\u206f\u3164\ufe00-\ufe0e"
+                           "\ufeff\uffa0\U000e0000-\U000e007f\U000e0100-\U000e01ef]")
+# Only real markup tags: '<IPS 144Hz>' or 'Adapter <HDMI> to <VGA>' in a title is text.
+_TAG_RE = re.compile(r"</?(?:a|b|br|div|em|font|h[1-6]|hr|i|img|li|ol|p|small|span|strong|sub|sup|u|ul)"
+                     r"(?:\s[^<>]*)?/?>", re.I)
+
+
+def _scrub(v, depth=0):
+    """Invisible characters out of every string, dict key and nested value."""
+    if isinstance(v, str):
+        return _INVISIBLE_RE.sub("", v) if _INVISIBLE_RE.search(v) else v
+    if depth < 8 and isinstance(v, dict):
+        return {_scrub(k, 8): _scrub(x, depth + 1) for k, x in v.items()}
+    if depth < 8 and isinstance(v, list):
+        return [_scrub(x, depth + 1) for x in v]
+    return v
+
+
 def clean_record(r, key):
+    t = r.get("title")
+    if isinstance(t, str) and ("&" in t or '\\"' in t or "\\'" in t):
+        # Gjirafa titles carry '55&quot;' and '55\\"': show them as the page does. Unescape before
+        # scrubbing, so '&#x202E;' or '&lt;br /&gt;' cannot bring back what the scrub removes.
+        r["title"] = clean_title(t)
+    for f, v in list(r.items()):
+        if isinstance(v, (str, dict, list)) and f not in ("found_by", "sources"):
+            r[f] = _scrub(v)
+    t = r.get("title")
+    if isinstance(t, str) and "<" in t and _TAG_RE.search(t):
+        r["title"] = " ".join(_TAG_RE.sub(" ", t).split())
     r.setdefault("store", key)
     if r.get("store") != key and key in ("gjirafa50", "zirafamall"):
         r["store"] = key
@@ -1976,10 +2013,6 @@ def clean_record(r, key):
             r[f] = to_int(r[f])
     if r.get("id") is not None and not isinstance(r["id"], str):
         r["id"] = str(r["id"])
-    t = r.get("title")
-    if isinstance(t, str) and ("&" in t or '\\"' in t or "\\'" in t):
-        # Gjirafa titles carry '55&quot;' and '55\\"': show them as the page does
-        r["title"] = clean_title(t)
     if not r.get("error"):
         r["effective_price_mkd"] = effective_price(r)
         r["price_condition"] = member_condition(r) if uses_member_price(r) else None
@@ -2439,11 +2472,19 @@ def cmd_stores(ctx, a):
             "client_status": infos[k]["status"] if infos[k]["status"] != "ok" else "ok",
             "client_message": infos[k]["message"],
         })
+    failed = [r for r in rows if r["client_status"] != "ok"]
+    rc = 1 if rows and len(failed) == len(rows) else 0
+    missing = {m.group(1) for r in failed for m in [re.search(r"No module named '([\w.]+)'", r["client_message"] or "")] if m}
+    if missing:
+        n = sum(1 for r in failed if "No module named" in (r["client_message"] or ""))
+        warn(f"mkshop: {n} of {len(rows)} store clients cannot start: missing Python module(s) "
+             f"{', '.join(sorted(missing))}. Install requests and beautifulsoup4 for {ctx.python} "
+             "(a virtualenv works), or set MKSHOP_PYTHON to an interpreter that has them.")
     if a.json is not None:
         write_json(rows, a.json)
         if a.json != "-":
             print(f"wrote {len(rows)} stores to {a.json}")
-        return 0
+        return rc
     out = sys.stdout
     for r in rows:
         caps = ", ".join(r["capabilities"]) if r["capabilities"] is not None else "(info unavailable)"
@@ -2455,7 +2496,7 @@ def cmd_stores(ctx, a):
             print(f"{'':<12} notes: {trunc(r['notes'], 300)}", file=out)
         if r["client_status"] != "ok":
             print(f"{'':<12} CLIENT {r['client_status'].upper()}: {r['client_message']}", file=out)
-    return 0
+    return rc
 
 
 # --------------------------------------------------------------------------

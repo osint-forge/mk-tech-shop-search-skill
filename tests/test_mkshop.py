@@ -665,6 +665,28 @@ check("group: member prices in the search-only table are explained under it",
 rc, out, err, dt = run(["group", WALK, SRCH, "--json", os.path.join(_OUT, "g.json")])
 check("group --json PATH prints the tables too", rc == 0 and "PRODUCTS:" in out and "wrote " in out, out[:300])
 
+# stores: every client failing to import exits 1 and names the missing module once (2026-10-09)
+NOMOD = _tf.mkdtemp(prefix="mkshop-nomod-")
+for _s in ("setec", "anhoch", "neksio", "ddstore", "neptun", "hivetec", "gjirafa", "setra", "ananas", "tehnomarket"):
+    with open(os.path.join(NOMOD, _s + ".py"), "w") as _f:
+        _f.write("import requests_not_installed_xyz\n")
+rc, out, err, dt = run(["stores"], {"MKSHOP_STORES_DIR": NOMOD})
+check("stores: no client can start -> exit 1 and one install hint naming the module",
+      rc == 1 and err.count("missing Python module(s) requests_not_installed_xyz") == 1 and "MKSHOP_PYTHON" in err,
+      (rc, err[-400:]))
+rc, out, err, dt = run(["stores"])
+check("stores: healthy clients -> exit 0", rc == 0, (rc, err[-300:]))
+_sh.rmtree(NOMOD, ignore_errors=True)
+SOME = os.path.join(_tf.mkdtemp(prefix="mkshop-somemod-"), "stores")
+_sh.copytree(FAKE, SOME, ignore=_sh.ignore_patterns("__pycache__"))
+for _s in ("anhoch", "neptun", "ddstore"):   # e.g. beautifulsoup4 missing: only the clients that use it fail
+    with open(os.path.join(SOME, _s + ".py"), "w") as _f:
+        _f.write("import bs4_not_installed_xyz\n")
+rc, out, err, dt = run(["stores"], {"MKSHOP_STORES_DIR": SOME})
+check("stores: some clients missing a module -> exit 0, but the install hint names how many",
+      rc == 0 and "3 of 11 store clients cannot start: missing Python module(s) bs4_not_installed_xyz" in err, (rc, err[-400:]))
+_sh.rmtree(os.path.dirname(SOME), ignore_errors=True)
+
 _sh.rmtree(TMP, ignore_errors=True)
 _sh.rmtree(_OUT, ignore_errors=True)
 

@@ -152,32 +152,23 @@ with no HTML parsing, cookies or login.
   product URL slugs come from old titles.
 - **SKUs.** 10 products have no SKU, and numeric SKUs can look like ids.
 
-## Bot protection and politeness (evidence 2026-10-03, Sofia Cloudflare PoP)
+## Bot protection and politeness (checked 2026-10-03)
 
-- **Cloudflare challenges long query strings.** 196 characters → 200; 206 characters → **403 `cf-mitigated: challenge`,
-  "Just a moment..."**, from the edge in 0.01 s (cf-ray `a44bc193eee0e1b8-SOF`). The path length doesn't count, and the
-  next request is fine. The client caps queries at 170 characters (commas stay literal, `include=` chunks about 120), and
-  an over-long search exits 2 unsent. With the guard lifted on purpose, the client exited 3: `BLOCKED: HTTP 403 ...
-  cf-mitigated='challenge' cf-ray=a44bcffe9858d0dc-SOF title='Just a moment...'`. The rule counts the
-  **percent-encoded** query string. A search of 30 Cyrillic letters (198 characters) got 200; 33 letters (216
-  characters) got the challenge (cf-ray `a44c580cf91964c5-SOF`). Each Cyrillic letter costs 6 characters, so under the
-  170 cap one search word can have about 24 Cyrillic letters.
-- **User-Agent.** `Python-urllib` → **403 Cloudflare Error 1010** (cf-ray `a44bc1be9936d0ec-SOF`). The python-requests,
-  empty and curl UAs → 200. The client sends desktop Chrome.
-- **Rate.** 10 unpaced back-to-back calls were all 200 in 0.66–0.84 s. A 25-page sweep at 0.6 s pacing took about 1 s
-  per page. About 250 requests today brought no 429, `Retry-After` or `X-RateLimit`. A 12-way concurrent burst
-  (2026-10-01) slowed each request to 3.4–4 s (the origin queues). **Keep it sequential.** A second check gave the
-  same result: 18 unpaced back-to-back requests in the client's own pattern (category pages and `_fields` listings)
-  were all 200 in 0.67–0.82 s. HEAD, the python-requests UA on an HTML page and the Wget UA on the API were all 200.
-- **One transient block was seen on an ordinary run.** In a burst of about a dozen back-to-back 3-request `list` runs,
-  one run exited 3. Its BLOCKED line was not captured. The identical run succeeded seconds later, and the roughly 200
-  requests that followed were all clean. The cause is unknown. The client therefore retries a block response once after 5 s before it
-  exits 3.
-- There is no CAPTCHA, Turnstile or login wall. Every HTML page embeds Cloudflare's `/cdn-cgi/challenge-platform/` beacon
-  script near the end. That is normal, not a challenge, and the client checks only the first 20 KB of an HTML
-  error body for challenge markers.
-- The client paces at 0.6 s, retries 429/5xx with backoff, retries a block response once, and exits 3 on a 401/403,
-  `cf-mitigated`, challenge markup or a persistent 429.
+- **Cloudflare challenges long query strings.** At about 200 characters, counted percent-encoded, the edge
+  answers 403 `cf-mitigated: challenge` "Just a moment..."; the path length doesn't count, and the next request
+  is fine. The client caps queries at
+  170 characters (commas stay literal, `include=` chunks of about 120) and refuses a longer search with exit 2
+  before sending it. A Cyrillic letter costs 6 characters, so one search word can have about 24 Cyrillic letters.
+- Cloudflare refuses some library user agents (error 1010). The client sends a desktop Chrome UA.
+- **Keep it sequential.** The origin queues concurrent requests (a 12-way burst slowed each to 3.4–4 s). About
+  250 paced requests on 2026-10-03 saw no 429, `Retry-After` or `X-RateLimit`.
+- One unexplained transient block was seen in a burst of back-to-back runs; the identical run succeeded seconds
+  later. The client therefore retries a block response once after 5 s before it exits 3.
+- Every HTML page embeds Cloudflare's `/cdn-cgi/challenge-platform/` beacon. That is not a challenge; the client
+  checks only the first 20 KB of an HTML error body for challenge markers.
+- `robots.txt` (2026-10-09) disallows only cart, admin and upload paths.
+- The client paces at 0.6 s, retries 429/5xx with backoff, retries a block response once, and exits 3 on a
+  401/403, `cf-mitigated`, challenge markup or a persistent 429.
 
 ## Troubleshooting
 

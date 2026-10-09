@@ -164,27 +164,15 @@ TVs and cameras 24, a Samsung charger 6. Some accessories have none (Sbox monito
 - A nonexistent slug in `/products` returns 200 with 0 rows (the client validates against the tree and the
   category page's 404, so an unknown category exits 2). A trailing slash on a category page gives HTTP 500; the client strips it.
 
-## Bot protection and politeness (evidence 2026-10-03)
+## Bot protection and politeness (checked 2026-10-03)
 
-- **Two User-Agent blocks, at two layers.**
-  - `python-requests` (case-insensitive substring, so `Mozilla/5.0 (compatible) python-requests/2.32` and
-    even `... python-requests-oauthlib` too) is refused by the **LiteSpeed origin**: **403** "Access to this
-    resource on the server is denied!", `cf-cache-status: BYPASS`, no `cf-mitigated` header, no challenge
-    page (cf-ray `a44b8475cb480d8f-SOF`).
-  - `Python-urllib/3.x` is refused earlier, at the **Cloudflare edge**: 403 **error 1010
-    `browser_signature_banned`** in about 0.03 s with no `cf-cache-status` (cf-ray `a44c1e0e7bddd0c4-SOF`).
-    Cloudflare sends that error as **JSON** (`{"error_code":1010,"cloudflare_error":true,...}`) when the request
-    prefers JSON, as the XHR listing calls do, and as an HTML "Access denied | ... used Cloudflare to restrict
-    access" page otherwise. The client recognises both (it used to exit 1 on the JSON form).
-  - Allowed (200): Chrome, curl, Wget, `python-httpx`, aiohttp, Postman, Googlebot and empty UAs.
-    `/robots.txt` answers 200 even to the blocked UAs. The client sends a Chrome UA, and any 403 exits 3 with
-    `BLOCKED: HTTP 403 ...` naming the layer.
-- **No CAPTCHA, Turnstile, JS challenge, rate-limit headers or login wall** on any route used. The bare word
-  "captcha" appears in every page (the Ziggy route `bone.captcha.image`), so it is not a block marker.
-  12 unpaced keep-alive requests in a row all returned 200 (median 0.5 s, no `retry-after`/`x-ratelimit-*`).
-  If a 429 ever persists through the client's 6 attempts with backoff, it exits 3 instead of hammering on.
-- **The origin queues concurrency.** Sequential requests take 0.33–0.58 s; 6 concurrent requests took 0.74–2.65 s (all 200),
-  with no penalty afterwards. Keep requests strictly sequential (the client paces them at 0.5 s); parallelism gains nothing.
+- The LiteSpeed origin and the Cloudflare edge each refuse some library user agents with a 403: an HTML page, or
+  JSON error 1010 on the XHR listing calls. The client sends a desktop Chrome UA, recognises both forms, and exits
+  3 with `BLOCKED: HTTP 403 ...` naming the layer.
+- No CAPTCHA, Turnstile, JS challenge, rate-limit headers or login wall on any route used. The word "captcha"
+  appears in every page (a route name), so it is not a block marker.
+- **The origin queues concurrency**: 6 parallel requests took up to 2.65 s each, against about 0.5 s alone. Keep
+  requests sequential; the client paces them 0.5 s apart and exits 3 if a 429 persists through 6 attempts.
 - `robots.txt` allows everything. About 300 requests on 2026-10-03 got no 429 or 5xx.
 
 ## Troubleshooting

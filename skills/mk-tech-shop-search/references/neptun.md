@@ -171,27 +171,17 @@ including extended-warranty offers such as "Samsung TV 2+3YW" (5 years).
   menu ids.
 - **`sitemap.xml`** is stale, third-party and category-only. Ignore it.
 
-## Bot protection and politeness (evidence 2026-10-03)
+## Bot protection and politeness (checked 2026-10-03)
 
-- **Cloudflare blocks by user agent only.** Empty UA: 403 "Attention Required! | Cloudflare" (cf-ray
-  a44bbf8d1ab9d0c4-SOF); `Python-urllib/3.14`: 403 `error code: 1010`; fake Googlebot: 403;
-  `python-requests` and `curl`: 200. No CAPTCHA, JS challenge, Turnstile, login wall or TLS fingerprinting.
-- **Verifier re-probe (same day, 26 requests).**
-  - A fake bingbot got the 403 "Attention Required" page (cf-ray a44c4a9b2e34d2d9-SOF).
-  - A GPTBot UA got a 403 text/plain "Your request was blocked." This is AI-crawler blocking
-    (cf-ray a44c4ab11875d0da-SOF).
-  - HeadlessChrome, MSIE 6, aiohttp and a one-letter garbage UA all got 200.
-  - 8 concurrent HTML category GETs all returned 200 in 0.23–0.34 s.
-  - 10 rapid sequential searches took 49–81 ms each, with no rate-limit headers and no stalls.
-  - The client classifies every one of these (403 HTML/plain, `cf-mitigated`, 200/503 interstitials,
-    persistent 429) as exit 3 `BLOCKED:`. This was checked offline with mocked responses on `categories`,
-    `search`, `list` and `detail`.
-- **Rate limiting.** 15 unpaced sequential POSTs all returned 200 in 53–83 ms, with no `Retry-After`,
-  `X-RateLimit-*` or `cf-mitigated` headers. On 2026-10-01, concurrent load caused occasional 8–9 s stalls
-  but no 429s.
+- **Cloudflare blocks by user agent only**: empty, some library, and fake search-engine or AI-crawler user agents
+  get a 403. There is no CAPTCHA, JS challenge, Turnstile, login wall or TLS fingerprinting. The client sends a
+  desktop Chrome UA.
+- **Rate limiting:** none seen. 15 unpaced sequential POSTs returned 200 in 53–83 ms with no `Retry-After` or
+  `X-RateLimit-*` headers; concurrent load caused occasional 8–9 s stalls (2026-10-01) but no 429s.
 - **robots.txt** disallows nothing that the client uses.
-- **The client** is strictly sequential at a 0.5 s pace and backs off on 429/5xx. On a block it exits 3 with
-  `BLOCKED: HTTP 403 ... cf-ray=... title=...` (tested with an empty UA).
+- **The client** is strictly sequential at a 0.5 s pace and backs off on 429/5xx. A block (a 403 page,
+  `cf-mitigated`, a 200/503 interstitial, a persistent 429) exits 3 with
+  `BLOCKED: ... HTTP <status> ... cf-ray=... title=...`.
 
 ## Troubleshooting
 

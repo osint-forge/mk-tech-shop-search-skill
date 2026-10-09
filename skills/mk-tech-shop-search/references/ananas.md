@@ -164,25 +164,19 @@ Otherwise null; Ananas does not show the selling chain's own terms (Нексио
 - **Misfiled items**: a Gorenje fridge sits in small kitchen appliances. Check titles, not only membership.
 - `mpn` comes only from the sparse `Model` attribute; descriptions often say "Модел: X".
 
-## Bot protection and politeness (evidence 2026-10-03)
+## Bot protection and politeness (checked 2026-10-03)
 
-- **CloudFront WAF blocks crawler-library UAs**: `Scrapy/2.11` and `Python-urllib/3.14` → 403, 919 bytes
-  "ERROR: The request could not be satisfied ... Request blocked." (`X-Cache: Error from cloudfront`,
-  x-amz-cf-id `iJKQLrChER74...`). python-requests default UA, an empty UA and Chrome → 200 (1 MB).
-  Earlier probes: Wget, Go, okhttp, aiohttp, HeadlessChrome all 200. No CAPTCHA, JS challenge or login wall.
-- **GraphQL gateway** (AWS ALB): any operation named `GetMerchantInventoryV2` → **403 from awselb/2.0**
-  (520-byte HTML), an operation-name rule against product scraping. The client does not work around it;
-  it reads the same object from the product page. `Categories` and the guest delivery promise → 200.
-- **Algolia**: 6 back-to-back unpaced queries → 200 in 0.12 s each, no rate-limit headers; `/browse`
-  → 403 (search-only key, expected). Queries count against Ananas' quota: the client uses 1,000-hit pages.
-- Verifier re-probe (26 requests, 2026-10-03): Scrapy/2.11 and Python-urllib/3.14 → 403 919 bytes again
-  (0.09 s, `Error from cloudfront`); curl/8.5.0, Go-http-client/1.1, Wget/1.21.4 and a bare `Mozilla/5.0`
-  → the normal 308 to the canonical slug; 8 unpaced product pages → all 200 (~1 s, 0.5 MB each); 10
-  unpaced Algolia queries → all 200 in 0.54 s with no rate-limit or Retry-After headers.
+- A CloudFront WAF refuses some crawler-library user agents with a 403 "Request blocked" page. The client sends
+  a desktop Chrome UA. There is no CAPTCHA, JS challenge or login wall.
+- The GraphQL gateway refuses product-inventory operations by name (403 from the load balancer). The client does
+  not work around it: it reads the same data from the product page.
+- Algolia `/browse` is not allowed with the public search-only key, and queries count against Ananas' quota, so
+  the client asks for 1,000-hit pages.
 - robots.txt disallows `/kategorije/`, `/mk/`, `/en/`, `/dostava/`; the client uses `/kategorii/`, `/proizvod/`.
-  No Crawl-delay; one `Sitemap:` line.
-- The client is sequential (0.3 s between Algolia calls, 0.7 s between page/GraphQL calls, backoff on
-  429/5xx). Exit 3 prints `BLOCKED: ... HTTP 403, server=CloudFront, ...`; a 429 after 4 tries is also 3.
+  No Crawl-delay.
+- The client is sequential (0.3 s between Algolia calls, 0.7 s between page and GraphQL calls) and backs off on
+  429/5xx. A block exits 3 with `BLOCKED: ... HTTP 403, server=CloudFront, ...`, as does a 429 that persists
+  through 4 tries.
 
 ## Troubleshooting
 

@@ -97,21 +97,18 @@ Every product carries exactly one label from `if_in_stock` / `if_out_stock`. Cat
 - **Titles** mix English, Macedonian and distributor shorthand. Duplicate listings of one model can exist with different prices and stock: hidden offers, colour variants, refurbished "(OUTLET) Used ...". Check `attributes.condition`, which is Refurbished for 135 products.
 - **URLs:** some products have no URL key, so their canonical is `/mk/pid/<sku>` and the `<url_key>.html` form returns 404. Always use the record `url`.
 
-## Bot protection and politeness (evidence 2026-10-03, about 12:50 UTC, SOF POP)
+## Bot protection and politeness (checked 2026-10-03)
 
-- **Cloudflare managed challenge for non-browser user agents (flag).** On `/graphql` (category pages behave the same):
-
-  | User-Agent | Result |
-  |---|---|
-  | python-requests default, empty, `curl/8.5.0`, `HeadlessChrome/140` | 403, `cf-mitigated: challenge`, title "Just a moment..." (cf-ray `a44ba49f6810d0d2-SOF`) |
-  | GPTBot | 403 "Attention Required! \| Cloudflare" (block, `a44ba4b2ee47bdb7-SOF`) |
-  | Chrome desktop | 200 |
-
-  The rule is by User-Agent only; there is no TLS fingerprinting and no CAPTCHA or Turnstile with a browser UA. The client exits 3 with `BLOCKED: HTTP 403 ... cf-ray=...`.
-  Re-probe at about 13:15 UTC the same day: it is a **blocklist of tool UAs**, not a browser allowlist. `Wget/1.24.5`, `Python-urllib/3.14` and python-requests got 403 "Just a moment..." (cf-ray `a44c397409abd0e4-SOF`, `a44c397d9f9bf439-SOF`, `a44c399cac6aa2bf-SOF`). Firefox, iPhone Safari, the bare string `chrome`, a Chrome UA without Accept-Language and even an unverified Googlebot UA got 200. `robots.txt` is exempt (200 for python-requests). Twelve back-to-back unpaced GraphQL requests all returned 200 in about 0.5 s each with no rate-limit headers.
-- **Do not treat `captcha` or `challenge-platform` in page HTML as a block.** Every page has Magento's captcha config and Cloudflare's passive JSD beacon.
-- **Load:** no 429, rate-limit headers or slowdowns over about 250 sequential requests today. The client paces requests 0.5 s apart and backs off on 429/5xx. The origin queues concurrent requests (earlier probe: 25 parallel requests took 1–5 s each), so keep everything sequential.
-- **robots.txt** disallows `/graphql`, `/rest/`, `/catalogsearch/`, `?q=` and most filter parameters (`brand=`, `price=`, `if_in_stock=`, ...). The header comments say this is for SEO and crawl budget. It allows `?p=` pagination, `/catalog/category/view/` and `/catalog/product/view/`, and sets no crawl-delay.
+- Cloudflare challenges or blocks common tool and crawler user agents (403 "Just a moment...",
+  `cf-mitigated: challenge`), by user agent only. The client sends a desktop Chrome UA and exits 3 with
+  `BLOCKED: HTTP 403 ... cf-ray=...` on a challenge.
+- **Do not treat `captcha` or `challenge-platform` in page HTML as a block.** Every page has Magento's captcha
+  config and Cloudflare's passive beacon.
+- **Load:** no 429 or rate-limit headers over about 250 sequential requests. The origin queues concurrent requests
+  (25 in parallel took 1–5 s each), so keep everything sequential; the client paces 0.5 s and backs off on 429/5xx.
+- **robots.txt** disallows `/graphql`, `/rest/`, `/catalogsearch/`, `?q=` and most filter parameters (`brand=`,
+  `price=`, `if_in_stock=`, ...). Its comments say this is for SEO and crawl budget. It allows `?p=` pagination,
+  `/catalog/category/view/` and `/catalog/product/view/`, and sets no crawl-delay.
   - The GraphQL backend goes against the `/graphql` rule. The storefront itself never calls GraphQL.
   - `--backend html` respects robots for plain listings and product pages, but not for search or filters.
 
