@@ -68,6 +68,10 @@ INFO_TIMEOUT = 30              # `info` is network-free; it should be instant
 DEFAULT_LIMIT_PER_STORE = 120
 DEFAULT_MATCH_LIMIT = 40
 DEFAULT_SHOW = 100
+# group prints a products table and then each product's offers: 100 x 10 rows ran to 40k
+# characters on a two-shop test, past what an agent's tool output shows inline (~30k).
+GROUP_SHOW = 40
+GROUP_SHOW_OFFERS = 5
 TITLE_WIDTH = 72
 # Pause between two client runs against the same shop (each run is one
 # search; the client paces its own pages). Keeps a shop's traffic sequential
@@ -2245,6 +2249,10 @@ def annotate(records, extra_g50_skus=()):
                 r["mirror_of"] = None   # same SKU, but the titles name another product
             r["model_key"] = model_key(r, sig, vocab)
             r["match_key"] = ("ean:" + norm_gtin(r["ean"])) if norm_gtin(r.get("ean")) else r["model_key"]
+            if sig.accessory:
+                r["accessory"] = sig.accessory
+            else:
+                r.pop("accessory", None)
         except Exception as e:  # never let annotation break a run
             r.setdefault("model_key", None)
             r.setdefault("match_key", None)
@@ -2353,15 +2361,20 @@ def print_status_table(statuses, out, with_kept=True):
             ("hits", lambda k: "" if statuses[k].get("count") is None else statuses[k]["count"], "r", None)]
     if with_kept:
         cols.append(("kept", lambda k: "" if statuses[k].get("kept") is None else statuses[k]["kept"], "r", None))
+    if any(st.get("relevance") for st in statuses.values()):
+        rel = lambda k, f: (statuses[k].get("relevance") or {}).get(f, "")  # noqa: E731
+        cols += [("all-words", lambda k: rel(k, "all_words"), "r", None),
+                 ("accessories", lambda k: rel(k, "accessories"), "r", None)]
     cols += [("time", lambda k: f"{statuses[k].get('elapsed_s', 0):.1f}s", "r", None),
              ("note", lambda k: _status_note(statuses[k]), "l", 150)]
     render_table(list(statuses), cols, out)
 
 
 def _status_note(st):
-    """Message (failure, limit hit) and the first client warning: a warning
-    such as an OR fallback must stay visible next to a 'hit --limit' note."""
+    """Message (failure, limit hit), mkshop's own notes and the first client warning: a
+    warning such as an OR fallback must stay visible next to a 'hit --limit' note."""
     parts = [st["message"]] if st.get("message") else []
+    parts += st.get("notes") or []
     if st.get("warnings"):
         parts.append("warning: " + st["warnings"][0].strip())
     return "; ".join(parts)
@@ -2380,6 +2393,16 @@ def footer_line(statuses, n_results, noun="results"):
         s += f"; not found / rejected (exit 2): {', '.join(nf)}"
     if bad:
         s += f"; NOT searched: {', '.join(bad)}"
+    answered = {k: v for k, v in statuses.items() if v["status"] in ("ok", "partial")}
+    more = [k for k, v in answered.items() if any(q.get("hit_limit") for q in v.get("queries") or [])]
+    if more:
+        s += f"; more may exist (hit --limit-per-store): {', '.join(more)}"
+    acc = [k for k, v in answered.items() if any(n.startswith("mostly accessories") for n in v.get("notes") or [])]
+    if acc:
+        s += f"; mostly accessories: {', '.join(acc)}"
+    warned = [k for k, v in answered.items() if v.get("warnings")]
+    if warned:
+        s += f"; warnings (see the status table): {', '.join(warned)}"
     return s
 
 
@@ -2503,11 +2526,46 @@ def _search_store(ctx, key, queries, limit, timeout):
 
 def _passes_strict(rec, queries):
     hay = alnum_words(" ".join(str(rec.get(f) or "") for f in ("title", "brand", "sku", "ean", "mpn")))
+    glued = hay.replace(" ", "")   # 'rtx5070' must find 'RTX 5070'
     for q in rec.get("found_by") or queries:
         words = [w for w in alnum_words(q).split() if len(w) >= 2]
-        if words and all(w in hay for w in words):
+        if words and all(w in hay or w in glued for w in words):
             return True
     return False
+
+
+# A shop whose hits are mostly accessories (cases, glass, batteries, mounts) gets a note in
+# its status: on 106 hand-labelled result sets this was right 7 times out of 7, while a
+# "few hits contain the query words" rule was wrong about a third of the time (translated
+# product nouns, titles that are only a model code), so that one is reported as a count only.
+ACC_NOTE_MIN_HITS = 10
+ACC_NOTE_SHARE = 0.5
+
+
+def relevance_counts(records, statuses):
+    """Per shop that answered: how many hits contain every word of a query that found them
+    (exactly what --strict keeps) and how many the title analysis calls accessories (not
+    counted when the query that found them asks for an accessory itself)."""
+    acc_query = {}
+    counts = {k: [0, 0, 0] for k, st in statuses.items() if st["status"] in ("ok", "partial")}
+    for r in records:
+        c = counts.get(r.get("store"))
+        if c is None:
+            continue
+        qs = r.get("found_by") or []
+        c[0] += 1
+        c[1] += _passes_strict(r, qs)
+        if r.get("accessory"):
+            for q in qs:
+                if q not in acc_query:
+                    acc_query[q] = bool(signature(q).accessory)
+            if not any(acc_query[q] for q in qs):
+                c[2] += 1
+    for k, (n, words, acc) in counts.items():
+        st = statuses[k]
+        st["relevance"] = {"hits": n, "all_words": words, "accessories": acc}
+        if n >= ACC_NOTE_MIN_HITS and acc >= ACC_NOTE_SHARE * n:
+            st.setdefault("notes", []).append(f"mostly accessories ({acc} of {n})")
 
 
 def alnum_words(s):
@@ -2574,6 +2632,7 @@ def cmd_search(ctx, a):
         records += r.pop("records")
         statuses[k] = r
     annotate(records)
+    relevance_counts(records, statuses)
     total = len(records)
     kept, dropped = filter_records(records, a, statuses, queries if a.strict else None)
     hidden = 0
@@ -2609,10 +2668,10 @@ def _emit_listing(env, a, kept, statuses, noun):
         write_json(env, a.json)
     to_stdout_json = a.json == "-" or a.csv == "-"
     if not to_stdout_json:
-        if a.json is None and not a.csv:
+        wrote = [p for p in (a.json, a.csv) if p]
+        if not (wrote and a.no_table):
             print_records(kept, sys.stdout, a.show, a.title_width)
-        else:
-            wrote = [p for p in (a.json, a.csv) if p]
+        if wrote:
             print(f"wrote {len(kept)} {noun} to {', '.join(wrote)}")
         print(footer_line(statuses, len(kept), noun) + _dropped_note(env.get("dropped")))
     sys.stdout.flush()
@@ -2669,18 +2728,11 @@ def cmd_categories(ctx, a):
     rc = overall_exit(statuses)
     if a.json is not None:
         write_json(env, a.json)
-        if a.json != "-":
+    if a.json != "-":
+        if records and not (a.json and a.no_table):
+            print_categories(records, a, sys.stdout)
+        if a.json:
             print(f"wrote {len(records)} categories to {a.json}")
-    else:
-        cols = [("STORE", lambda r: r.get("store"), "l", None),
-                ("COUNT", lambda r: "" if r.get("count") is None else r.get("count"), "r", None),
-                ("ID", lambda r: r.get("id") if r.get("id") is not None else "", "l", 34)]
-        if any(r.get("slug") and str(r.get("slug")) != str(r.get("id")) for r in records):
-            cols.append(("SLUG", lambda r: r.get("slug") or "", "l", 40))
-        cols += [("PATH", lambda r: r.get("path") or r.get("name"), "l", 90),
-                 ("URL", lambda r: r.get("url"), "l", None)]
-        if records:
-            render_table(records, cols, sys.stdout)
         print(footer_line(statuses, len(records), "categories"))
     if a.json != "-":
         sys.stdout.flush()
@@ -2688,6 +2740,52 @@ def cmd_categories(ctx, a):
             print("", file=sys.stderr)
             print_status_table(statuses, sys.stderr, with_kept=False)
     return rc
+
+
+# Categories printed per shop for --grep, biggest first: eval-5's 226-row grep printed 54k
+# characters with URLs and slugs, past what an agent's tool output shows inline (~30k).
+CATS_SHOW = 20
+CATS_PATH_WIDTH = 80
+
+
+def _path_tail(path, width=CATS_PATH_WIDTH):
+    """A breadcrumb cut from the left so the leaf stays visible: '… > Монитори > Гејмерски'."""
+    if len(path) <= width:
+        return path
+    parts = path.split(" > ")
+    while len(parts) > 1 and len("… > " + " > ".join(parts)) > width:
+        parts.pop(0)
+    tail = "… > " + " > ".join(parts)
+    return tail if len(tail) <= width else "…" + path[-(width - 1):]
+
+
+def print_categories(records, a, out):
+    per = a.show if a.show is not None else (CATS_SHOW if a.grep else 0)
+    per = max(per, 0)
+    by = {}
+    for r in records:
+        by.setdefault(r.get("store"), []).append(r)
+    rows, more = [], {}
+    for k, rs in by.items():
+        if a.grep:   # a full tree keeps the shop's own order
+            rs = sorted(rs, key=lambda r: (r.get("count") is None, -(r.get("count") or 0)))
+        rows += rs[:per] if per else rs
+        if per and len(rs) > per:
+            more[k] = len(rs) - per
+    # what `list` takes: the id, else the slug, else the URL (some shops' menus give no id)
+    cols = [("STORE", lambda r: r.get("store"), "l", None),
+            ("COUNT", lambda r: "" if r.get("count") is None else r.get("count"), "r", None),
+            ("ID / SLUG", lambda r: next((str(r[f]) for f in ("id", "slug", "url") if r.get(f) not in (None, "")), ""),
+             "l", None)]
+    if a.urls and any(r.get("slug") and str(r.get("slug")) != str(r.get("id")) for r in rows):
+        cols.append(("SLUG", lambda r: r.get("slug") or "", "l", 40))
+    cols.append(("PATH", lambda r: _path_tail(r.get("path") or r.get("name") or ""), "l", None))
+    if a.urls:
+        cols.append(("URL", lambda r: r.get("url"), "l", None))
+    render_table(rows, cols, out)
+    if more:
+        print("... more categories not shown: " + ", ".join(f"{k} {n}" for k, n in more.items())
+              + " (--show 0 for all, or --json)", file=out)
 
 
 # --------------------------------------------------------------------------
@@ -2742,15 +2840,15 @@ def cmd_facets(ctx, a):
            "count": len(recs), "results": recs}
     if a.json is not None:
         write_json(env, a.json)
-        if a.json != "-":
-            print(f"wrote {len(recs)} facet values to {a.json}")
-    else:
-        if recs:
+    if a.json != "-":
+        if recs and not (a.json and a.no_table):
             cols = [("NAME", lambda x: x.get("name"), "l", 40),
                     ("VALUE", lambda x: x.get("value"), "l", 50),
                     ("COUNT", lambda x: "" if x.get("count") is None else x.get("count"), "r", None),
                     ("TOKEN (for list --filter)", lambda x: x.get("token"), "l", None)]
             render_table(recs, cols, sys.stdout)
+        if a.json:
+            print(f"wrote {len(recs)} facet values to {a.json}")
         print(footer_line({key: st}, len(recs), "facet values"))
     if r["status"] != "ok":
         warn(f"[{key}] facets: {r['status']}: {r['message']}")
@@ -2905,11 +3003,12 @@ def cmd_detail(ctx, a):
            "count": sum(1 for r in results if not r.get("error")), "results": results}
     if a.json is not None:
         write_json(env, a.json)
-        if a.json != "-":
+    if a.json != "-":
+        if not (a.json and a.no_table):
+            for n, rec in enumerate(results, 1):
+                print_detail(rec, n, sys.stdout)
+        if a.json:
             print(f"wrote {len(results)} records to {a.json}")
-    else:
-        for n, rec in enumerate(results, 1):
-            print_detail(rec, n, sys.stdout)
     errs = [r for r in results if r.get("error")]
     if a.json != "-":
         if errs:
@@ -4081,7 +4180,8 @@ _OFFER_FIELDS = {"price_mkd", "regular_price_mkd", "member_price_mkd", "member_p
                  "member_price_name", "in_stock", "stock_note", "per_location_stock",
                  "delivery_estimate", "shipping_mkd", "price_valid_until", "member_price_valid_until"}
 # mkshop's own annotations: recomputed for the union, never carried over.
-_DERIVED_FIELDS = ("match", "_kinds", "group_link", "product", "mirror_of", "model_key", "match_key",
+_DERIVED_FIELDS = ("match", "_kinds", "group_link", "product", "mirror_of", "model_key", "match_key", "accessory",
+                   "search_only",
                    "effective_price_mkd", "price_condition", "effective_price_valid_until", "sources")
 
 
@@ -4090,6 +4190,7 @@ def load_group_inputs(paths):
     group) and plain client JSON lists. -> (items [(freshness, input no,
     record)], inputs info, store statuses the envelopes reported)."""
     items, inputs, env_status = [], [], {}
+    walks = {"stores": set(), "inputs": set(), "rows": set()}
     for n, path in enumerate(paths):
         try:
             with open(path, encoding="utf-8") as f:
@@ -4107,6 +4208,21 @@ def load_group_inputs(paths):
             if ga:
                 info["generated_at"] = data["generated_at"]
                 fresh = ga.timestamp() if ga.tzinfo else time.mktime(ga.timetuple())
+            if cmd == "list":
+                stores = data.get("stores") or {}
+                store = data.get("store") or (next(iter(stores)) if len(stores) == 1 else None)
+                info.update(store=store, category=data.get("category"), filters=data.get("filters") or [])
+                # a walk that failed (blocked, not found, error) walked nothing
+                if store and (stores.get(store) or {}).get("status", "ok") in ("ok", "partial"):
+                    walks["stores"].add(store)
+                    walks["inputs"].add(n)
+            elif cmd == "group" and data.get("walked"):
+                # a saved group keeps its walks: its offers in walked shops without search_only came from one
+                walks["stores"].update(data["walked"])
+                for pr in data.get("results") or []:
+                    for o in (pr.get("offers") or []) if isinstance(pr, dict) else []:
+                        if isinstance(o, dict) and o.get("store") in data["walked"] and not o.get("search_only"):
+                            walks["rows"].add((o["store"], str(o.get("id") or o.get("url"))))
             if cmd == "group":
                 rows = [o for p in data.get("results") or [] if isinstance(p, dict) for o in p.get("offers") or []]
             elif cmd in ("search", "list", "detail", "match"):
@@ -4140,7 +4256,7 @@ def load_group_inputs(paths):
             info["used"] += 1
         info["records"] = len(rows)
         inputs.append(info)
-    return items, inputs, env_status
+    return items, inputs, env_status, walks
 
 
 def _filled(v):
@@ -4711,13 +4827,25 @@ def cmd_group(ctx, a):
         files, a.json = [a.json] + files, "-"
     if not files:
         die("mkshop group: give one or more saved JSON FILEs (mkshop --json output or client JSON lists)")
-    items, inputs, env_status = load_group_inputs(files)
+    items, inputs, env_status, walks = load_group_inputs(files)
     recs = union_records(items)
     if not recs:
         die("mkshop group: no product records in " + ", ".join(files)
             + " (give saved search / list / match / detail envelopes or client JSON lists)")
     annotate(recs)
     log(f"group: {len(items)} records from {len(files)} file(s), {len(recs)} after the union by store + id")
+    # A record from a shop you walked by category that none of the saved walks holds: the
+    # walk missed it (another category, a filter, a blank attribute) or it is an accessory.
+    walked = walks["stores"]
+    for r in recs:
+        if (r["store"] in walked and not set(r.get("sources") or []) & walks["inputs"]
+                and (r["store"], str(r.get("id") or r.get("url"))) not in walks["rows"]):
+            r["search_only"] = True
+        else:
+            r.pop("search_only", None)
+    search_only_all = sum(1 for r in recs if r.get("search_only"))
+    if a.only_search and not walked:
+        die("mkshop group: --only-search needs at least one saved `list` envelope among the FILEs")
     groups, sigs, eans, hints, _g = group_records(recs)
     products = [build_product(m, recs, sigs, eans) for m in groups]
     root_of = {}
@@ -4740,6 +4868,8 @@ def cmd_group(ctx, a):
                 drop("below --min-price")
             elif a.max_price is not None and (e is None or e > a.max_price):
                 drop("above --max-price")
+            elif a.only_search and not o.get("search_only"):
+                drop("in a category walk (--only-search)")
             else:
                 kept.append(o)
         if a.hide_mirrors:
@@ -4819,11 +4949,17 @@ def cmd_group(ctx, a):
         msg = "; ".join(f"{x[0]} in {os.path.basename(x[2])}" + (f": {x[1]}" if x[1] else "") for x in bad) or None
         statuses[k] = {"status": st, "count": n_rec, "kept": sum(1 for o in offers_all if o["store"] == k),
                        "message": msg, "warnings": [], "elapsed_s": 0.0}
+    search_only = {}
+    if walked:
+        for o in offers_all:
+            if o.get("search_only"):
+                search_only[o["store"]] = search_only.get(o["store"], 0) + 1
     env = {"command": "group", "generated_at": now_iso(), "inputs": inputs, "member_prices": MEMBER_PRICES,
            "filters": {k: v for k, v in (("in_stock", a.in_stock), ("min_price", a.min_price),
                                          ("max_price", a.max_price), ("hide_mirrors", a.hide_mirrors),
-                                         ("sort", a.sort)) if v not in (None, False)},
+                                         ("only_search", a.only_search), ("sort", a.sort)) if v not in (None, False)},
            "dropped": dropped, "records": len(recs), "count": len(products), "offers": len(offers_all),
+           "walked": sorted(walked), "search_only": search_only, "search_only_before_filters": search_only_all,
            "related": related, "stores": statuses, "results": products}
     if a.csv:
         rows = [dict(o, product_title=p["title"], product_codes=" ".join(([f"EAN {p['ean']}"] if p["ean"] else [])
@@ -4833,11 +4969,12 @@ def cmd_group(ctx, a):
     if a.json is not None:
         write_json(env, a.json)
     if a.json != "-" and a.csv != "-":
-        if a.json is None and not a.csv:
+        wrote = [p for p in (a.json, a.csv) if p]
+        if not (wrote and a.no_table):
             print_group(env, sys.stdout, a)
-        else:
-            print(f"wrote {len(products)} products ({len(offers_all)} offers) to "
-                  + ", ".join(p for p in (a.json, a.csv) if p))
+        if wrote:
+            print(f"wrote {len(products)} products ({len(offers_all)} offers) to " + ", ".join(wrote))
+        if wrote and a.no_table:
             print(_group_footer(env))
         sys.stdout.flush()
         with _print_lock:
@@ -4851,6 +4988,46 @@ def cmd_group(ctx, a):
     return 0
 
 
+GROUP_SEARCH_ONLY_SHOW = 15
+
+
+def print_search_only(env, out, a):
+    """What search found in a shop you walked by category that none of the walks holds."""
+    if not env.get("walked") or all(i["command"] == "list" for i in env["inputs"]):
+        return
+    offers = [o for p in env["results"] for o in p["offers"] if o.get("search_only")]
+    if not offers:
+        n = env.get("search_only_before_filters") or 0
+        print("FOUND ONLY BY SEARCH: " + (f"{n} offers, all removed by the filters" if n else
+              "nothing; every search hit in " + ", ".join(env["walked"]) + " is in a saved category walk"), file=out)
+        return
+    per = {}
+    for o in offers:
+        n = per.setdefault(o["store"], [0, 0])
+        n[0] += 1
+        n[1] += bool(o.get("accessory"))
+    print("", file=out)
+    print("FOUND ONLY BY SEARCH (in shops you walked by category, but in none of the saved walks: another "
+          "category, a filter or a blank attribute dropped them, or they are accessories): "
+          + ", ".join(f"{k} {n}" + (f" ({acc} accessories)" if acc else "") for k, (n, acc) in per.items()),
+          file=out)
+    offers.sort(key=lambda o: (bool(o.get("accessory")), effective_price(o) is None, effective_price(o) or 0))
+    rows = offers[:GROUP_SEARCH_ONLY_SHOW]
+    cols = ([("#", lambda o: o["product"], "r", None)] + price_columns(rows, was=False)
+            + [("STORE", store_cell, "l", 24),
+               ("ACC", lambda o: o.get("accessory") or "", "l", 14),
+               ("CATEGORY", lambda o: _path_tail(o.get("category") or "", 40), "l", None),
+               ("TITLE", lambda o: o.get("title"), "l", a.title_width),
+               ("URL", lambda o: o.get("url"), "l", None)])
+    render_table(rows, cols, out)
+    if len(offers) > len(rows):
+        print(f"... {len(offers) - len(rows)} more (accessories last; --only-search lists them all, "
+              "JSON offers carry search_only: true)", file=out)
+    for note in (member_footnote(rows, again=True), valid_footnote(rows)):
+        if note:
+            print(note, file=out)
+
+
 def _group_footer(env):
     shops = sorted({o.get("mirror_of") or o["store"] for p in env["results"] for o in p["offers"]})
     s = (f"-- {env['count']} products, {env['offers']} offers from {len(shops)} shops "
@@ -4858,6 +5035,9 @@ def _group_footer(env):
     bad = [f"{k} ({v['status']})" for k, v in env["stores"].items() if v["status"] not in ("ok", "partial")]
     if bad:
         s += "; NOT searched in some inputs: " + ", ".join(bad)
+    if env.get("search_only"):
+        s += f"; found only by search (not in a category walk): {sum(env['search_only'].values())} offers in " \
+             + ", ".join(env["search_only"])
     return s + _dropped_note(env.get("dropped"))
 
 
@@ -4926,6 +5106,7 @@ def print_group(env, out, a):
     if has_mirror:
         print("MIRRORS: marketplace listings of a covered shop's own catalogue (Ananas seller = that shop; "
               "ZirafaMall SKU = a Gjirafa50 SKU); SHOPS counts them once, under that shop.", file=out)
+    print_search_only(env, out, a)
     rel = [x for x in env.get("related") or [] if x["products"][0] <= show or x["products"][1] <= show]
     if rel:
         print("RELATED (kept apart: they share a code or a model name, but no EAN / code check joins them):",
@@ -5027,7 +5208,9 @@ def build_parser():
         sp.add_argument("--json", nargs="?", const="-", metavar="PATH", help=json_help)
         sp.add_argument("--csv", metavar="PATH", help="also write the kept records as CSV ('-' = stdout)")
         sp.add_argument("--show", type=int, default=DEFAULT_SHOW,
-                        help=f"rows to print in the table (default {DEFAULT_SHOW}; 0 = all). JSON/CSV always hold every row")
+                        help=f"rows to print in the table (default {DEFAULT_SHOW}; 0 = all). The table prints "
+                             "with --json/--csv PATH too; JSON/CSV always hold every row")
+        sp.add_argument("--no-table", action="store_true", help="print only the 'wrote' line and the footer when --json/--csv go to a file (by default the table prints too)")
         sp.add_argument("--title-width", type=int, default=TITLE_WIDTH, help="truncate titles in the table to N chars")
 
     sp = sub.add_parser("stores", parents=[common], help="list shops, domains, what they sell, capabilities",
@@ -5078,6 +5261,12 @@ def build_parser():
     sp.add_argument("--stores", default="all", help="comma list of store keys (default all)")
     sp.add_argument("--exclude", help="comma list of store keys to leave out")
     sp.add_argument("--json", nargs="?", const="-", metavar="PATH", help="JSON envelope to PATH, or stdout if no PATH")
+    sp.add_argument("--show", type=int, metavar="N",
+                    help=f"categories printed per store (default {CATS_SHOW} with --grep, biggest first; all for a "
+                         "full tree; 0 = all). JSON always holds every category")
+    sp.add_argument("--urls", action="store_true", help="add the URL (and slug) columns to the table; the JSON has them")
+    sp.add_argument("--no-table", action="store_true",
+                    help="with --json PATH, print only the 'wrote' line and the footer (by default the table prints too)")
 
     sp = sub.add_parser("list", parents=[common], help="every product in one store's category",
                         description="Walks all pages of CATEGORY (an id, slug or url printed by `categories`).\n"
@@ -5101,6 +5290,8 @@ def build_parser():
     sp.add_argument("--store", required=True, help="store key")
     sp.add_argument("category", help="category id, slug or URL from `categories`")
     sp.add_argument("--json", nargs="?", const="-", metavar="PATH", help="JSON envelope to PATH, or stdout if no PATH")
+    sp.add_argument("--no-table", action="store_true",
+                    help="with --json PATH, print only the 'wrote' line and the footer (by default the table prints too)")
 
     sp = sub.add_parser("detail", parents=[common], help="full records for URLs or ids",
                         description="One record per input, in input order. URLs are routed to their shop by domain;\n"
@@ -5111,6 +5302,8 @@ def build_parser():
     sp.add_argument("refs", nargs="+", metavar="REF", help="product URL, or id/code with --store")
     sp.add_argument("--store", help="store key for bare ids")
     sp.add_argument("--json", nargs="?", const="-", metavar="PATH", help="JSON envelope to PATH, or stdout if no PATH")
+    sp.add_argument("--no-table", action="store_true",
+                    help="with --json PATH, print only the 'wrote' line (by default the records print too)")
 
     sp = sub.add_parser(
         "match", parents=[common], help="find the same product in other stores",
@@ -5226,15 +5419,20 @@ def build_parser():
     sp.add_argument("--in-stock", action="store_true", help="drop offers the shop marks out of stock")
     sp.add_argument("--hide-mirrors", action="store_true",
                     help="drop mirror offers whose shop's own offer is in the same product")
-    sp.add_argument("--offers", type=int, default=10,
-                    help="offers printed per product in the table (default 10; 0 = all)")
+    sp.add_argument("--only-search", action="store_true",
+                    help="keep only offers found by search/match/detail in a shop you also walked with `list`, "
+                         "but in none of the saved walks (the FOUND ONLY BY SEARCH section, in full)")
+    sp.add_argument("--offers", type=int, default=GROUP_SHOW_OFFERS,
+                    help=f"offers printed per product in the table (default {GROUP_SHOW_OFFERS}; 0 = all)")
     add_listing_opts(sp, "write the JSON envelope to PATH ('-' or no PATH = stdout)")
     for act in sp._actions:
         if act.dest == "sort":
             act.choices = ["price", "shops", "title"]
             act.help = "product order: price (best effective price, default), shops (most shops first), title"
         elif act.dest == "show":
-            act.help = f"products to print (default {DEFAULT_SHOW}; 0 = all). JSON/CSV always hold every product"
+            act.default = GROUP_SHOW
+            act.help = (f"products to print (default {GROUP_SHOW}; 0 = all). The table prints with "
+                        "--json/--csv PATH too; JSON/CSV always hold every product")
         elif act.dest in ("min_price", "max_price"):
             act.help = act.help.replace("records", "offers")
         elif act.dest == "csv":

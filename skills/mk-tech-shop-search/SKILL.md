@@ -12,7 +12,13 @@ rendered pages gives you. `scripts/mkshop.py` drives them all: cross-store
 search, category discovery, listing, facets, product detail and cross-store
 product matching.
 
-Run everything from the skill directory:
+Paths such as `scripts/mkshop.py` below are relative to this skill's
+directory. Call the tools by their absolute path and don't `cd` into the
+skill: `mkshop.py` finds its shop clients itself. Keep each task's files
+(`--json`, `--csv`, the report) together in one folder outside the skill:
+the user's project directory if they named one, otherwise something like
+`./mk-shop-<topic>-<date>/`. `<out>` below stands for that folder. Write
+absolute paths, since shell variables don't survive between tool calls.
 
 ```bash
 python3 scripts/mkshop.py --help
@@ -66,7 +72,7 @@ shops: a struck-through price is not a deal signal.
 
 ```bash
 python3 scripts/mkshop.py search "<brand> <model>" --q "<model code>" --q "<Macedonian product noun>" \
-  --max-price <budget> --json sweep.json
+  --max-price <budget> --json <out>/sweep.json
 ```
 
 This runs every relevant shop's own search in parallel (one worker per shop,
@@ -91,8 +97,18 @@ Useful flags:
 
 A shop that hits `--limit-per-store` is flagged "more may exist".
 
-Read the per-shop status footer before trusting a zero: only `ok` with zero
-results is a real zero (see "When a shop fails").
+The table prints even when you save `--json` (`--no-table` turns it off),
+so read it there; to look at a saved run again, run `group` on the file
+rather than printing the file.
+
+Read the per-shop status table and footer before trusting a zero: only `ok`
+with zero results is a real zero (see "When a shop fails"). Read them before
+trusting a hit count too. `all-words` counts the hits that contain every
+word of a query that found them (what `--strict` keeps). A low count can
+mean loose matching, but also another language or titles that are only a
+model code, so read a few titles before saying a shop carries the product.
+`mostly accessories` means most of a shop's hits are cases, glass,
+batteries or mounts.
 
 Search is for recall. Membership comes from step 3.
 
@@ -100,19 +116,20 @@ Search is for recall. Membership comes from step 3.
 
 ```bash
 python3 scripts/mkshop.py categories --grep '<macedonian stem>|<english stem>'   # every shop's matching categories
-python3 scripts/mkshop.py list --store <key> <category-id-or-url> --json <key>_list.json
+python3 scripts/mkshop.py list --store <key> <category-id-or-url> --json <out>/<key>_list.json
 python3 scripts/mkshop.py facets --store <key> <category>                          # where the shop has structured attributes
-python3 scripts/mkshop.py list --store <key> <category> --filter '<token from facets>' --json filtered.json
+python3 scripts/mkshop.py list --store <key> <category> --filter '<token from facets>' --json <out>/filtered.json
 ```
 
 Category handles differ per shop (numeric ids, slugs, URLs, transliterated
 Cyrillic). Never guess them: grep for them, and try both a Macedonian stem
-and an English one. `list` walks every page, so a category listing is the
-complete set; a search never is. Where a shop's facets (structured
-attributes) are well filled, they decide membership better than title
-words. Where they are sparse (the shop's reference says so), use them to
-confirm and recover the rest from titles and `detail` specs. Read the facet
-values first, because filter tokens must match exactly.
+and an English one. The table shows each shop's 20 biggest matches (`--show
+0` for all, `--urls` adds links). `list` walks every page, so a category
+listing is the complete set; a search never is. Where a shop's facets
+(structured attributes) are well filled, they decide membership better than
+title words. Where they are sparse (the shop's reference says so), use them
+to confirm and recover the rest from titles and `detail` specs. Read the
+facet values first, because filter tokens must match exactly.
 
 ### 4. Check what the structure would miss
 
@@ -124,8 +141,10 @@ Before trusting a filter:
 - look at what the category contains that the filter dropped, and recover
   products from their title or `detail` specs text;
 - check sibling and parent categories;
-- run a widening search for the product noun in each shop and union by
-  store + id.
+- run a widening search for the product noun, then
+  `group <out>/sweep.json <out>/<key>_list.json ...`: its FOUND ONLY BY
+  SEARCH section lists what the search found in a shop you walked that none
+  of your walks holds.
 
 Report what a filter dropped for lack of data and what you recovered.
 Silence reads as "nothing was missed", which is the one claim you can't make.
@@ -136,7 +155,7 @@ Silence reads as "nothing was missed", which is the one claim you can't make.
 python3 scripts/mkshop.py match "<product URL from any covered shop>"
 python3 scripts/mkshop.py match <EAN>
 python3 scripts/mkshop.py match "<brand> <model>"
-python3 scripts/mkshop.py group sweep.json <key>_list.json ...   # one row per product across saved runs
+python3 scripts/mkshop.py group <out>/sweep.json <out>/<key>_list.json ...   # one row per product across saved runs
 ```
 
 `match` resolves the source product, then searches every shop by EAN, by
@@ -184,7 +203,7 @@ bundles often show only there.
 ### 6. Get detail on the shortlist
 
 ```bash
-python3 scripts/mkshop.py detail <url> <url> ... --json detail.json
+python3 scripts/mkshop.py detail <url> <url> ... --json <out>/detail.json
 ```
 
 Only for the handful you'll actually recommend. URLs route to the right shop
@@ -430,7 +449,7 @@ stack, light and dark via `prefers-color-scheme`.
   to undo the template, you picked the wrong pattern. No gradients, shadows,
   animation or icons; right-align numbers with tabular figures.
 
-Write it to a sensible path and tell the user where it is.
+Write it into the task folder (`<out>/report.html`) and tell the user the path.
 
 ### The reply
 

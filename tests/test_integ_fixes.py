@@ -1359,6 +1359,52 @@ check("setec: a capitalised host is still a setec.mk URL",
       [r[2] for r in _sc.resolve_products(["Setec.mk/products/abc", "https://SETEC.MK/products/x"])] == [None, None]
       and [r[1] for r in _sc.resolve_products(["Setec.mk/products/abc"])] == ["abc"])
 
+
+# ==== relevance counts and --strict across spacing (2026-10-09) ====
+check("--strict matches across spacing: 'rtx5070' ~ 'RTX 5070'",
+      m._passes_strict({"title": "MSI GeForce RTX 5070 VENTUS 2X OC 12GB"}, ["rtx5070"]))
+check("--strict still needs every word", not m._passes_strict({"title": "MSI GeForce RTX 5060 VENTUS"}, ["rtx 5070"]))
+_glass = [dict(store="ananas", id=f"g{i}", title="Заштитно стакло за Samsung Galaxy A56 - 9H", found_by=["galaxy a56"])
+          for i in range(9)]
+_phones = [dict(store="ananas", id=f"p{i}", title=f"Samsung Galaxy A56 5G 8/256GB {c}", found_by=["galaxy a56"])
+           for i, c in enumerate(("Graphite", "Olive", "Pink"))]
+_case = [dict(store="setec", id=f"c{i}", title="Футрола за Samsung Galaxy A56", found_by=["galaxy a56 case"])
+         for i in range(12)]
+_other = [dict(store="neptun", id="n1", title="Philips 55PUS8000", found_by=["galaxy a56"])]
+_recs = m.annotate(_glass + _phones + _case + _other)
+_st = {"ananas": {"status": "ok"}, "setec": {"status": "ok"}, "neptun": {"status": "ok"}, "ddstore": {"status": "blocked"},
+       "setra": {"status": "timeout"}}
+m.relevance_counts(_recs, _st)
+check("relevance: counts per shop, accessories noted when they are most of 10+ hits",
+      _st["ananas"]["relevance"] == {"hits": 12, "all_words": 12, "accessories": 9}
+      and _st["ananas"].get("notes") == ["mostly accessories (9 of 12)"], _st["ananas"])
+check("relevance: hits a query for an accessory found are not counted as accessories",
+      _st["setec"]["relevance"]["accessories"] == 0 and not _st["setec"].get("notes"), _st["setec"])
+check("relevance: off-target hits show as a low all-words count, without a note",
+      _st["neptun"]["relevance"] == {"hits": 1, "all_words": 0, "accessories": 0} and not _st["neptun"].get("notes"),
+      _st["neptun"])
+check("relevance: a shop that did not answer gets no counts",
+      "relevance" not in _st["ddstore"] and "relevance" not in _st["setra"], (_st["ddstore"], _st["setra"]))
+import argparse as _ap, io as _io2  # noqa: E401,E402
+_buf = _io2.StringIO()
+m.print_categories([{"store": "gjirafa50", "id": None, "slug": "monitore-teknologji", "path": "Компјутери > Монитори",
+                     "url": "https://gjirafa50.mk/monitore-teknologji", "count": 120},
+                    {"store": "ddstore", "id": "kompjuterska-oprema/monitori/gejmerski-monitori", "path": "Монитори",
+                     "count": 40}], _ap.Namespace(show=None, grep="monitor", urls=False), _buf)
+check("categories table: a row without an id shows its slug, long ids are not cut",
+      "monitore-teknologji" in _buf.getvalue() and "kompjuterska-oprema/monitori/gejmerski-monitori" in _buf.getvalue(),
+      _buf.getvalue())
+_foot = m.footer_line(dict(_st, ananas=dict(_st["ananas"], queries=[{"query": "galaxy a56", "hit_limit": True}],
+                                            warnings=["WARNING: x"])), 25)
+check("footer names shops that hit the limit, are mostly accessories or warned",
+      "more may exist (hit --limit-per-store): ananas" in _foot and "mostly accessories: ananas" in _foot
+      and "warnings (see the status table): ananas" in _foot, _foot)
+check("status note carries the accessories note", "mostly accessories (9 of 12)" in m._status_note(_st["ananas"]),
+      m._status_note(_st["ananas"]))
+_long = "Компјутери и IT опрема > Монитори и Додатоци > Монитори > Гејмерски монитори 27"
+check("category paths are cut from the left so the leaf stays",
+      m._path_tail(_long, 50) == "… > Монитори > Гејмерски монитори 27" and m._path_tail("Short > Path") == "Short > Path",
+      m._path_tail(_long, 50))
+
 print(f"\n{fails} failure(s)")
 sys.exit(1 if fails else 0)
-

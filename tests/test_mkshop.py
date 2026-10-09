@@ -573,6 +573,98 @@ rc, out, err, dt = run(["group", V, "--quiet"])
 check("group e2e table: RELATED lines name the twin and the accessory", "same Gjirafa SKU 606820mo" in out
       and ("one is an accessory" in out or "over 3x apart" in out), out[-1500:])
 
+
+# ==== tables next to saved JSON, relevance counts, compact categories, search-only offers (2026-10-09) ====
+P = os.path.join(_OUT, "sweep.json")
+rc, out, err, dt = run(["search", "galaxy a56", "--stores", "ananas,setec", "--json", P])
+check("search --json PATH: table, 'wrote' line and footer on stdout",
+      rc == 0 and "PRICE" in out and "wrote 13 results to" in out and out.rstrip().splitlines()[-1].startswith("-- "), out[:600])
+check("status table shows the all-words and accessories counts", "all-words" in err and "accessories" in err, err[-600:])
+d = json.load(open(P, encoding="utf-8"))
+check("search JSON: per-shop relevance counts",
+      d["stores"]["ananas"]["relevance"] == {"hits": 9, "all_words": 9, "accessories": 0}, d["stores"]["ananas"].get("relevance"))
+rc, out, err, dt = run(["search", "galaxy a56", "--stores", "ananas,setec", "--json", P, "--no-table"])
+check("search --no-table: only the 'wrote' line and the footer",
+      rc == 0 and "PRICE" not in out and out.splitlines()[0].startswith("wrote "), out[:300])
+rc, out, err, dt = run(["detail", "https://setec.mk/products/sony-whult900nbce7-G101", "--json", os.path.join(_OUT, "d.json")])
+check("detail --json PATH prints the record too", rc == 0 and "WHULT900NB" in out and "wrote 1 records to" in out, out[:400])
+rc, out, err, dt = run(["categories", "--grep", "телефон|phone"])
+check("categories table: no URL or slug column by default",
+      rc == 0 and out.splitlines()[0].split() == ["STORE", "COUNT", "ID", "/", "SLUG", "PATH"] and "https://" not in out,
+      out[:300])
+rc, out, err, dt = run(["categories", "--grep", ".", "--show", "-1"])
+check("categories --show -1 prints every category", rc == 0 and "more categories not shown" not in out, out[-300:])
+rc, out, err, dt = run(["categories", "--grep", "телефон|phone", "--urls"])
+check("categories --urls adds the URL column", rc == 0 and "URL" in out.splitlines()[0] and "https://" in out, out[:300])
+rc, out, err, dt = run(["categories", "--grep", ".", "--show", "1"])
+first = [ln.split()[0] for ln in out.splitlines()[1:] if ln and not ln.startswith(("...", "--"))]
+check("categories --show caps rows per shop and names what it left out",
+      rc == 0 and len(first) == len(set(first)) and "more categories not shown" in out, out[-500:])
+WALK = jfile("walk.json", {"command": "list", "generated_at": "2026-10-09T10:00:00+02:00", "store": "setec",
+                           "category": "monitori", "filters": [], "stores": {"setec": {"status": "ok"}},
+                           "results": [grec("setec", "W1", 'AOC Q27G4XF 27" QHD 180Hz', 12990, category="Монитори"),
+                                       grec("setec", "W2", 'LG 27GS75Q-B 27" QHD 180Hz', 15990, category="Монитори")]})
+SRCH = jfile("srch.json", {"command": "search", "generated_at": "2026-10-09T10:05:00+02:00", "queries": ["monitor 27"],
+                           "stores": {"setec": {"status": "ok"}, "ananas": {"status": "ok"}},
+                           "results": [grec("setec", "W1", 'AOC Q27G4XF 27" QHD 180Hz', 12990, category="Монитори"),
+                                       grec("setec", "S8", 'Држач за монитор 27"', 990, category="Додатоци"),
+                                       grec("setec", "S9", 'Samsung Odyssey G5 27" QHD 165Hz LS27CG552', 14990,
+                                            category="Гејмерски монитори"),
+                                       grec("ananas", "A1", 'MSI MAG 275QF 27" QHD 180Hz', 13990, category="Монитори")]})
+rc, d, err, dt = js(["group", WALK, SRCH])
+so = {o["id"] for p in d["results"] for o in p["offers"] if o.get("search_only")}
+check("group: search hits in a walked shop that no walk holds are search_only (unwalked shops are not)",
+      rc == 0 and so == {"S8", "S9"} and d["search_only"] == {"setec": 2} and d["walked"] == ["setec"],
+      (so, d.get("search_only"), d.get("walked")))
+rc, out, err, dt = run(["group", WALK, SRCH, "--quiet"])
+sec = out[out.find("FOUND ONLY BY SEARCH"):] if "FOUND ONLY BY SEARCH" in out else ""
+check("group table: FOUND ONLY BY SEARCH lists real products before accessories",
+      "setec 2 (1 accessories)" in sec and 0 <= sec.find("Odyssey") < sec.find("Држач"), out[-900:])
+check("group footer counts the search-only offers", "found only by search (not in a category walk): 2 offers in setec" in out,
+      out[-300:])
+rc, d, err, dt = js(["group", WALK, SRCH, "--only-search"])
+check("group --only-search keeps only those offers",
+      rc == 0 and {o["id"] for p in d["results"] for o in p["offers"]} == {"S8", "S9"}, [p["title"] for p in d["results"]])
+rc, out, err, dt = run(["group", SRCH, "--only-search"])
+check("group --only-search without a saved list exits 2 and says why", rc == 2 and "needs at least one saved `list`" in err,
+      (rc, err[-200:]))
+# a saved group keeps its walks: its walk rows stay walk rows, its search-only rows stay search-only
+GSAVED = os.path.join(_OUT, "g_saved.json")
+rc, out, err, dt = run(["group", WALK, SRCH, "--json", GSAVED, "--no-table", "--quiet"])
+WALK2 = jfile("walk2.json", {"command": "list", "generated_at": "2026-10-09T11:00:00+02:00", "store": "setec",
+                             "category": "televizori", "filters": [], "stores": {"setec": {"status": "ok"}},
+                             "results": [grec("setec", "T1", 'Hisense 55A6Q 55" 4K', 23990, category="Телевизори")]})
+rc, d, err, dt = js(["group", GSAVED, WALK2])
+so = {o["id"] for p in d["results"] for o in p["offers"] if o.get("search_only")}
+check("group of a saved group: its walk rows are not gaps, its gaps stay gaps", rc == 0 and so == {"S8", "S9"}, so)
+rc, d, err, dt = js(["group", GSAVED, "--only-search"])
+check("group --only-search on a saved group alone works", rc == 0 and d["count"] >= 1, (rc, err[-200:]))
+# a failed walk walked nothing; an older list envelope without "store" still counts
+BAD = jfile("walk_bad.json", {"command": "list", "store": "setec", "category": "monitori",
+                              "stores": {"setec": {"status": "blocked"}}, "results": []})
+rc, d, err, dt = js(["group", BAD, SRCH])
+check("group: a blocked walk does not turn search hits into gaps", rc == 0 and d["walked"] == [] and d["search_only"] == {},
+      (d.get("walked"), d.get("search_only")))
+OLD = jfile("walk_old.json", {"command": "list", "category": "monitori", "stores": {"setec": {"status": "ok"}},
+                              "results": [grec("setec", "W1", 'AOC Q27G4XF 27" QHD 180Hz', 12990, category="Монитори")]})
+rc, d, err, dt = js(["group", OLD, SRCH])
+check("group: a list envelope without 'store' still counts as a walk", rc == 0 and d["walked"] == ["setec"], d.get("walked"))
+rc, out, err, dt = run(["group", WALK, SRCH, "--max-price", "500", "--quiet"])
+check("group: search-only offers removed by filters are reported as such",
+      "FOUND ONLY BY SEARCH: 2 offers, all removed by the filters" in out, out[-400:])
+rc, out, err, dt = run(["group", WALK, "--quiet"])
+check("group of walks only: no FOUND ONLY BY SEARCH line", rc == 0 and "FOUND ONLY BY SEARCH" not in out, out[-300:])
+SRCHM = jfile("srch_member.json", {"command": "search", "queries": ["monitor 27"], "stores": {"setec": {"status": "ok"}},
+                                   "results": [grec("setec", "S9", 'Samsung Odyssey G5 27" QHD 165Hz LS27CG552', 14990,
+                                                    category="Гејмерски монитори", member_price_mkd=13990,
+                                                    member_price_condition="Setec club card, free")]})
+rc, out, err, dt = run(["group", WALK, SRCHM, "--quiet"])
+sec = out[out.find("FOUND ONLY BY SEARCH"):]
+check("group: member prices in the search-only table are explained under it",
+      "13,990*" in sec and "Setec club card, free" in sec, sec[:900])
+rc, out, err, dt = run(["group", WALK, SRCH, "--json", os.path.join(_OUT, "g.json")])
+check("group --json PATH prints the tables too", rc == 0 and "PRODUCTS:" in out and "wrote " in out, out[:300])
+
 _sh.rmtree(TMP, ignore_errors=True)
 _sh.rmtree(_OUT, ignore_errors=True)
 
