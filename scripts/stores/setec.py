@@ -53,12 +53,13 @@ DETAIL_URL = BASE + "/api/medusa/products-with-details-web"
 # and listings past the ceiling are fetched in brand/price windows.
 CAP = 1000
 PAGE = 500                     # hits per request inside one query window
-PACE_S = 0.35                  # min gap between requests to the same host
+PACE_S = 0.35                  # min gap per host: the contract's 0.3-1 s; Setec shows no rate limiting
 # Both backends normally answer in well under a second; the generous timeout only
 # matters when a host is cold or struggling.
 TIMEOUT = 45
 MAX_TRIES = 4
-DEFAULT_ORDER_THRESHOLD = 3    # web-config order_threshold at time of writing
+MAX_RETRY_AFTER_S = 60         # never sleep longer than this on a server's Retry-After
+DEFAULT_ORDER_THRESHOLD = 3    # web-config order_threshold on 2026-10-09, used if web-config fails
 
 PRICE = "variants.calculated_price.calculated_amount"
 BASE_FILTERS = ["status = 'published'", "is_web_active = 'true'"]  # what the site adds
@@ -98,6 +99,10 @@ class StoreError(RuntimeError):
     pass
 
 
+class KeyRejected(StoreError):
+    """The search host answered 401/403 JSON: the public key was rotated or revoked."""
+
+
 QUIET = False
 VERBOSE = False
 
@@ -134,10 +139,10 @@ def session():
 
 
 def _pace(host):
-    wait = PACE_S - (time.time() - _last.get(host, 0.0))
+    wait = PACE_S - (time.monotonic() - _last.get(host, float("-inf")))
     if wait > 0:
         time.sleep(wait)
-    _last[host] = time.time()
+    _last[host] = time.monotonic()
 
 
 def _evidence(resp):
@@ -163,7 +168,8 @@ def _request(method, url, *, auth=False, expect_json=True, allow_404=False, **kw
             log(f"{method} {url[:150]}")
         try:
             r = session().request(method, url, timeout=TIMEOUT, headers=headers, **kw)
-        except (requests.ConnectionError, requests.Timeout) as e:
+        except (requests.ConnectionError, requests.Timeout,
+                requests.exceptions.ChunkedEncodingError, requests.exceptions.ContentDecodingError) as e:
             if attempt == MAX_TRIES:
                 raise StoreError(f"{method} {url}: network error after {attempt} tries: {e}")
             time.sleep(delay)
@@ -178,11 +184,8 @@ def _request(method, url, *, auth=False, expect_json=True, allow_404=False, **kw
                 and (r.status_code in (403, 429, 503) or len(r.content) < 60000)):
             raise Blocked(_evidence(r))
         if r.status_code in (429, 500, 502, 503, 504) and attempt < MAX_TRIES:
-            ra = r.headers.get("retry-after")
-            try:
-                sleep_for = max(float(ra), delay) if ra else delay
-            except ValueError:
-                sleep_for = delay
+            ra = (r.headers.get("retry-after") or "").strip()
+            sleep_for = min(max(float(ra), delay), MAX_RETRY_AFTER_S) if ra.isdigit() else delay
             log(f"HTTP {r.status_code} from {host}; retrying in {sleep_for:.0f}s")
             time.sleep(sleep_for)
             delay *= 2
@@ -191,7 +194,7 @@ def _request(method, url, *, auth=False, expect_json=True, allow_404=False, **kw
         if r.status_code == 404 and allow_404:
             return None
         if auth and r.status_code in (401, 403) and "json" in ctype:
-            raise PermissionError(r.text[:300])
+            raise KeyRejected(r.text[:300])
         if r.status_code == 400 and "json" in ctype:
             try:
                 msg = r.json().get("message", r.text[:300])
@@ -200,6 +203,8 @@ def _request(method, url, *, auth=False, expect_json=True, allow_404=False, **kw
             raise UsageError(f"search backend rejected the request: {msg}")
         if r.status_code == 403:
             raise Blocked(_evidence(r))
+        if r.status_code == 429:
+            raise Blocked(f"still HTTP 429 (rate limited) after {MAX_TRIES} tries; " + _evidence(r))
         if r.status_code != 200:
             raise StoreError(f"{method} {url[:120]}: HTTP {r.status_code}: {r.text[:200]!r}")
         if expect_json:
@@ -249,9 +254,12 @@ def meili(path, body):
     url = SEARCH_BASE + path
     try:
         return _request("POST", url, auth=True, json=body)
-    except PermissionError as e:
+    except KeyRejected as e:
         if _rediscover_key():
-            return _request("POST", SEARCH_BASE + path, auth=True, json=body)
+            try:
+                return _request("POST", SEARCH_BASE + path, auth=True, json=body)
+            except KeyRejected as e2:
+                e = e2
         raise StoreError(f"search key rejected and could not be re-discovered: {e}")
 
 
@@ -286,7 +294,8 @@ def order_threshold():
     if _threshold[0] is None:
         try:
             _threshold[0] = int(_request("GET", CONFIG_URL).get("order_threshold") or 0)
-        except (StoreError, ValueError, TypeError, AttributeError):
+        except (StoreError, ValueError, TypeError, AttributeError) as e:
+            log(f"web-config unavailable ({e}); assuming low-stock threshold {DEFAULT_ORDER_THRESHOLD}")
             _threshold[0] = DEFAULT_ORDER_THRESHOLD
     return _threshold[0]
 
@@ -624,9 +633,14 @@ def all_categories():
     return recs
 
 
+def _with_scheme(s):
+    """'setec.mk/products/x' (pasted without the scheme) -> 'https://setec.mk/products/x'."""
+    return "https://" + s if re.match(r"(?:www\.)?setec\.mk/", s, re.I) else s
+
+
 def resolve_category(arg):
     """-> (label, filter expression, tree-node-or-None). Raises UsageError if unknown."""
-    a = arg.strip()
+    a = _with_scheme(arg.strip())
     if a.startswith("http"):
         u = urlparse(a)
         if "setec.mk" not in u.netloc or "/category/" not in u.path:
@@ -1023,7 +1037,7 @@ def cmd_info(a):
         "store": STORE, "name": NAME, "base_url": BASE,
         "capabilities": ["search", "categories", "list", "detail", "facets", "filter",
                          "ean_in_listing", "ean_in_detail", "stock_qty",
-                         "per_location_stock", "warranty"],
+                         "per_location_stock", "warranty", "search_ean", "search_codes"],
         "sells": ("Large consumer-electronics and home chain (~14k products): computers and "
                   "PC parts, laptops, monitors, phones and accessories, TVs/audio, large and "
                   "small home appliances, air conditioning/heating, kitchenware, tools, "
@@ -1166,7 +1180,7 @@ def resolve_products(inputs):
     """-> list of (input, handle or None, error or None), in input order."""
     out, ids, codes = [], {}, {}
     for raw in inputs:
-        s = raw.strip()
+        s = _with_scheme(raw.strip())
         if s.startswith("http"):
             u = urlparse(s)
             if "setec.mk" not in u.netloc:
@@ -1322,8 +1336,9 @@ def cmd_detail(a):
                 print(f"!! {r['input']}: {r['error']}")
                 continue
             was = f" (was {r['regular_price_mkd']:,})" if r.get("regular_price_mkd") else ""
+            price = f"{r['price_mkd']:,} ден" if r.get("price_mkd") is not None else "no price"
             print(f"\n{r['title']}\n  {r['url']}")
-            print(f"  {r['price_mkd']:,} ден{was} | {r['stock_note']} | warranty {r['warranty']}")
+            print(f"  {price}{was} | {r.get('stock_note') or '-'} | warranty {r.get('warranty') or '-'}")
             print(f"  Шифра {r['sku']} | EAN {r['ean']} | brand {r['brand']} | {r['category']}")
             for s in r.get("per_location_stock") or []:
                 if s["quantity"] > 0:
@@ -1421,9 +1436,12 @@ def cmd_stores(a):
     for raw, handle, err in rows:
         p = None
         if not err and handle:
-            d = _request("GET", DETAIL_URL, params={"handle": handle}, allow_404=True)
+            try:
+                d = _request("GET", DETAIL_URL, params={"handle": handle}, allow_404=True)
+            except (StoreError, UsageError) as e:
+                d, err = None, str(e)
             p = (d or {}).get("product") if isinstance(d, dict) else None
-            err = None if p else f"no product with handle {handle!r}"
+            err = None if p else (err or f"no product with handle {handle!r}")
         if not p:
             warn(f"skipping {raw!r}: {err or 'unresolved'}")
             out.append({"input": raw, "error": err or "unresolved"})
@@ -1516,6 +1534,9 @@ def main(argv=None):
         return 2
     except StoreError as e:
         print(f"ERROR: {e}", file=sys.stderr)
+        return 1
+    except (requests.RequestException, ValueError, KeyError) as e:
+        print(f"ERROR: {type(e).__name__}: {e}", file=sys.stderr)
         return 1
     except KeyboardInterrupt:
         return 130
