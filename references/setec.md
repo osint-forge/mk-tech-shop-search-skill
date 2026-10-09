@@ -25,6 +25,10 @@ All public JSON; no cookies or login.
 - **Category tree.** `GET https://setec.mk/api/strapi/category?locale=mk-MK&withSubcategories=true`
   is the site's menu: 317 nodes with `medusaID` (`pcat_…` id), `slug` (handle) and name.
 - **Web config.** `GET https://setec.mk/api/medusa/web-config` returns `{"order_threshold":3,...}`.
+- **Store locator.** `GET https://setec.mk/api/strapi/page?locale=mk-MK&slug=prodazni-saloni`:
+  `sales_channels[]` with `name`, `title`, `address`, `working_hours`, `contact_info` for 39
+  locations (2026-10-09). Its names differ from the detail API's (`Сетек ГОДИ` vs `СЕТЕК Годи`),
+  so match by town and area. The client does not call it.
 - **URLs.** `https://setec.mk/products/<handle>` (canonical), `https://setec.mk/category/<handle>`.
 - **Base filter** (the site's own, added by the client): `status = 'published' AND is_web_active = 'true'`.
 
@@ -86,7 +90,10 @@ are banded (`Батерија (mAh)::4000-4999`) and sometimes split across name
   adds 90 genuine hits).
 - **Typos.** Typo tolerance is off for `external_id`, `handle`, `id` and
   `variants.catalogue_number`, but on for numbers elsewhere, so a Шифра can also hit a
-  description. English stop words (`for`, `and`, …) are ignored.
+  description.
+- **Every word must match, glue words included.** On 2026-10-09 `laptop` found 246, `laptop for`
+  14 and `laptop and` 0; `фрижидер` 273, `фрижидер за` 222 and `фрижидер со` 90. Only `и` was
+  ignored. Search with nouns, brands and codes; leave out `за`, `со`, `for`, `and`.
 - **Codes.** An EAN or the on-site Шифра (`external_id`) finds the product; `detail`
   accepts both.
 - **Ceiling.** Each variant caps at 1,000 hits, and stderr gives the true total.
@@ -137,7 +144,11 @@ are banded (`Батерија (mAh)::4000-4999`) and sometimes split across name
 `{location, in_stock, quantity, walk_in, in_web_total}`.
 
 - **Walk-in:** false for the warehouse and СЕТЕК Web; warehouse-only = order online, no pickup today.
-- **Names:** out-of-Skopje stores by town (СЕТЕК Битола 2); Skopje by area/mall (Аеродром, ГТЦ).
+- **Names:** out-of-Skopje stores by town (СЕТЕК Битола 2); a name without a town is a Skopje
+  store (Годи, Стадион, Драчево, Чаир, Ѓорче Петров, ГТЦ, Ми Сторе: all Skopje addresses on the
+  store locator, 2026-10-09). Trust the locator's address over its title, which can be wrong
+  (Битола is titled 'Скопје'). `СЕТЕК OUTLET` is not on the locator: say its town is unverified
+  if it decides the answer.
 - **Quantities:** shop stock is often 1.
 - **Outlet:** `СЕТЕК OUTLET` units are walk-in only and are not counted in
   `total_web_quantity`; the per-location sum exceeds the total by exactly the outlet's

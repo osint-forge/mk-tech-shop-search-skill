@@ -70,7 +70,8 @@ round, so an all-shop search takes tens of seconds per phrasing.
 Search engines differ between shops: title vs description matching, silent
 OR-fallback, Cyrillic vs Latin spellings. Each shop's reference describes
 its own. So sweep with several phrasings: English and Macedonian, brand +
-model code, the generic product noun.
+model code, the generic product noun. Leave out glue words (`за`, `со`, `for`,
+`and`): some shops require every word to match.
 
 Useful flags:
 
@@ -266,7 +267,7 @@ Rules of thumb:
 - A price far below every other shop's for the same EAN is either a real
   deal or a listing error (wrong variant, refurbished, regional edition).
   Check `detail` before presenting it.
-- Quote prices in ден / MKD; add a rough EUR figure for expensive items.
+- Quote prices in ден / MKD; add a rough EUR figure for expensive items (~61.5 ден per EUR).
 
 ## Reading stock and delivery
 
