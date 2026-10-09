@@ -57,9 +57,10 @@ covered and which couldn't be checked; the answer will need to say so in a
 line.
 
 If the user limits the question to one shop, answer for that shop, using its
-client's extras where they help (Setec: `stores`, `gaps`). For "is this a good
-price", still `match` the product across the other shops: a struck-through
-price is not a deal signal.
+client's extras where they help (e.g. `python3 scripts/stores/setec.py stores
+<url>` for per-store stock, `setec.py gaps` for blank attributes; see "Reference"
+below). For "is this a good price", still `match` the product across the other
+shops: a struck-through price is not a deal signal.
 
 ### 2. Sweep with cross-store search
 
@@ -75,8 +76,9 @@ round, so an all-shop search takes tens of seconds per phrasing.
 Search engines differ between shops: title vs description matching, silent
 OR-fallback, Cyrillic vs Latin spellings. Each shop's reference describes
 its own. So sweep with several phrasings: English and Macedonian, brand +
-model code, the generic product noun. Leave out glue words (`за`, `со`, `for`,
-`and`): some shops require every word to match.
+model code, the generic product noun. Don't end a query on a glue word
+(`за`, `со`, `for`, `and`): some shops match the last word as a prefix, so
+`laptop and` can find nothing.
 
 Useful flags:
 

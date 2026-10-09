@@ -103,6 +103,11 @@ class KeyRejected(StoreError):
     """The search host answered 401/403 JSON: the public key was rotated or revoked."""
 
 
+class RateLimited(StoreError):
+    """Still HTTP 429 after MAX_TRIES. A StoreError, so optional calls (web-config, the
+    category tree, one detail item) keep their fallbacks; uncaught it exits 3 (blocked)."""
+
+
 QUIET = False
 VERBOSE = False
 
@@ -204,7 +209,7 @@ def _request(method, url, *, auth=False, expect_json=True, allow_404=False, **kw
         if r.status_code == 403:
             raise Blocked(_evidence(r))
         if r.status_code == 429:
-            raise Blocked(f"still HTTP 429 (rate limited) after {MAX_TRIES} tries; " + _evidence(r))
+            raise RateLimited(f"still HTTP 429 (rate limited) after {MAX_TRIES} tries; " + _evidence(r))
         if r.status_code != 200:
             raise StoreError(f"{method} {url[:120]}: HTTP {r.status_code}: {r.text[:200]!r}")
         if expect_json:
@@ -244,8 +249,8 @@ def _rediscover_key():
         hit = _KEY_RE.search(js)
         if hit:
             SEARCH_BASE, SEARCH_KEY = hit.group(1), hit.group(2)
-            warn(f"using search host {SEARCH_BASE} with key {SEARCH_KEY[:8]}... "
-                 "(update SEARCH_BASE/SEARCH_KEY in setec.py)")
+            log(f"using search host {SEARCH_BASE} with key {SEARCH_KEY[:8]}... "
+                "(update SEARCH_BASE/SEARCH_KEY in setec.py)")
             return True
     return False
 
@@ -643,7 +648,7 @@ def resolve_category(arg):
     a = _with_scheme(arg.strip())
     if a.startswith("http"):
         u = urlparse(a)
-        if "setec.mk" not in u.netloc or "/category/" not in u.path:
+        if "setec.mk" not in u.netloc.lower() or "/category/" not in u.path:
             raise UsageError(f"not a setec.mk category URL: {arg}")
         a = unquote(u.path.split("/category/", 1)[1].strip("/").split("/")[0])
     tree = load_tree()
@@ -1183,7 +1188,7 @@ def resolve_products(inputs):
         s = _with_scheme(raw.strip())
         if s.startswith("http"):
             u = urlparse(s)
-            if "setec.mk" not in u.netloc:
+            if "setec.mk" not in u.netloc.lower():
                 out.append([raw, None, "not a setec.mk URL"])
             elif "/products/" in u.path:
                 out.append([raw, unquote(u.path.split("/products/", 1)[1].strip("/").split("/")[0]), None])
@@ -1532,6 +1537,9 @@ def main(argv=None):
     except UsageError as e:
         print(f"ERROR: {e}", file=sys.stderr)
         return 2
+    except RateLimited as e:
+        print(f"BLOCKED: {e}", file=sys.stderr)
+        return 3
     except StoreError as e:
         print(f"ERROR: {e}", file=sys.stderr)
         return 1

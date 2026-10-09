@@ -26,9 +26,10 @@ All public JSON; no cookies or login.
   is the site's menu: 317 nodes with `medusaID` (`pcat_…` id), `slug` (handle) and name.
 - **Web config.** `GET https://setec.mk/api/medusa/web-config` returns `{"order_threshold":3,...}`.
 - **Store locator.** `GET https://setec.mk/api/strapi/page?locale=mk-MK&slug=prodazni-saloni`:
-  `sales_channels[]` with `name`, `title`, `address`, `working_hours`, `contact_info` for 39
-  locations (2026-10-09). Its names differ from the detail API's (`Сетек ГОДИ` vs `СЕТЕК Годи`),
-  so match by town and area. The client does not call it.
+  `sales_channels[]` with `name`, `title`, `address`, `working_hours`, `contact_info` (2026-10-09:
+  36 shops plus head office, service centre and central warehouse). Its names differ from the
+  detail API's (`Сетек ГОДИ` vs `СЕТЕК Годи`); match them by name, not just by town, since some
+  towns have two locations. The client does not call it.
 - **URLs.** `https://setec.mk/products/<handle>` (canonical), `https://setec.mk/category/<handle>`.
 - **Base filter** (the site's own, added by the client): `status = 'published' AND is_web_active = 'true'`.
 
@@ -91,9 +92,11 @@ are banded (`Батерија (mAh)::4000-4999`) and sometimes split across name
 - **Typos.** Typo tolerance is off for `external_id`, `handle`, `id` and
   `variants.catalogue_number`, but on for numbers elsewhere, so a Шифра can also hit a
   description.
-- **Every word must match, glue words included.** On 2026-10-09 `laptop` found 246, `laptop for`
-  14 and `laptop and` 0; `фрижидер` 273, `фрижидер за` 222 and `фрижидер со` 90. Only `и` was
-  ignored. Search with nouns, brands and codes; leave out `за`, `со`, `for`, `and`.
+- **The last word is a prefix.** Glue words (`for`, `and`, `за`, `со`) are ignored anywhere but
+  at the end, where the last word is prefix-matched like any other: on 2026-10-09 `laptop` and
+  `for laptop` found 246, `laptop for gaming` = `laptop gaming` 18, but `laptop for` 14, `laptop
+  an` 21 and `laptop and` 0; `фрижидер со` 90 against `фрижидер` 273. Never end a query on a glue
+  word or a cut-off word.
 - **Codes.** An EAN or the on-site Шифра (`external_id`) finds the product; `detail`
   accepts both.
 - **Ceiling.** Each variant caps at 1,000 hits, and stderr gives the true total.
@@ -147,8 +150,9 @@ are banded (`Батерија (mAh)::4000-4999`) and sometimes split across name
 - **Names:** out-of-Skopje stores by town (СЕТЕК Битола 2); a name without a town is a Skopje
   store (Годи, Стадион, Драчево, Чаир, Ѓорче Петров, ГТЦ, Ми Сторе: all Skopje addresses on the
   store locator, 2026-10-09). Trust the locator's address over its title, which can be wrong
-  (Битола is titled 'Скопје'). `СЕТЕК OUTLET` is not on the locator: say its town is unverified
-  if it decides the answer.
+  (Битола is titled 'Скопје'). Some detail-API locations are not on the locator (`СЕТЕК OUTLET`,
+  `СЕТЕК Струмица 2`, `СЕТЕК Штип 2` on 2026-10-09): give their town from the name, but no
+  address, and say so if it decides the answer.
 - **Quantities:** shop stock is often 1.
 - **Outlet:** `СЕТЕК OUTLET` units are walk-in only and are not counted in
   `total_web_quantity`; the per-location sum exceeds the total by exactly the outlet's
@@ -182,8 +186,9 @@ agents get 200 on HTML pages, the detail API, the Strapi tree and the search hos
 bursts (12 + 8 search, 8 + 6 detail) all 200; 401 without the key. Unknown product pages
 answer a soft 200, which does not matter because the client reads only the JSON APIs. The
 client still runs sequentially, 0.35 s per host, backs off on 429/5xx (honouring
-`Retry-After` up to 60 s), and exits 3 (`BLOCKED:`) on an HTML challenge, a 403, a 429 that
-persists after 4 tries, or HTML where JSON was expected.
+`Retry-After` up to 60 s), and exits 3 (`BLOCKED:`) on an HTML challenge, a 403, HTML where JSON
+was expected, or a 429 that persists after 4 tries on a call it cannot do without (a persistent
+429 on web-config, the category tree or one detail item falls back as for any other error).
 
 ## Setec-only commands
 

@@ -109,7 +109,7 @@ records with a member price.
 Detail records add `warranty` (str/null), `ean`, `specs` (description/spec
 text, whitespace-collapsed), `per_location_stock` (list of
 `{location, in_stock, quantity?}` or null), and `extra` (object for
-store-specific data such as price floors).
+store-specific data such as alternative supplier offers).
 
 ## Behaviour
 
