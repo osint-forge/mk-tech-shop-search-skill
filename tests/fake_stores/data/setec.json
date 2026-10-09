@@ -1,0 +1,979 @@
+[
+{
+"store": "setec",
+"id": "1001",
+"sku": "1001",
+"title": "Samsung Galaxy A56 5G 8GB/128GB Graphite",
+"url": "https://setec.mk/products/samsung-galaxy-a56-5g-8gb-128gb-graphite-1001",
+"brand": "Samsung",
+"price_mkd": 19990,
+"regular_price_mkd": null,
+"in_stock": false,
+"stock_note": "нема на залиха",
+"category": "Мобилни телефони > Паметни телефони",
+"ean": "8806095810011",
+"mpn": null,
+"warranty": "24 месеци",
+"specs": "Samsung Galaxy A56 5G 8GB/128GB Graphite. Fake spec text.",
+"per_location_stock": [
+{
+"location": "Скопје Центар",
+"in_stock": true,
+"quantity": 2
+}
+],
+"extra": {
+"min_web_price_with_vat": 19790
+},
+"attributes": {
+"Категорија": "phone"
+}
+},
+{
+"store": "setec",
+"id": "1002",
+"sku": "1002",
+"title": "Samsung Galaxy A56 5G 8GB/128GB Light Gray",
+"url": "https://setec.mk/products/samsung-galaxy-a56-5g-8gb-128gb-light-gray-1002",
+"brand": "Samsung",
+"price_mkd": 20290,
+"regular_price_mkd": null,
+"in_stock": true,
+"stock_note": "на залиха",
+"category": "Мобилни телефони > Паметни телефони",
+"ean": "8806095810028",
+"mpn": null,
+"warranty": "24 месеци",
+"specs": "Samsung Galaxy A56 5G 8GB/128GB Light Gray. Fake spec text.",
+"per_location_stock": [
+{
+"location": "Скопје Центар",
+"in_stock": true,
+"quantity": 2
+}
+],
+"extra": {
+"min_web_price_with_vat": 20090
+},
+"attributes": {
+"Категорија": "phone"
+}
+},
+{
+"store": "setec",
+"id": "1003",
+"sku": "1003",
+"title": "Samsung Galaxy A56 5G 8GB/256GB Graphite",
+"url": "https://setec.mk/products/samsung-galaxy-a56-5g-8gb-256gb-graphite-1003",
+"brand": "Samsung",
+"price_mkd": 22890,
+"regular_price_mkd": null,
+"in_stock": true,
+"stock_note": "на залиха",
+"category": "Мобилни телефони > Паметни телефони",
+"ean": "8806095810035",
+"mpn": null,
+"warranty": "24 месеци",
+"specs": "Samsung Galaxy A56 5G 8GB/256GB Graphite. Fake spec text.",
+"per_location_stock": [
+{
+"location": "Скопје Центар",
+"in_stock": true,
+"quantity": 2
+}
+],
+"extra": {
+"min_web_price_with_vat": 22690
+},
+"attributes": {
+"Категорија": "phone"
+}
+},
+{
+"store": "setec",
+"id": "1004",
+"sku": "1004",
+"title": "Samsung Galaxy A56 5G 8GB/256GB Pink",
+"url": "https://setec.mk/products/samsung-galaxy-a56-5g-8gb-256gb-pink-1004",
+"brand": "Samsung",
+"price_mkd": 22890,
+"regular_price_mkd": null,
+"in_stock": true,
+"stock_note": "на залиха",
+"category": "Мобилни телефони > Паметни телефони",
+"ean": "8806095810042",
+"mpn": null,
+"warranty": "24 месеци",
+"specs": "Samsung Galaxy A56 5G 8GB/256GB Pink. Fake spec text.",
+"per_location_stock": [
+{
+"location": "Скопје Центар",
+"in_stock": true,
+"quantity": 2
+}
+],
+"extra": {
+"min_web_price_with_vat": 22690
+},
+"attributes": {
+"Категорија": "phone"
+}
+},
+{
+"store": "setec",
+"id": "1005",
+"sku": "1005",
+"title": "Samsung Galaxy A36 5G 6GB/128GB Black",
+"url": "https://setec.mk/products/samsung-galaxy-a36-5g-6gb-128gb-black-1005",
+"brand": "Samsung",
+"price_mkd": 15990,
+"regular_price_mkd": null,
+"in_stock": false,
+"stock_note": "нема на залиха",
+"category": "Мобилни телефони > Паметни телефони",
+"ean": "8806095811001",
+"mpn": null,
+"warranty": "24 месеци",
+"specs": "Samsung Galaxy A36 5G 6GB/128GB Black. Fake spec text.",
+"per_location_stock": [
+{
+"location": "Скопје Центар",
+"in_stock": true,
+"quantity": 2
+}
+],
+"extra": {
+"min_web_price_with_vat": 15790
+},
+"attributes": {
+"Категорија": "phone"
+}
+},
+{
+"store": "setec",
+"id": "1006",
+"sku": "1006",
+"title": "Samsung Galaxy S25 12GB/128GB Navy SM-S931B",
+"url": "https://setec.mk/products/samsung-galaxy-s25-12gb-128gb-navy-sm-s931b-1006",
+"brand": "Samsung",
+"price_mkd": 50090,
+"regular_price_mkd": null,
+"in_stock": true,
+"stock_note": "на залиха",
+"category": "Мобилни телефони > Паметни телефони",
+"ean": "8806095812008",
+"mpn": null,
+"warranty": "24 месеци",
+"specs": "Samsung Galaxy S25 12GB/128GB Navy SM-S931B. Fake spec text.",
+"per_location_stock": [
+{
+"location": "Скопје Центар",
+"in_stock": true,
+"quantity": 2
+}
+],
+"extra": {
+"min_web_price_with_vat": 49890
+},
+"attributes": {
+"Категорија": "phone"
+}
+},
+{
+"store": "setec",
+"id": "1007",
+"sku": "1007",
+"title": "Samsung Galaxy S25 Ultra 12GB/256GB Titanium Black SM-S938B",
+"url": "https://setec.mk/products/samsung-galaxy-s25-ultra-12gb-256gb-titanium-black-sm-s938b-1007",
+"brand": "Samsung",
+"price_mkd": 79990,
+"regular_price_mkd": 80990,
+"in_stock": true,
+"stock_note": "на залиха",
+"category": "Мобилни телефони > Паметни телефони",
+"ean": "8806095813005",
+"mpn": null,
+"warranty": "24 месеци",
+"specs": "Samsung Galaxy S25 Ultra 12GB/256GB Titanium Black SM-S938B. Fake spec text.",
+"per_location_stock": [
+{
+"location": "Скопје Центар",
+"in_stock": true,
+"quantity": 2
+}
+],
+"extra": {
+"min_web_price_with_vat": 79790
+},
+"attributes": {
+"Категорија": "phone"
+}
+},
+{
+"store": "setec",
+"id": "1008",
+"sku": "1008",
+"title": "Apple iPhone 16 128GB Black",
+"url": "https://setec.mk/products/apple-iphone-16-128gb-black-1008",
+"brand": "Apple",
+"price_mkd": 59890,
+"regular_price_mkd": null,
+"in_stock": true,
+"stock_note": "на залиха",
+"category": "Мобилни телефони > Паметни телефони",
+"ean": "0195949821523",
+"mpn": null,
+"warranty": "24 месеци",
+"specs": "Apple iPhone 16 128GB Black. Fake spec text.",
+"per_location_stock": [
+{
+"location": "Скопје Центар",
+"in_stock": true,
+"quantity": 2
+}
+],
+"extra": {
+"min_web_price_with_vat": 59690
+},
+"attributes": {
+"Категорија": "phone"
+}
+},
+{
+"store": "setec",
+"id": "1009",
+"sku": "1009",
+"title": "Apple iPhone 16 Pro 128GB Black Titanium",
+"url": "https://setec.mk/products/apple-iphone-16-pro-128gb-black-titanium-1009",
+"brand": "Apple",
+"price_mkd": 75290,
+"regular_price_mkd": null,
+"in_stock": false,
+"stock_note": "нема на залиха",
+"category": "Мобилни телефони > Паметни телефони",
+"ean": "0195949823015",
+"mpn": null,
+"warranty": "24 месеци",
+"specs": "Apple iPhone 16 Pro 128GB Black Titanium. Fake spec text.",
+"per_location_stock": [
+{
+"location": "Скопје Центар",
+"in_stock": true,
+"quantity": 2
+}
+],
+"extra": {
+"min_web_price_with_vat": 75090
+},
+"attributes": {
+"Категорија": "phone"
+}
+},
+{
+"store": "setec",
+"id": "1010",
+"sku": "1010",
+"title": "Apple iPhone 15 128GB Black",
+"url": "https://setec.mk/products/apple-iphone-15-128gb-black-1010",
+"brand": "Apple",
+"price_mkd": 47990,
+"regular_price_mkd": null,
+"in_stock": true,
+"stock_note": "на залиха",
+"category": "Мобилни телефони > Паметни телефони",
+"ean": "0194253701234",
+"mpn": null,
+"warranty": "24 месеци",
+"specs": "Apple iPhone 15 128GB Black. Fake spec text.",
+"per_location_stock": [
+{
+"location": "Скопје Центар",
+"in_stock": true,
+"quantity": 2
+}
+],
+"extra": {
+"min_web_price_with_vat": 47790
+},
+"attributes": {
+"Категорија": "phone"
+}
+},
+{
+"store": "setec",
+"id": "1011",
+"sku": "1011",
+"title": "Logitech MX Master 3S Performance Wireless Mouse Graphite",
+"url": "https://setec.mk/products/logitech-mx-master-3s-performance-wireless-mouse-graphite-1011",
+"brand": "Logitech",
+"price_mkd": 6390,
+"regular_price_mkd": null,
+"in_stock": true,
+"stock_note": "на залиха",
+"category": "Компјутерска опрема > Глувчиња",
+"ean": "5099206103603",
+"mpn": null,
+"warranty": "24 месеци",
+"specs": "Logitech MX Master 3S Performance Wireless Mouse Graphite. Fake spec text.",
+"per_location_stock": [
+{
+"location": "Скопје Центар",
+"in_stock": true,
+"quantity": 2
+}
+],
+"extra": {
+"min_web_price_with_vat": 6190
+},
+"attributes": {
+"Категорија": "mouse"
+}
+},
+{
+"store": "setec",
+"id": "1012",
+"sku": "1012",
+"title": "Logitech MX Master 3S Performance Wireless Mouse Pale Grey",
+"url": "https://setec.mk/products/logitech-mx-master-3s-performance-wireless-mouse-pale-grey-1012",
+"brand": "Logitech",
+"price_mkd": 6590,
+"regular_price_mkd": null,
+"in_stock": true,
+"stock_note": "на залиха",
+"category": "Компјутерска опрема > Глувчиња",
+"ean": "5099206103610",
+"mpn": null,
+"warranty": "24 месеци",
+"specs": "Logitech MX Master 3S Performance Wireless Mouse Pale Grey. Fake spec text.",
+"per_location_stock": [
+{
+"location": "Скопје Центар",
+"in_stock": true,
+"quantity": 2
+}
+],
+"extra": {
+"min_web_price_with_vat": 6390
+},
+"attributes": {
+"Категорија": "mouse"
+}
+},
+{
+"store": "setec",
+"id": "1013",
+"sku": "1013",
+"title": "Logitech MX Anywhere 3S Graphite",
+"url": "https://setec.mk/products/logitech-mx-anywhere-3s-graphite-1013",
+"brand": "Logitech",
+"price_mkd": 4890,
+"regular_price_mkd": 5390,
+"in_stock": true,
+"stock_note": "на залиха",
+"category": "Компјутерска опрема > Глувчиња",
+"ean": "5099206110809",
+"mpn": null,
+"warranty": "24 месеци",
+"specs": "Logitech MX Anywhere 3S Graphite. Fake spec text.",
+"per_location_stock": [
+{
+"location": "Скопје Центар",
+"in_stock": true,
+"quantity": 2
+}
+],
+"extra": {
+"min_web_price_with_vat": 4690
+},
+"attributes": {
+"Категорија": "mouse"
+}
+},
+{
+"store": "setec",
+"id": "1014",
+"sku": "1014",
+"title": "Logitech MX Master 3 Graphite",
+"url": "https://setec.mk/products/logitech-mx-master-3-graphite-1014",
+"brand": "Logitech",
+"price_mkd": 5490,
+"regular_price_mkd": null,
+"in_stock": true,
+"stock_note": "на залиха",
+"category": "Компјутерска опрема > Глувчиња",
+"ean": "5099206092235",
+"mpn": null,
+"warranty": "24 месеци",
+"specs": "Logitech MX Master 3 Graphite. Fake spec text.",
+"per_location_stock": [
+{
+"location": "Скопје Центар",
+"in_stock": true,
+"quantity": 2
+}
+],
+"extra": {
+"min_web_price_with_vat": 5290
+},
+"attributes": {
+"Категорија": "mouse"
+}
+},
+{
+"store": "setec",
+"id": "1015",
+"sku": "1015",
+"title": "Samsung QE55Q60DAUXXH 55\" QLED 4K Smart TV",
+"url": "https://setec.mk/products/samsung-qe55q60dauxxh-55-qled-4k-smart-tv-1015",
+"brand": "Samsung",
+"price_mkd": 37990,
+"regular_price_mkd": null,
+"in_stock": true,
+"stock_note": "на залиха",
+"category": "Телевизори > QLED и OLED",
+"ean": "8806095565836",
+"mpn": null,
+"warranty": "24 месеци",
+"specs": "Samsung QE55Q60DAUXXH 55\" QLED 4K Smart TV. Fake spec text.",
+"per_location_stock": [
+{
+"location": "Скопје Центар",
+"in_stock": true,
+"quantity": 2
+}
+],
+"extra": {
+"min_web_price_with_vat": 37790
+},
+"attributes": {
+"Категорија": "tv"
+}
+},
+{
+"store": "setec",
+"id": "1016",
+"sku": "1016",
+"title": "Samsung QE65Q60DAUXXH 65\" QLED 4K Smart TV",
+"url": "https://setec.mk/products/samsung-qe65q60dauxxh-65-qled-4k-smart-tv-1016",
+"brand": "Samsung",
+"price_mkd": 52890,
+"regular_price_mkd": null,
+"in_stock": false,
+"stock_note": "нема на залиха",
+"category": "Телевизори > QLED и OLED",
+"ean": "8806095565843",
+"mpn": null,
+"warranty": "24 месеци",
+"specs": "Samsung QE65Q60DAUXXH 65\" QLED 4K Smart TV. Fake spec text.",
+"per_location_stock": [
+{
+"location": "Скопје Центар",
+"in_stock": true,
+"quantity": 2
+}
+],
+"extra": {
+"min_web_price_with_vat": 52690
+},
+"attributes": {
+"Категорија": "tv"
+}
+},
+{
+"store": "setec",
+"id": "1017",
+"sku": "1017",
+"title": "LG OLED55C44LA 55\" OLED evo 4K Smart TV",
+"url": "https://setec.mk/products/lg-oled55c44la-55-oled-evo-4k-smart-tv-1017",
+"brand": "LG",
+"price_mkd": 80290,
+"regular_price_mkd": 81290,
+"in_stock": true,
+"stock_note": "на залиха",
+"category": "Телевизори > QLED и OLED",
+"ean": "8806091975123",
+"mpn": null,
+"warranty": "24 месеци",
+"specs": "LG OLED55C44LA 55\" OLED evo 4K Smart TV. Fake spec text.",
+"per_location_stock": [
+{
+"location": "Скопје Центар",
+"in_stock": true,
+"quantity": 2
+}
+],
+"extra": {
+"min_web_price_with_vat": 80090
+},
+"attributes": {
+"Категорија": "tv"
+}
+},
+{
+"store": "setec",
+"id": "1018",
+"sku": "1018",
+"title": "Crucial P3 Plus 1TB M.2 NVMe PCIe Gen4 SSD CT1000P3PSSD8",
+"url": "https://setec.mk/products/crucial-p3-plus-1tb-m-2-nvme-pcie-gen4-ssd-ct1000p3pssd8-1018",
+"brand": "Crucial",
+"price_mkd": 4390,
+"regular_price_mkd": 5390,
+"in_stock": true,
+"stock_note": "на залиха",
+"category": "Компјутерски компоненти > SSD дискови",
+"ean": "0649528918796",
+"mpn": null,
+"warranty": "24 месеци",
+"specs": "Crucial P3 Plus 1TB M.2 NVMe PCIe Gen4 SSD CT1000P3PSSD8. Fake spec text.",
+"per_location_stock": [
+{
+"location": "Скопје Центар",
+"in_stock": true,
+"quantity": 2
+}
+],
+"extra": {
+"min_web_price_with_vat": 4190
+},
+"attributes": {
+"Категорија": "ssd"
+}
+},
+{
+"store": "setec",
+"id": "1019",
+"sku": "1019",
+"title": "Crucial P3 Plus 2TB M.2 NVMe PCIe Gen4 SSD CT2000P3PSSD8",
+"url": "https://setec.mk/products/crucial-p3-plus-2tb-m-2-nvme-pcie-gen4-ssd-ct2000p3pssd8-1019",
+"brand": "Crucial",
+"price_mkd": 7790,
+"regular_price_mkd": null,
+"in_stock": true,
+"stock_note": "на залиха",
+"category": "Компјутерски компоненти > SSD дискови",
+"ean": "0649528918802",
+"mpn": null,
+"warranty": "24 месеци",
+"specs": "Crucial P3 Plus 2TB M.2 NVMe PCIe Gen4 SSD CT2000P3PSSD8. Fake spec text.",
+"per_location_stock": [
+{
+"location": "Скопје Центар",
+"in_stock": true,
+"quantity": 2
+}
+],
+"extra": {
+"min_web_price_with_vat": 7590
+},
+"attributes": {
+"Категорија": "ssd"
+}
+},
+{
+"store": "setec",
+"id": "1020",
+"sku": "1020",
+"title": "Crucial P3 1TB M.2 NVMe PCIe Gen3 SSD CT1000P3SSD8",
+"url": "https://setec.mk/products/crucial-p3-1tb-m-2-nvme-pcie-gen3-ssd-ct1000p3ssd8-1020",
+"brand": "Crucial",
+"price_mkd": 4090,
+"regular_price_mkd": null,
+"in_stock": true,
+"stock_note": "на залиха",
+"category": "Компјутерски компоненти > SSD дискови",
+"ean": "0649528918789",
+"mpn": null,
+"warranty": "24 месеци",
+"specs": "Crucial P3 1TB M.2 NVMe PCIe Gen3 SSD CT1000P3SSD8. Fake spec text.",
+"per_location_stock": [
+{
+"location": "Скопје Центар",
+"in_stock": true,
+"quantity": 2
+}
+],
+"extra": {
+"min_web_price_with_vat": 3890
+},
+"attributes": {
+"Категорија": "ssd"
+}
+},
+{
+"store": "setec",
+"id": "1021",
+"sku": "1021",
+"title": "Samsung 990 PRO 2TB NVMe M.2 SSD MZ-V9P2T0BW",
+"url": "https://setec.mk/products/samsung-990-pro-2tb-nvme-m-2-ssd-mz-v9p2t0bw-1021",
+"brand": "Samsung",
+"price_mkd": 11890,
+"regular_price_mkd": 12390,
+"in_stock": false,
+"stock_note": "нема на залиха",
+"category": "Компјутерски компоненти > SSD дискови",
+"ean": "8806094215038",
+"mpn": null,
+"warranty": "24 месеци",
+"specs": "Samsung 990 PRO 2TB NVMe M.2 SSD MZ-V9P2T0BW. Fake spec text.",
+"per_location_stock": [
+{
+"location": "Скопје Центар",
+"in_stock": true,
+"quantity": 2
+}
+],
+"extra": {
+"min_web_price_with_vat": 11690
+},
+"attributes": {
+"Категорија": "ssd"
+}
+},
+{
+"store": "setec",
+"id": "1022",
+"sku": "1022",
+"title": "Beko WUE 8622 B перална машина 8kg 1200 вртежи",
+"url": "https://setec.mk/products/beko-wue-8622-b-8kg-1200-1022",
+"brand": "Beko",
+"price_mkd": 21990,
+"regular_price_mkd": 22990,
+"in_stock": true,
+"stock_note": "на залиха",
+"category": "Бела техника > Перални машини",
+"ean": "8690842512345",
+"mpn": null,
+"warranty": "24 месеци",
+"specs": "Beko WUE 8622 B перална машина 8kg 1200 вртежи. Fake spec text.",
+"per_location_stock": [
+{
+"location": "Скопје Центар",
+"in_stock": true,
+"quantity": 2
+}
+],
+"extra": {
+"min_web_price_with_vat": 21790
+},
+"attributes": {
+"Категорија": "washer"
+}
+},
+{
+"store": "setec",
+"id": "1023",
+"sku": "1023",
+"title": "Gorenje WNEI84APS перална машина 8kg",
+"url": "https://setec.mk/products/gorenje-wnei84aps-8kg-1023",
+"brand": "Gorenje",
+"price_mkd": 24890,
+"regular_price_mkd": null,
+"in_stock": true,
+"stock_note": "на залиха",
+"category": "Бела техника > Перални машини",
+"ean": "3838782612345",
+"mpn": null,
+"warranty": "24 месеци",
+"specs": "Gorenje WNEI84APS перална машина 8kg. Fake spec text.",
+"per_location_stock": [
+{
+"location": "Скопје Центар",
+"in_stock": true,
+"quantity": 2
+}
+],
+"extra": {
+"min_web_price_with_vat": 24690
+},
+"attributes": {
+"Категорија": "washer"
+}
+},
+{
+"store": "setec",
+"id": "1024",
+"sku": "1024",
+"title": "Xiaomi Robot Vacuum S20+ White",
+"url": "https://setec.mk/products/xiaomi-robot-vacuum-s20-white-1024",
+"brand": "Xiaomi",
+"price_mkd": 17890,
+"regular_price_mkd": 18890,
+"in_stock": true,
+"stock_note": "на залиха",
+"category": "Мали апарати > Правосмукалки",
+"ean": "6941812789123",
+"mpn": null,
+"warranty": "24 месеци",
+"specs": "Xiaomi Robot Vacuum S20+ White. Fake spec text.",
+"per_location_stock": [
+{
+"location": "Скопје Центар",
+"in_stock": true,
+"quantity": 2
+}
+],
+"extra": {
+"min_web_price_with_vat": 17690
+},
+"attributes": {
+"Категорија": "vacuum"
+}
+},
+{
+"store": "setec",
+"id": "1025",
+"sku": "1025",
+"title": "Xiaomi Robot Vacuum S20 Black",
+"url": "https://setec.mk/products/xiaomi-robot-vacuum-s20-black-1025",
+"brand": "Xiaomi",
+"price_mkd": 12990,
+"regular_price_mkd": null,
+"in_stock": false,
+"stock_note": "нема на залиха",
+"category": "Мали апарати > Правосмукалки",
+"ean": "6941812789000",
+"mpn": null,
+"warranty": "24 месеци",
+"specs": "Xiaomi Robot Vacuum S20 Black. Fake spec text.",
+"per_location_stock": [
+{
+"location": "Скопје Центар",
+"in_stock": true,
+"quantity": 2
+}
+],
+"extra": {
+"min_web_price_with_vat": 12790
+},
+"attributes": {
+"Категорија": "vacuum"
+}
+},
+{
+"store": "setec",
+"id": "1026",
+"sku": "1026",
+"title": "ASUS TUF Gaming GeForce RTX 4070 Ti SUPER OC 16GB GDDR6X",
+"url": "https://setec.mk/products/asus-tuf-gaming-geforce-rtx-4070-ti-super-oc-16gb-gddr6x-1026",
+"brand": "ASUS",
+"price_mkd": 56090,
+"regular_price_mkd": null,
+"in_stock": true,
+"stock_note": "на залиха",
+"category": "Компјутерски компоненти > Графички картички",
+"ean": "4711387376543",
+"mpn": null,
+"warranty": "24 месеци",
+"specs": "ASUS TUF Gaming GeForce RTX 4070 Ti SUPER OC 16GB GDDR6X. Fake spec text.",
+"per_location_stock": [
+{
+"location": "Скопје Центар",
+"in_stock": true,
+"quantity": 2
+}
+],
+"extra": {
+"min_web_price_with_vat": 55890
+},
+"attributes": {
+"Категорија": "gpu"
+}
+},
+{
+"store": "setec",
+"id": "1027",
+"sku": "1027",
+"title": "ASUS TUF Gaming GeForce RTX 4070 SUPER OC 12GB GDDR6X",
+"url": "https://setec.mk/products/asus-tuf-gaming-geforce-rtx-4070-super-oc-12gb-gddr6x-1027",
+"brand": "ASUS",
+"price_mkd": 45890,
+"regular_price_mkd": 46390,
+"in_stock": true,
+"stock_note": "на залиха",
+"category": "Компјутерски компоненти > Графички картички",
+"ean": "4711387376000",
+"mpn": null,
+"warranty": "24 месеци",
+"specs": "ASUS TUF Gaming GeForce RTX 4070 SUPER OC 12GB GDDR6X. Fake spec text.",
+"per_location_stock": [
+{
+"location": "Скопје Центар",
+"in_stock": true,
+"quantity": 2
+}
+],
+"extra": {
+"min_web_price_with_vat": 45690
+},
+"attributes": {
+"Категорија": "gpu"
+}
+},
+{
+"store": "setec",
+"id": "1028",
+"sku": "1028",
+"title": "Nintendo Switch 2 конзола",
+"url": "https://setec.mk/products/nintendo-switch-2-1028",
+"brand": "Nintendo",
+"price_mkd": 32290,
+"regular_price_mkd": 32790,
+"in_stock": false,
+"stock_note": "нема на залиха",
+"category": "Гејминг > Конзоли",
+"ean": "0045496884321",
+"mpn": null,
+"warranty": "24 месеци",
+"specs": "Nintendo Switch 2 конзола. Fake spec text.",
+"per_location_stock": [
+{
+"location": "Скопје Центар",
+"in_stock": true,
+"quantity": 2
+}
+],
+"extra": {
+"min_web_price_with_vat": 32090
+},
+"attributes": {
+"Категорија": "console"
+}
+},
+{
+"store": "setec",
+"id": "1029",
+"sku": "1029",
+"title": "Nintendo Switch OLED White",
+"url": "https://setec.mk/products/nintendo-switch-oled-white-1029",
+"brand": "Nintendo",
+"price_mkd": 21890,
+"regular_price_mkd": 22890,
+"in_stock": true,
+"stock_note": "на залиха",
+"category": "Гејминг > Конзоли",
+"ean": "0045496453435",
+"mpn": null,
+"warranty": "24 месеци",
+"specs": "Nintendo Switch OLED White. Fake spec text.",
+"per_location_stock": [
+{
+"location": "Скопје Центар",
+"in_stock": true,
+"quantity": 2
+}
+],
+"extra": {
+"min_web_price_with_vat": 21690
+},
+"attributes": {
+"Категорија": "console"
+}
+},
+{
+"store": "setec",
+"id": "G101",
+"sku": "G101",
+"title": "SONY WHULT900NB.CE7",
+"url": "https://setec.mk/products/sony-whult900nbce7-G101",
+"brand": "SONY",
+"price_mkd": 8929,
+"regular_price_mkd": 11390,
+"in_stock": true,
+"stock_note": "на залиха",
+"category": "Аудио > Bluetooth слушалки",
+"ean": "4548736156432",
+"mpn": null,
+"warranty": "24 месеци",
+"specs": "SONY WHULT900NB.CE7, Wireless BLUETOOTH Noise Canceling Headphones, Up to 30 hours of playback time, Black",
+"per_location_stock": null,
+"extra": null,
+"attributes": {
+"Боја": "Црна"
+}
+},
+{
+"store": "setec",
+"id": "G102",
+"sku": "G102",
+"title": "SONY WHULT900NH.CE7",
+"url": "https://setec.mk/products/sony-whult900nhce7-G102",
+"brand": "SONY",
+"price_mkd": 8929,
+"regular_price_mkd": null,
+"in_stock": true,
+"stock_note": "на залиха",
+"category": "Аудио > Bluetooth слушалки",
+"ean": "4548736156449",
+"mpn": null,
+"warranty": "24 месеци",
+"specs": "SONY WHULT900NH.CE7.",
+"per_location_stock": null,
+"extra": null,
+"attributes": {
+"Боја": "Сива"
+}
+},
+{
+"store": "setec",
+"id": "G108",
+"sku": "G108",
+"title": "JBL T770NC Wireless Over-Ear Headphones Black",
+"url": "https://setec.mk/products/jbl-t770nc-wireless-over-ear-headphones-black-G108",
+"brand": "JBL",
+"price_mkd": 4999,
+"regular_price_mkd": null,
+"in_stock": true,
+"stock_note": "на залиха",
+"category": "Аудио > Слушалки",
+"ean": "6925281974571",
+"mpn": null,
+"warranty": "24 месеци",
+"specs": "JBL T770NC Wireless Over-Ear Headphones Black.",
+"per_location_stock": null,
+"extra": null
+},
+{
+"store": "setec",
+"id": "G301",
+"sku": "G301",
+"title": "SONY WH1000XM5L.CE7 ( Midnight Blue )",
+"url": "https://setec.mk/products/sony-wh1000xm5lce7-midnight-blue-G301",
+"brand": "SONY",
+"price_mkd": 19599,
+"regular_price_mkd": null,
+"in_stock": true,
+"stock_note": "на залиха",
+"category": "Аудио > Bluetooth слушалки",
+"ean": "4548736134294",
+"mpn": null,
+"warranty": "24 месеци",
+"specs": "SONY WH1000XM5L.CE7 ( Midnight Blue ), Overhead Wireless Noise Cancelling Headphones, 4 Hz - 40.000 Hz, Wireless freedom with BLUETOOTH, Speak-to-chat",
+"per_location_stock": null,
+"extra": null,
+"attributes": {
+"Боја": "Сина"
+}
+},
+{
+"store": "setec",
+"id": "G304",
+"sku": "G304",
+"title": "SONY WH1000XM5S.CE7 ( Platinum Silver )",
+"url": "https://setec.mk/products/sony-wh1000xm5sce7-platinum-silver-G304",
+"brand": "SONY",
+"price_mkd": 19599,
+"regular_price_mkd": null,
+"in_stock": true,
+"stock_note": "на залиха",
+"category": "Аудио > Bluetooth слушалки",
+"ean": "4548736132597",
+"mpn": null,
+"warranty": "24 месеци",
+"specs": "SONY WH1000XM5S.CE7 ( Platinum Silver ), Overhead Wireless Noise Cancelling Headphones, 4 Hz - 40.000 Hz, Wireless freedom with BLUETOOTH, Speak-to-chat",
+"per_location_stock": null,
+"extra": null,
+"attributes": {
+"Боја": "Беж"
+}
+}
+]

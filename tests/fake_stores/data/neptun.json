@@ -1,0 +1,1022 @@
+[
+{
+"store": "neptun",
+"id": "1030",
+"sku": "84101030",
+"title": "SAMSUNG GALAXY A56 5G 8/128GB GRAPHITE",
+"url": "https://www.neptun.mk/categories/samsung-galaxy-a56-5g-8-128gb-graphite-1030",
+"brand": "SAMSUNG",
+"price_mkd": 20190,
+"regular_price_mkd": 20690,
+"in_stock": false,
+"stock_note": "нема на залиха",
+"category": "Мобилни телефони > Паметни телефони",
+"ean": "8806095810011",
+"mpn": null,
+"warranty": "24 месеци",
+"specs": "SAMSUNG GALAXY A56 5G 8/128GB GRAPHITE. Fake spec text.",
+"per_location_stock": [
+{
+"location": "Скопје Центар",
+"in_stock": true,
+"quantity": 2
+}
+],
+"extra": null,
+"attributes": {
+"Категорија": "phone"
+}
+},
+{
+"store": "neptun",
+"id": "1031",
+"sku": "84101031",
+"title": "SAMSUNG GALAXY A56 5G 8/128GB LIGHT GRAY",
+"url": "https://www.neptun.mk/categories/samsung-galaxy-a56-5g-8-128gb-light-gray-1031",
+"brand": "SAMSUNG",
+"price_mkd": 20490,
+"regular_price_mkd": null,
+"in_stock": true,
+"stock_note": "на залиха",
+"category": "Мобилни телефони > Паметни телефони",
+"ean": "8806095810028",
+"mpn": null,
+"warranty": "24 месеци",
+"specs": "SAMSUNG GALAXY A56 5G 8/128GB LIGHT GRAY. Fake spec text.",
+"per_location_stock": [
+{
+"location": "Скопје Центар",
+"in_stock": true,
+"quantity": 2
+}
+],
+"extra": null,
+"attributes": {
+"Категорија": "phone"
+}
+},
+{
+"store": "neptun",
+"id": "1032",
+"sku": "84101032",
+"title": "SAMSUNG GALAXY A56 5G 8/256GB GRAPHITE",
+"url": "https://www.neptun.mk/categories/samsung-galaxy-a56-5g-8-256gb-graphite-1032",
+"brand": "SAMSUNG",
+"price_mkd": 23490,
+"regular_price_mkd": 23990,
+"in_stock": false,
+"stock_note": "нема на залиха",
+"category": "Мобилни телефони > Паметни телефони",
+"ean": "8806095810035",
+"mpn": null,
+"warranty": "24 месеци",
+"specs": "SAMSUNG GALAXY A56 5G 8/256GB GRAPHITE. Fake spec text.",
+"per_location_stock": [
+{
+"location": "Скопје Центар",
+"in_stock": true,
+"quantity": 2
+}
+],
+"extra": null,
+"attributes": {
+"Категорија": "phone"
+}
+},
+{
+"store": "neptun",
+"id": "1033",
+"sku": "84101033",
+"title": "SAMSUNG GALAXY A56 5G 8/256GB PINK",
+"url": "https://www.neptun.mk/categories/samsung-galaxy-a56-5g-8-256gb-pink-1033",
+"brand": "SAMSUNG",
+"price_mkd": 23190,
+"regular_price_mkd": 24190,
+"in_stock": true,
+"stock_note": "на залиха",
+"category": "Мобилни телефони > Паметни телефони",
+"ean": "8806095810042",
+"mpn": null,
+"warranty": "24 месеци",
+"specs": "SAMSUNG GALAXY A56 5G 8/256GB PINK. Fake spec text.",
+"per_location_stock": [
+{
+"location": "Скопје Центар",
+"in_stock": true,
+"quantity": 2
+}
+],
+"extra": null,
+"attributes": {
+"Категорија": "phone"
+}
+},
+{
+"store": "neptun",
+"id": "1034",
+"sku": "84101034",
+"title": "SAMSUNG GALAXY A36 5G 6/128GB BLACK",
+"url": "https://www.neptun.mk/categories/samsung-galaxy-a36-5g-6-128gb-black-1034",
+"brand": "SAMSUNG",
+"price_mkd": 16190,
+"regular_price_mkd": 17190,
+"in_stock": true,
+"stock_note": "на залиха",
+"category": "Мобилни телефони > Паметни телефони",
+"ean": "8806095811001",
+"mpn": null,
+"warranty": "24 месеци",
+"specs": "SAMSUNG GALAXY A36 5G 6/128GB BLACK. Fake spec text.",
+"per_location_stock": [
+{
+"location": "Скопје Центар",
+"in_stock": true,
+"quantity": 2
+}
+],
+"extra": null,
+"attributes": {
+"Категорија": "phone"
+}
+},
+{
+"store": "neptun",
+"id": "1035",
+"sku": "84101035",
+"title": "SAMSUNG GALAXY S25 12/128GB NAVY",
+"url": "https://www.neptun.mk/categories/samsung-galaxy-s25-12-128gb-navy-1035",
+"brand": "SAMSUNG",
+"price_mkd": 50190,
+"regular_price_mkd": null,
+"in_stock": false,
+"stock_note": "нема на залиха",
+"category": "Мобилни телефони > Паметни телефони",
+"ean": "8806095812008",
+"mpn": null,
+"warranty": "24 месеци",
+"specs": "SAMSUNG GALAXY S25 12/128GB NAVY. Fake spec text.",
+"per_location_stock": [
+{
+"location": "Скопје Центар",
+"in_stock": true,
+"quantity": 2
+}
+],
+"extra": null,
+"attributes": {
+"Категорија": "phone"
+}
+},
+{
+"store": "neptun",
+"id": "1036",
+"sku": "84101036",
+"title": "SAMSUNG GALAXY S25 ULTRA 12/256GB TITANIUM BLACK",
+"url": "https://www.neptun.mk/categories/samsung-galaxy-s25-ultra-12-256gb-titanium-black-1036",
+"brand": "SAMSUNG",
+"price_mkd": 80190,
+"regular_price_mkd": null,
+"in_stock": true,
+"stock_note": "на залиха",
+"category": "Мобилни телефони > Паметни телефони",
+"ean": "8806095813005",
+"mpn": null,
+"warranty": "24 месеци",
+"specs": "SAMSUNG GALAXY S25 ULTRA 12/256GB TITANIUM BLACK. Fake spec text.",
+"per_location_stock": [
+{
+"location": "Скопје Центар",
+"in_stock": true,
+"quantity": 2
+}
+],
+"extra": null,
+"attributes": {
+"Категорија": "phone"
+}
+},
+{
+"store": "neptun",
+"id": "1037",
+"sku": "84101037",
+"title": "APPLE IPHONE 16 128GB BLACK",
+"url": "https://www.neptun.mk/categories/apple-iphone-16-128gb-black-1037",
+"brand": "APPLE",
+"price_mkd": 60190,
+"regular_price_mkd": null,
+"in_stock": false,
+"stock_note": "нема на залиха",
+"category": "Мобилни телефони > Паметни телефони",
+"ean": "0195949821523",
+"mpn": null,
+"warranty": "24 месеци",
+"specs": "APPLE IPHONE 16 128GB BLACK. Fake spec text.",
+"per_location_stock": [
+{
+"location": "Скопје Центар",
+"in_stock": true,
+"quantity": 2
+}
+],
+"extra": null,
+"attributes": {
+"Категорија": "phone"
+}
+},
+{
+"store": "neptun",
+"id": "1038",
+"sku": "84101038",
+"title": "APPLE IPHONE 16 PRO 128GB BLACK TITANIUM",
+"url": "https://www.neptun.mk/categories/apple-iphone-16-pro-128gb-black-titanium-1038",
+"brand": "APPLE",
+"price_mkd": 75290,
+"regular_price_mkd": 76290,
+"in_stock": true,
+"stock_note": "на залиха",
+"category": "Мобилни телефони > Паметни телефони",
+"ean": "0195949823015",
+"mpn": null,
+"warranty": "24 месеци",
+"specs": "APPLE IPHONE 16 PRO 128GB BLACK TITANIUM. Fake spec text.",
+"per_location_stock": [
+{
+"location": "Скопје Центар",
+"in_stock": true,
+"quantity": 2
+}
+],
+"extra": null,
+"attributes": {
+"Категорија": "phone"
+}
+},
+{
+"store": "neptun",
+"id": "1039",
+"sku": "84101039",
+"title": "APPLE IPHONE 15 128GB BLACK",
+"url": "https://www.neptun.mk/categories/apple-iphone-15-128gb-black-1039",
+"brand": "APPLE",
+"price_mkd": 48190,
+"regular_price_mkd": 49190,
+"in_stock": false,
+"stock_note": "нема на залиха",
+"category": "Мобилни телефони > Паметни телефони",
+"ean": "0194253701234",
+"mpn": null,
+"warranty": "24 месеци",
+"specs": "APPLE IPHONE 15 128GB BLACK. Fake spec text.",
+"per_location_stock": [
+{
+"location": "Скопје Центар",
+"in_stock": true,
+"quantity": 2
+}
+],
+"extra": null,
+"attributes": {
+"Категорија": "phone"
+}
+},
+{
+"store": "neptun",
+"id": "1040",
+"sku": "84101040",
+"title": "LOGITECH MX MASTER 3S GRAPHITE",
+"url": "https://www.neptun.mk/categories/logitech-mx-master-3s-graphite-1040",
+"brand": "LOGITECH",
+"price_mkd": 6590,
+"regular_price_mkd": 7090,
+"in_stock": true,
+"stock_note": "на залиха",
+"category": "Компјутерска опрема > Глувчиња",
+"ean": "5099206103603",
+"mpn": null,
+"warranty": "24 месеци",
+"specs": "LOGITECH MX MASTER 3S GRAPHITE. Fake spec text.",
+"per_location_stock": [
+{
+"location": "Скопје Центар",
+"in_stock": true,
+"quantity": 2
+}
+],
+"extra": null,
+"attributes": {
+"Категорија": "mouse"
+}
+},
+{
+"store": "neptun",
+"id": "1041",
+"sku": "84101041",
+"title": "Logitech MX Master 3S Performance Wireless Mouse Pale Grey",
+"url": "https://www.neptun.mk/categories/logitech-mx-master-3s-performance-wireless-mouse-pale-grey-1041",
+"brand": "LOGITECH",
+"price_mkd": 6590,
+"regular_price_mkd": 7090,
+"in_stock": false,
+"stock_note": "нема на залиха",
+"category": "Компјутерска опрема > Глувчиња",
+"ean": "5099206103610",
+"mpn": null,
+"warranty": "24 месеци",
+"specs": "Logitech MX Master 3S Performance Wireless Mouse Pale Grey. Fake spec text.",
+"per_location_stock": [
+{
+"location": "Скопје Центар",
+"in_stock": true,
+"quantity": 2
+}
+],
+"extra": null,
+"attributes": {
+"Категорија": "mouse"
+}
+},
+{
+"store": "neptun",
+"id": "1042",
+"sku": "84101042",
+"title": "Logitech MX Anywhere 3S Graphite",
+"url": "https://www.neptun.mk/categories/logitech-mx-anywhere-3s-graphite-1042",
+"brand": "LOGITECH",
+"price_mkd": 5490,
+"regular_price_mkd": 6490,
+"in_stock": true,
+"stock_note": "на залиха",
+"category": "Компјутерска опрема > Глувчиња",
+"ean": "5099206110809",
+"mpn": null,
+"warranty": "24 месеци",
+"specs": "Logitech MX Anywhere 3S Graphite. Fake spec text.",
+"per_location_stock": [
+{
+"location": "Скопје Центар",
+"in_stock": true,
+"quantity": 2
+}
+],
+"extra": null,
+"attributes": {
+"Категорија": "mouse"
+}
+},
+{
+"store": "neptun",
+"id": "1043",
+"sku": "84101043",
+"title": "SAMSUNG QLED TV QE55Q60DAUXXH",
+"url": "https://www.neptun.mk/categories/samsung-qled-tv-qe55q60dauxxh-1043",
+"brand": "SAMSUNG",
+"price_mkd": 38190,
+"regular_price_mkd": null,
+"in_stock": true,
+"stock_note": "на залиха",
+"category": "Телевизори > QLED и OLED",
+"ean": "8806095565836",
+"mpn": null,
+"warranty": "24 месеци",
+"specs": "SAMSUNG QLED TV QE55Q60DAUXXH. Fake spec text.",
+"per_location_stock": [
+{
+"location": "Скопје Центар",
+"in_stock": true,
+"quantity": 2
+}
+],
+"extra": null,
+"attributes": {
+"Категорија": "tv"
+}
+},
+{
+"store": "neptun",
+"id": "1044",
+"sku": "84101044",
+"title": "SAMSUNG QLED TV QE65Q60DAUXXH",
+"url": "https://www.neptun.mk/categories/samsung-qled-tv-qe65q60dauxxh-1044",
+"brand": "SAMSUNG",
+"price_mkd": 53490,
+"regular_price_mkd": null,
+"in_stock": true,
+"stock_note": "на залиха",
+"category": "Телевизори > QLED и OLED",
+"ean": "8806095565843",
+"mpn": null,
+"warranty": "24 месеци",
+"specs": "SAMSUNG QLED TV QE65Q60DAUXXH. Fake spec text.",
+"per_location_stock": [
+{
+"location": "Скопје Центар",
+"in_stock": true,
+"quantity": 2
+}
+],
+"extra": null,
+"attributes": {
+"Категорија": "tv"
+}
+},
+{
+"store": "neptun",
+"id": "1045",
+"sku": "84101045",
+"title": "LG OLED TV OLED55C44LA",
+"url": "https://www.neptun.mk/categories/lg-oled-tv-oled55c44la-1045",
+"brand": "LG",
+"price_mkd": 80290,
+"regular_price_mkd": null,
+"in_stock": true,
+"stock_note": "на залиха",
+"category": "Телевизори > QLED и OLED",
+"ean": "8806091975123",
+"mpn": null,
+"warranty": "24 месеци",
+"specs": "LG OLED TV OLED55C44LA. Fake spec text.",
+"per_location_stock": [
+{
+"location": "Скопје Центар",
+"in_stock": true,
+"quantity": 2
+}
+],
+"extra": null,
+"attributes": {
+"Категорија": "tv"
+}
+},
+{
+"store": "neptun",
+"id": "1046",
+"sku": "84101046",
+"title": "BEKO ПЕРАЛНА МАШИНА WUE 8622 B",
+"url": "https://www.neptun.mk/categories/beko-wue-8622-b-1046",
+"brand": "BEKO",
+"price_mkd": 22190,
+"regular_price_mkd": null,
+"in_stock": true,
+"stock_note": "на залиха",
+"category": "Бела техника > Перални машини",
+"ean": "8690842512345",
+"mpn": null,
+"warranty": "24 месеци",
+"specs": "BEKO ПЕРАЛНА МАШИНА WUE 8622 B. Fake spec text.",
+"per_location_stock": [
+{
+"location": "Скопје Центар",
+"in_stock": true,
+"quantity": 2
+}
+],
+"extra": null,
+"attributes": {
+"Категорија": "washer"
+}
+},
+{
+"store": "neptun",
+"id": "1047",
+"sku": "84101047",
+"title": "GORENJE ПЕРАЛНА МАШИНА WNEI84APS",
+"url": "https://www.neptun.mk/categories/gorenje-wnei84aps-1047",
+"brand": "GORENJE",
+"price_mkd": 25290,
+"regular_price_mkd": 25790,
+"in_stock": true,
+"stock_note": "на залиха",
+"category": "Бела техника > Перални машини",
+"ean": "3838782612345",
+"mpn": null,
+"warranty": "24 месеци",
+"specs": "GORENJE ПЕРАЛНА МАШИНА WNEI84APS. Fake spec text.",
+"per_location_stock": [
+{
+"location": "Скопје Центар",
+"in_stock": true,
+"quantity": 2
+}
+],
+"extra": null,
+"attributes": {
+"Категорија": "washer"
+}
+},
+{
+"store": "neptun",
+"id": "1048",
+"sku": "84101048",
+"title": "XIAOMI ROBOT VACUUM S20+ БЕЛА",
+"url": "https://www.neptun.mk/categories/xiaomi-robot-vacuum-s20-1048",
+"brand": "XIAOMI",
+"price_mkd": 18190,
+"regular_price_mkd": null,
+"in_stock": false,
+"stock_note": "нема на залиха",
+"category": "Мали апарати > Правосмукалки",
+"ean": "6941812789123",
+"mpn": null,
+"warranty": "24 месеци",
+"specs": "XIAOMI ROBOT VACUUM S20+ БЕЛА. Fake spec text.",
+"per_location_stock": [
+{
+"location": "Скопје Центар",
+"in_stock": true,
+"quantity": 2
+}
+],
+"extra": null,
+"attributes": {
+"Категорија": "vacuum"
+}
+},
+{
+"store": "neptun",
+"id": "1049",
+"sku": "84101049",
+"title": "XIAOMI ROBOT VACUUM S20 ЦРНА",
+"url": "https://www.neptun.mk/categories/xiaomi-robot-vacuum-s20-1049",
+"brand": "XIAOMI",
+"price_mkd": 13490,
+"regular_price_mkd": 14490,
+"in_stock": false,
+"stock_note": "нема на залиха",
+"category": "Мали апарати > Правосмукалки",
+"ean": "6941812789000",
+"mpn": null,
+"warranty": "24 месеци",
+"specs": "XIAOMI ROBOT VACUUM S20 ЦРНА. Fake spec text.",
+"per_location_stock": [
+{
+"location": "Скопје Центар",
+"in_stock": true,
+"quantity": 2
+}
+],
+"extra": null,
+"attributes": {
+"Категорија": "vacuum"
+}
+},
+{
+"store": "neptun",
+"id": "1050",
+"sku": "84101050",
+"title": "NINTENDO SWITCH 2 CONSOLE",
+"url": "https://www.neptun.mk/categories/nintendo-switch-2-console-1050",
+"brand": "NINTENDO",
+"price_mkd": 32290,
+"regular_price_mkd": 33290,
+"in_stock": true,
+"stock_note": "на залиха",
+"category": "Гејминг > Конзоли",
+"ean": "0045496884321",
+"mpn": null,
+"warranty": "24 месеци",
+"specs": "NINTENDO SWITCH 2 CONSOLE. Fake spec text.",
+"per_location_stock": [
+{
+"location": "Скопје Центар",
+"in_stock": true,
+"quantity": 2
+}
+],
+"extra": null,
+"attributes": {
+"Категорија": "console"
+}
+},
+{
+"store": "neptun",
+"id": "1051",
+"sku": "84101051",
+"title": "NINTENDO SWITCH OLED WHITE",
+"url": "https://www.neptun.mk/categories/nintendo-switch-oled-white-1051",
+"brand": "NINTENDO",
+"price_mkd": 22290,
+"regular_price_mkd": 23290,
+"in_stock": true,
+"stock_note": "на залиха",
+"category": "Гејминг > Конзоли",
+"ean": "0045496453435",
+"mpn": null,
+"warranty": "24 месеци",
+"specs": "NINTENDO SWITCH OLED WHITE. Fake spec text.",
+"per_location_stock": [
+{
+"location": "Скопје Центар",
+"in_stock": true,
+"quantity": 2
+}
+],
+"extra": null,
+"attributes": {
+"Категорија": "console"
+}
+},
+{
+"store": "neptun",
+"id": "299881",
+"sku": "84122949",
+"title": "HyperX Origins 2 1800",
+"url": "https://www.neptun.mk/categories/84122949-HyperX-Origins-2-1800",
+"brand": "HYPERX",
+"price_mkd": 7199,
+"regular_price_mkd": null,
+"in_stock": true,
+"stock_note": "online order: yes; in stock in 2 store(s): NEPTUN - Скопје - (Ист Гејт Мол), Нептун - Скопје (Сити Мол)",
+"category": "GAMING > GAMING Додатоци за компјутери > Gaming тастатури",
+"ean": "0198828944764",
+"seller": null,
+"warranty": "24 months",
+"specs": "•Layout:1800 Compact Layout •Switches:HyperX Linear Red •Switch Type:Linear Mechanical •Actuation Point:1.8 mm •Switch Lifespan:Up to 80 million keystrokes •Switch Stem:POM Half-Wall Stem •Factory Lubed Switches:Yes •Hot-Swap:Yes •Switch Compatibility:3-Pin / 5-Pin Mechanical Switches •Polling Rate:Up to 8000Hz •RGB Lighting:Yes •Onboard Profiles:Up to 3 profiles •O-Ring Mount:Yes •Plate:Polycarbonate •Stabilizers:Plate-Mounted •Silicone Dampening:Yes •Interchangeable Housing:Yes •Adjustable Keyboard Angle:Yes •High-Profile Design:Yes •Programmable Keys:Yes •Macro Support:Yes •Customizable Keycaps:Yes •Software:HyperX NGENUITY | •Layout:1800 Compact Layout •Switches:HyperX Linear Red •Actuation Point:1.8 mm •Polling Rate:Up to 8000Hz •RGB Lighting:Yes",
+"per_location_stock": [
+{
+"location": "NEPTUN - Скопје - (Ист Гејт Мол)",
+"city": "Скопје",
+"in_stock": true
+},
+{
+"location": "Нептун - Скопје (Сити Мол)",
+"city": "Скопје",
+"in_stock": true
+}
+],
+"mpn": null
+},
+{
+"store": "neptun",
+"id": "299848",
+"sku": "84122922",
+"title": "Razer BlackWidow V4 Tenkeyless HyperSpeed Orange Tactile Switch",
+"url": "https://www.neptun.mk/categories/84122922-Razer-BlackWidow-V4-Tenkeyless-HyperSpeed-Orange-Tactile-Switch",
+"brand": "RAZER",
+"price_mkd": 5999,
+"regular_price_mkd": null,
+"in_stock": true,
+"stock_note": "online order: yes; in stock in 3 store(s): NEPTUN - Куманово, NEPTUN - Скопје - (Ист Гејт Мол), Нептун - Скопје (Сити Мол)",
+"category": "GAMING > GAMING Додатоци за компјутери > Gaming тастатури",
+"ean": "8886419349884",
+"seller": null,
+"warranty": "24 months",
+"specs": "•Keyboard Layout:US Layout •Form Factor:Tenkeyless (TKL) •Switches:Razer Mechanical Switches Gen-3 •Switch Type:Tactile •Keystroke Lifespan:Up to 100 million keystrokes •Lighting:Razer Chroma RGB •Connectivity:Razer HyperSpeed Wireless 2.4GHz / Bluetooth / USB Type-C •Polling Rate:1000Hz •Onboard Memory:Up to 5 profiles •Keycaps:Doubleshot ABS •N-Key Rollover:Yes •Anti-Ghosting:Yes •Snap Tap:Yes •Media Keys:Secondary Media Keys •Top Case:5052 Aluminum Alloy •Bottom Case:ABS Plastic •Plate:Top-mounted Steel Plate •Sound Dampening Foam:Yes •Stabilizers:Lubricated Plate-Mount •Software:Razer Synapse 4 •Color:Black | •Form Factor:Tenkeyless (TKL) •Switches:Razer Mechanical Switches G3 •Polling Rate:1000Hz •Connectivity:Razer HyperSpeed Wireless 2.4GHz / Bluetooth / USB Type-C",
+"per_location_stock": [
+{
+"location": "NEPTUN - Куманово",
+"city": "Куманово",
+"in_stock": true
+},
+{
+"location": "NEPTUN - Скопје - (Ист Гејт Мол)",
+"city": "Скопје",
+"in_stock": true
+},
+{
+"location": "Нептун - Скопје (Сити Мол)",
+"city": "Скопје",
+"in_stock": true
+}
+],
+"mpn": null
+},
+{
+"store": "neptun",
+"id": "299826",
+"sku": "84122905",
+"title": "HyperX Origins 2 65",
+"url": "https://www.neptun.mk/categories/84122905-HyperX-Origins-2-65",
+"brand": "HYPERX",
+"price_mkd": 5999,
+"regular_price_mkd": null,
+"in_stock": true,
+"stock_note": "online order: yes; in stock in 3 store(s): NEPTUN – Битола (Блисс Мол), NEPTUN - Скопје - (Ист Гејт Мол), Нептун - Скопје (Сити Мол)",
+"category": "GAMING > GAMING Додатоци за компјутери > Gaming тастатури",
+"ean": "0198828944597",
+"seller": null,
+"warranty": "24 months",
+"specs": "•Формат:65% •Switches:HyperX Linear Red •Тип на прекинувачи:Линеарни, механички •Actuation Point:1.8 mm •Животен век на прекинувачи:до 80 милиони притискања •Hot-Swap:Да •Компатибилност на прекинувачи:3-pin и 5-pin •Polling Rate:до 8000Hz •RGB осветлување:Да •Onboard Profiles:до 3 профили •Софтвер:HyperX NGENUITY •O-Ring Mount:Да •Плоча:Поликарбонатна •Stabilizers:Plate-mounted •Куќиште:Заменливо •Прилагодлив агол:Да, со преклопни ногарки •Remap на копчиња:Да •Macro функции:Да •Заменливи Keycaps:Да | •Формат:65% •Switches:HyperX Linear Red •Polling Rate:до 8000Hz •RGB осветлување:Да •Hot-Swap:Да",
+"per_location_stock": [
+{
+"location": "NEPTUN – Битола (Блисс Мол)",
+"city": "Битола",
+"in_stock": true
+},
+{
+"location": "NEPTUN - Скопје - (Ист Гејт Мол)",
+"city": "Скопје",
+"in_stock": true
+},
+{
+"location": "Нептун - Скопје (Сити Мол)",
+"city": "Скопје",
+"in_stock": true
+}
+],
+"mpn": null
+},
+{
+"store": "neptun",
+"id": "297341",
+"sku": "84120889",
+"title": "Logitech G515 TKL Tactile Switches Black",
+"url": "https://www.neptun.mk/categories/84120889-Logitech-G515-TKL-Tactile-Switches-Black",
+"brand": "LOGITECH",
+"price_mkd": 6499,
+"regular_price_mkd": null,
+"in_stock": true,
+"stock_note": "online order: yes; in stock in 5 store(s): NEPTUN – Битола (Блисс Мол), NEPTUN - Прилеп, NEPTUN - Скопје - (Ист Гејт Мол), NEPTUN - Тетово (Палма Мол), Нептун - Скопје (Сити Мол)",
+"category": "GAMING > GAMING Додатоци за компјутери > Gaming тастатури",
+"ean": "5099206123175",
+"seller": null,
+"warranty": "24 months",
+"specs": "•Design: Ultra-slim (22 mm height), ergonomic TKL layout •Dimensions: 368 mm x 150 mm x 22 mm •Weight: 840 g (without cable) •Cable Length: 1.8 m •Switch Type: Low-profile GL mechanical switches •Actuation Point: 1.3 mm •Actuation Force: 43 g (linear) / 45 g (tactile) •Total Travel Distance: 3.2 mm •Performance: Fast response, high precision, low-profile speed •Build Quality: Factory-lubed switches, double-shot PBT keycaps •Sound Design: Layered sound dampening construction •Customization: Up to 15 functions per key via Logitech G HUB •Software: Logitech G HUB required for full customization •Key Features: KEYCONTROL mapping, ergonomic speed-focused design | •Design: Ultra-slim (22 mm height) •Actuation Point: 1.3 mm •Actuation Force: 43 g •Switch Type: Low-profile GL mechanical •Software: Logitech G HUB",
+"per_location_stock": [
+{
+"location": "NEPTUN – Битола (Блисс Мол)",
+"city": "Битола",
+"in_stock": true
+},
+{
+"location": "NEPTUN - Прилеп",
+"city": "Прилеп",
+"in_stock": true
+},
+{
+"location": "NEPTUN - Скопје - (Ист Гејт Мол)",
+"city": "Скопје",
+"in_stock": true
+},
+{
+"location": "NEPTUN - Тетово (Палма Мол)",
+"city": "Тетово",
+"in_stock": true
+},
+{
+"location": "Нептун - Скопје (Сити Мол)",
+"city": "Скопје",
+"in_stock": true
+}
+],
+"mpn": null
+},
+{
+"store": "neptun",
+"id": "297255",
+"sku": "84120815",
+"title": "Razer BlackWidow V4 Green Switches",
+"url": "https://www.neptun.mk/categories/84120815-Razer-BlackWidow-V4-Green-Switches",
+"brand": "RAZER",
+"price_mkd": 8399,
+"regular_price_mkd": null,
+"in_stock": true,
+"stock_note": "online order: yes; in stock in 3 store(s): NEPTUN – Битола (Блисс Мол), NEPTUN - Скопје - (Ист Гејт Мол), Нептун - Скопје (Сити Мол)",
+"category": "GAMING > GAMING Додатоци за компјутери > Gaming тастатури",
+"ean": "8887910072356",
+"seller": null,
+"warranty": "24 months",
+"specs": "•Keyboard Type: Mechanical (Full Size) •Switches: Razer Green (clicky) •Key Feel: Tactile & clicky / smooth & silent •Lighting: RGB (Razer Chroma) •Wrist Rest: Yes (magnetic, plush) •Onboard Memory: Up to 5 profiles •Media Controls: Roller + 4 dedicated buttons •Connectivity: Detachable USB-C cable •Keycaps: Doubleshot ABS •Build Material: Aluminum top case (5052 alloy) •Macro Keys: 6 dedicated •Software: Razer Synapse support •Polling Rate: Up to 8000 Hz •Stabilizers: Lubricated •Internal Design: PCB foam included •Underglow: 2-side lighting •Extra Features: Razer Snap Tap | •Switches: Razer Green (clicky) •Polling Rate: Up to 8000 Hz •Wrist Rest: Yes (magnetic, plush) •Lighting: RGB •Keycaps: Doubleshot ABS",
+"per_location_stock": [
+{
+"location": "NEPTUN – Битола (Блисс Мол)",
+"city": "Битола",
+"in_stock": true
+},
+{
+"location": "NEPTUN - Скопје - (Ист Гејт Мол)",
+"city": "Скопје",
+"in_stock": true
+},
+{
+"location": "Нептун - Скопје (Сити Мол)",
+"city": "Скопје",
+"in_stock": true
+}
+],
+"mpn": null
+},
+{
+"store": "neptun",
+"id": "296491",
+"sku": "84120306",
+"title": "Razer BlackWidow V4 X Green Switches",
+"url": "https://www.neptun.mk/categories/84120306-Razer-BlackWidow-V4-X-Green-Switches",
+"brand": "RAZER",
+"price_mkd": 5999,
+"regular_price_mkd": null,
+"in_stock": true,
+"stock_note": "online order: yes; in stock in 3 store(s): NEPTUN - Скопје - (Ист Гејт Мол), NEPTUN - Скопје (ГОДИ), Нептун - Скопје (Сити Мол)",
+"category": "GAMING > GAMING Додатоци за компјутери > Gaming тастатури",
+"ean": "8887910072691",
+"seller": null,
+"warranty": "24 months",
+"specs": "•Razer BlackWidow V4 X гејмерска тастатура •Тип: Механичка тастатура •Намена: Гејминг со напредна контрола и персонализација •Макро копчиња: 6 посебни програмабилни копчиња •Мултимедија: Roller + копчиња за звук, светлина и репродукција •Switch-еви: Gen-3 механички (Green – кликливи) •Осветлување: Razer Chroma RGB (16.8 милиони бои, по копче) •Keycaps: Doubleshot ABS – издржливи и отпорни на абење •Акустика: Пена за намалување звук + подмачкани стабилизатори •Софтвер: Razer Synapse 4 (напредни поставки и контроли) •Функција Snap Tap: Приоритет на најнов input за побрзи реакции •Издржливост: Дизајнирана за интензивен гејминг •Дизајн: RGB осветлување со динамични ефекти и теми | •Тип: Механичка тастатура •Keycaps: Doubleshot ABS •Осветлување: Razer Chroma RGB •Функција Snap Tap •Софтвер: Razer Synapse 4",
+"per_location_stock": [
+{
+"location": "NEPTUN - Скопје - (Ист Гејт Мол)",
+"city": "Скопје",
+"in_stock": true
+},
+{
+"location": "NEPTUN - Скопје (ГОДИ)",
+"city": "Скопје",
+"in_stock": true
+},
+{
+"location": "Нептун - Скопје (Сити Мол)",
+"city": "Скопје",
+"in_stock": true
+}
+],
+"mpn": null
+},
+{
+"store": "neptun",
+"id": "295964",
+"sku": "84119933",
+"title": "Rampage Quell Pro White w/Screen",
+"url": "https://www.neptun.mk/categories/84119933-Rampage-Quell-Pro-White-w-Screen",
+"brand": "RAMPAGE",
+"price_mkd": 4499,
+"regular_price_mkd": null,
+"in_stock": true,
+"stock_note": "online order: yes; in stock in 4 store(s): NEPTUN - Прилеп, NEPTUN - Скопје - (Ист Гејт Мол), NEPTUN - Скопје (ГОДИ), Нептун - Скопје (Сити Мол)",
+"category": "GAMING > GAMING Додатоци за компјутери > Gaming тастатури",
+"ean": "8680096146558",
+"seller": null,
+"warranty": "24 months",
+"specs": "•Color: White •Switch Type: Mechanical •Key Lifespan: 60 million keystrokes •Connectivity: Wired, 2.4 GHz, Bluetooth •Interface: Type-C •Display: 1.14-inch TFT •Battery: 4000 mAh •Backlighting: RGB •Polling Rate: 1000 Hz •Anti-Ghosting: All Keys Anti-Ghosting •Weight: 995 ± 5 g •Material: ABS •Dimensions: 333 x 147 x 43 mm •Package Contents: Keyboard + Manual + Key Puller •Key Travel: 1.8 ± 0.3 mm | •Connectivity: Wired, 2.4 GHz, Bluetooth •Interface: Type-C •Switch Type: Mechanical •Battery: 4000 mAh •Polling Rate: 1000 Hz",
+"per_location_stock": [
+{
+"location": "NEPTUN - Прилеп",
+"city": "Прилеп",
+"in_stock": true
+},
+{
+"location": "NEPTUN - Скопје - (Ист Гејт Мол)",
+"city": "Скопје",
+"in_stock": true
+},
+{
+"location": "NEPTUN - Скопје (ГОДИ)",
+"city": "Скопје",
+"in_stock": true
+},
+{
+"location": "Нептун - Скопје (Сити Мол)",
+"city": "Скопје",
+"in_stock": true
+}
+],
+"mpn": null
+},
+{
+"store": "neptun",
+"id": "293347",
+"sku": "84118103",
+"title": "Gaming тастатура Gaming Keyboard Razer Ornata V3 Tenkeyless",
+"url": "https://www.neptun.mk/categories/84118103-Gaming-Keyboard-Razer-Ornata-V3-Tenkeyless",
+"brand": "RAZER",
+"price_mkd": 4299,
+"regular_price_mkd": null,
+"in_stock": true,
+"stock_note": "online order: yes; in stock in 4 store(s): NEPTUN – Битола (Блисс Мол), NEPTUN - Неготино, NEPTUN - Скопје - (Ист Гејт Мол), Нептун - Скопје (Сити Мол)",
+"category": "GAMING > GAMING Додатоци за компјутери > Gaming тастатури",
+"ean": "8887910073032",
+"seller": null,
+"warranty": "24 months",
+"specs": "•Switch Type: Razer™ Mecha-Membrane Switches •Key Feel: Tactile click with soft, cushioned touch •Size: Tenkeyless •Lighting: 8 Razer Chroma™ RGB lighting zones •Wrist Rest: Yes •Onboard Memory: None •Media Keys: Dedicated media keys •Passthrough: None •Connectivity: Wired (attached cable) •Keycaps: UV-coated ABS keycaps •Razer™ Snap Tap: Advanced input optimization feature •Spill-Resistant Design: Durable design to protect against accidental spills •Cable Routing Options: Allows flexible cable management •Razer Synapse Support: Enables customization through Razer Synapse software •Programmable Keys: Fully programmable keys with on-the-fly macro recording •Gaming Mode: Option to disable certain keys during gameplay •Braided Fiber Cable: Enhanced durability and reduced cable wear •Ultrapolling Rate: 1000 Hz ultrapolling for faster response times | •Size: Tenkeyless •Razer Mecha-Membrane Switches •Razer Snap Tap •Ultrapolling Rate: 1000 Hz •Lighting: 8 Razer Chroma RGB",
+"per_location_stock": [
+{
+"location": "NEPTUN – Битола (Блисс Мол)",
+"city": "Битола",
+"in_stock": true
+},
+{
+"location": "NEPTUN - Неготино",
+"city": "Неготино",
+"in_stock": true
+},
+{
+"location": "NEPTUN - Скопје - (Ист Гејт Мол)",
+"city": "Скопје",
+"in_stock": true
+},
+{
+"location": "Нептун - Скопје (Сити Мол)",
+"city": "Скопје",
+"in_stock": true
+}
+],
+"mpn": null
+},
+{
+"store": "neptun",
+"id": "292406",
+"sku": "84117430",
+"title": "Gaming тастатура Gaming Keyboard NZXT Function Black Mechanical Red Switches",
+"url": "https://www.neptun.mk/categories/84117430-Gaming-Keyboard-NZXT-Function-Black-Mechanical-Red-Switches",
+"brand": "NZXT",
+"price_mkd": 5499,
+"regular_price_mkd": null,
+"in_stock": true,
+"stock_note": "online order: yes; in stock in 1 store(s): NEPTUN - Скопје (Градски Стадион)",
+"category": "GAMING > GAMING Додатоци за компјутери > Gaming тастатури",
+"ean": "5060301696185",
+"seller": null,
+"warranty": "24 months",
+"specs": "•Dimensions: 442 x 127.8 x 40.3 mm •Weight (Keyboard): 910 g •Top Plate Material: Aluminium •Wrist Rest: Included •Weight (Wrist Rest): 307 g •Mechanical Key Switches: Hot-swappable Gateron Linear Red •Switch Rating: 50 Million Keypresses •Lighting: Per-key RGB •Compatibility: 5-pin Cherry MX Switches •N-key Rollover: Yes •Anti-Ghosting: Yes •Keycap Profile: OEM •Keycap Material: ABS Plastic •Shine-through: Yes •On-board Profile Memory: 4 Customizable Profiles (using CAM Software) •System OS: PC / Windows 10, Windows 11 | •System OS: PC / Windows 10, Windows 11 •Switches:Gateron Linear Red •Anti-Ghosting •Wrist Rest •Dimensions: 442 x 127.8 x 40.3 mm",
+"per_location_stock": [
+{
+"location": "NEPTUN - Скопје (Градски Стадион)",
+"city": "Скопје",
+"in_stock": true
+}
+],
+"mpn": null
+},
+{
+"store": "neptun",
+"id": "292409",
+"sku": "84117433",
+"title": "Gaming тастатура Gaming Keyboard NZXT Function 2 MiniTKL Black NZXT Swift Optical Switches",
+"url": "https://www.neptun.mk/categories/84117433-Gaming-Keyboard-NZXT-Function-2-MiniTKL-Black-NZXT-Swift-Optical-Switches",
+"brand": "NZXT",
+"price_mkd": 8499,
+"regular_price_mkd": null,
+"in_stock": true,
+"stock_note": "online order: yes; in stock in 3 store(s): NEPTUN - Скопје - (Ист Гејт Мол), NEPTUN - Скопје (Градски Стадион), Нептун - Скопје (Сити Мол)",
+"category": "GAMING > GAMING Додатоци за компјутери > Gaming тастатури",
+"ean": "5056547203867",
+"seller": null,
+"warranty": "24 months",
+"specs": "•Type: NZXT Swift Optical Switches •Layout: US ANSI •Feel: Linear, Light, & Instant •Actuation Point: 2-Point Adjustable (1.0 mm, 1.5 mm) •Actuation Force: 40 g •Response Time: 0.2 ms •Lifetime: 100 Million Key Presses •Hot-Swappable Sockets: Yes •Keycaps: Doubleshot Shine-Through PBT •Polling Rate: Up to 8,000 Hz •Top Material: 5000 Series Aluminum •N-Key Rollover: Yes •Anti-Ghosting: Yes •Lighting: Per-Key RGB •Connectivity: Wired (Detachable) •Cable Type: Braided USB-C to USB-A •Cable Length: 2 m / 6.56 ft •Onboard Memory: Yes •Media Keys: Yes •Standard Bottom Row: Yes •Wrist Rest: No •Height Adjustment: 3 Level •Weight: 718 g / 1.58 lb •Height: 40.3 mm / 1.59 in •Width: 338.5 mm / 13.36 in •Depth: 123.4 mm / 4.86 in •System OS: Windows / Mac / Xbox / PlayStation® •Software: NZXT CAM | •Type: NZXT Swift Optical Switches •Polling Rate: Up to 8,000 Hz •Connectivity: Wired USB-C to USB-A (2m) •Anti-Ghosting: Yes •System OS:WIN/Mac/Xbox/Playstation",
+"per_location_stock": [
+{
+"location": "NEPTUN - Скопје - (Ист Гејт Мол)",
+"city": "Скопје",
+"in_stock": true
+},
+{
+"location": "NEPTUN - Скопје (Градски Стадион)",
+"city": "Скопје",
+"in_stock": true
+},
+{
+"location": "Нептун - Скопје (Сити Мол)",
+"city": "Скопје",
+"in_stock": true
+}
+],
+"mpn": null
+},
+{
+"store": "neptun",
+"id": "283909",
+"sku": "84110364",
+"title": "Gaming тастатура REDRAGON KEYBOARD + MOUSE + HEADPHONES 3 in 1 Combo S129W",
+"url": "https://www.neptun.mk/categories/REDRAGON-KEYBOARD---MOUSE---HEADPHONES-3-in-1-Combo-S129W",
+"brand": "REDRAGON",
+"price_mkd": 4495,
+"regular_price_mkd": 5699,
+"in_stock": true,
+"stock_note": "online order: yes; in stock in 2 store(s): NEPTUN – Битола (Блисс Мол), NEPTUN - Штип",
+"category": "GAMING > GAMING Додатоци за компјутери > Gaming тастатури",
+"ean": "6950376708144",
+"seller": null,
+"warranty": "24 months",
+"specs": "•Сет комбо 3 во 1 (Keyboard, Mouse and Headset): •Redragon K630 Dragonborn 60% RGB Mechanical Gaming Keyboard: -Форма:60% -Switches:Red -RGB светло:да -Конекција:USB Type-C •Redragon M607 Griffin Gaming Mouse -Број на копчиња:7 -DPI: до 7200 dpi -RGB светло:да -Конекција:USB-A •Redragon H350 Pandora 2 USB+3.5mm Aux RGB Gaming Headset -7.1 Surround звук -50mm Driver -RGB светло:да -Конекција:USB-A + 3.5mm Aux | •Сет комбо 3 во 1: •Keyboard Dragonborn K630 •Mouse Griffin M607 •Headset Pandora 2 H350",
+"per_location_stock": [
+{
+"location": "NEPTUN – Битола (Блисс Мол)",
+"city": "Битола",
+"in_stock": true
+},
+{
+"location": "NEPTUN - Штип",
+"city": "Штип",
+"in_stock": true
+}
+],
+"mpn": null
+},
+{
+"store": "neptun",
+"id": "G206",
+"sku": "G206",
+"title": "BT слушалки JBL LIVE 770 NC WHT",
+"url": "https://www.neptun.mk/categories/JBL-LIVE-770-NC-WHT-G206",
+"brand": "JBL",
+"price_mkd": 10999,
+"regular_price_mkd": null,
+"in_stock": true,
+"stock_note": "на залиха",
+"category": "Аудио > Слушалки",
+"ean": null,
+"mpn": null,
+"warranty": "24 месеци",
+"specs": "BT слушалки JBL LIVE 770 NC WHT.",
+"per_location_stock": null,
+"extra": null
+}
+]
