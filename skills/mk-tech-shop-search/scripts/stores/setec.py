@@ -1049,7 +1049,7 @@ def cmd_info(a):
         "capabilities": ["search", "categories", "list", "detail", "facets", "filter",
                          "ean_in_listing", "ean_in_detail", "stock_qty",
                          "per_location_stock", "warranty", "search_ean", "search_codes"],
-        "sells": ("Large consumer-electronics and home chain (~14k products): computers and "
+        "sells": ("Large consumer-electronics and home chain (over ten thousand products): computers and "
                   "PC parts, laptops, monitors, phones and accessories, TVs/audio, large and "
                   "small home appliances, air conditioning/heating, kitchenware, tools, "
                   "garden, sport/bicycles, lighting, consoles, smart home."),
@@ -1058,7 +1058,7 @@ def cmd_info(a):
                   "price_valid_until = ends_at of the Medusa price list behind price_mkd "
                   "(null: the standing 'Web Prices' list or the base price has none; left out "
                   "when the list behind the price cannot be identified). "
-                  "Stock = units summed over ~40 stores + central warehouse; 1-3 units => site "
+                  "Stock = units summed over all stores + central warehouse; 1-3 units => site "
                   "shows 'Нарачај' (order request). Search unions Cyrillic+Latin "
                   "transliterations; each query window caps at 1000 hits, list chunks past it. "
                   "Extra commands: gaps, brands, stores."),

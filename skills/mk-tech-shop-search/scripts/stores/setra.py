@@ -93,7 +93,7 @@ LIST_FIELDS = ("id,name,slug,sku,permalink,prices,is_in_stock,is_on_backorder,is
 TERMS_SLUG = "pravila-i-uslovi-na-prodazhba"
 SHOP_PATH = "/shop/"     # its filter widget lists every Brend (manufacturer) term with counts
 
-SELLS = ("IT, gaming and small-electronics shop (~1,630 products, mostly English titles): "
+SELLS = ("IT, gaming and small-electronics shop (under two thousand products, mostly English titles): "
          "peripherals (keyboards, mice, headsets, speakers, webcams, microphones, mouse pads, "
          "controllers, bags), gaming gear (gaming monitors, chairs, desks), PowerCube prebuilt "
          "gaming/office PCs and desktops, PC components (cases, air and water coolers, PSUs, "
@@ -114,9 +114,9 @@ NOTES = ("price_mkd = the current WooCommerce price (Store API minor units / 100
          "+ list for departments. brand is derived from the title with the shop's own brand "
          "list; ean only where the description prints one (~6%). Facets/--filter come from the "
          "category page filter widget (brand, display size, refresh rate, CPU, RAM, storage). "
-         "Warranty from the short description (83% of products; 6-60 months, inconsistent). "
+         "Warranty from the short description (over 80% of products; 6-60 months, inconsistent). "
          "Delivery: max 4 working days after order confirmation, from 150 MKD by courier "
-         "(terms page). Every request costs 2.5-6.5 s: sequential only; Wordfence installed.")
+         "(terms page). Every request takes a few seconds: sequential only; Wordfence installed.")
 CAPABILITIES = ["search", "categories", "list", "detail", "facets", "filter", "ean_in_listing",
                 "warranty", "delivery_estimate"]
 

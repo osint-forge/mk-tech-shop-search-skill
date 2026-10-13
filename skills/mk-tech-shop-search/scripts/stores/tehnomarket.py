@@ -73,8 +73,8 @@ DELIVERY_POLICY = ("store policy: basic home delivery 199 MKD, 2-7 working days;
                    "pickup in store possible")
 SHIPPING_MKD = 199
 
-SELLS = ("Consumer-electronics and appliance chain (~24 stores, ~5,800 products online in 8 "
-         "departments): computers and gaming (laptops, desktops plus a few PC parts, monitors, "
+SELLS = ("Consumer-electronics and appliance chain (stores nationwide, several thousand products "
+         "online): computers and gaming (laptops, desktops plus a few PC parts, monitors, "
          "printers, tablets, "
          "consoles, storage, networking, peripherals, office chairs, UPS); TV/audio/video (TVs, "
          "soundbars, audio systems, car audio, cameras, batteries); phones, smartwatches, landline "
@@ -87,7 +87,7 @@ SELLS = ("Consumer-electronics and appliance chain (~24 stores, ~5,800 products 
 NOTES = ("price_mkd = the 'SMART цена', which the online cart charges every buyer (no card "
          "needed; verified in the cart); regular_price_mkd = the higher 'Редовна Цена' shown "
          "above it. No EAN anywhere; Шифра (sku) equals the product id. Listings carry "
-         "per-store availability (yes/no for all 24 locations, no quantities). "
+         "per-store availability (yes/no for every location, no quantities). "
          "in_stock false = not orderable online. Search is AND over substrings of title AND "
          "description (noisy), no Cyrillic/Latin transliteration, and brackets or quotes in the "
          "query give 0 hits (the client retries without them); an exact product id jumps "

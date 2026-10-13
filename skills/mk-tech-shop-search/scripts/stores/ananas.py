@@ -81,7 +81,7 @@ ALGOLIA_PACE = 0.3        # pause between consecutive Algolia requests
 PAGE_PACE = 0.7           # pause between consecutive HTML page / GraphQL requests
 MAX_RETRIES = 4
 
-SELLS = ("Multi-seller marketplace (~285,000 listings from ~650 sellers, 24 departments): home and "
+SELLS = ("Multi-seller marketplace (hundreds of thousands of listings from hundreds of sellers): home and "
          "garden (furniture, kitchenware, lighting, decor), fashion, car and moto (tyres), DIY tools, "
          "toys and LEGO, beauty and personal-care appliances, baby gear, IT (laptops, PCs, components, "
          "peripherals, office devices), gaming, phones, tablets, smartwatches and cameras, TV/audio/"
@@ -97,7 +97,7 @@ NOTES = ("Each listing is one seller's offer (seller field); the same product fr
          "per-listing delivery fee for a guest / non-Ananas+ buyer (0 or 190 for most; 250-1,200+ for "
          "bulky items). search/list return every size/colour variant listing (the site folds them into "
          "one card; --group-variants gives that view). "
-         "in_stock = onStock (out-of-stock listings are rare, ~1%); stock_note carries the seller's "
+         "in_stock = onStock (out-of-stock listings are rare); stock_note carries the seller's "
          "unit count (200 is a common default, not a real count). Search is Algolia: typo-tolerant, "
          "prefix, matches EAN, Шифра (apId) and model codes. Titles are mostly Cyrillic and only some "
          "Latin spellings are mapped (televizor = телевизор, but igracka 3 vs играчка 18,688, blender "

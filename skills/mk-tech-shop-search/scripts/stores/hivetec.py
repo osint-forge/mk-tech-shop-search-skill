@@ -87,7 +87,7 @@ COUNT_WORDS_MAX = 4      # multi-word search: count at most this many words to p
 MAX_VARIATIONS = 12      # detail: price at most this many variations of a variable product (1 request each)
 DELIVERY_POLICY_SLUG = "kupuvanje-i-isporaka-na-proizvodi"
 
-SELLS = ("Gaming and PC specialist (~2,450 products, nearly all English titles): PC components "
+SELLS = ("Gaming and PC specialist (a few thousand products, nearly all English titles): PC components "
          "(cases, air and water cooling, fans, thermal paste, GPUs, motherboards, CPUs, RAM, PSUs, "
          "SSD/HDD), peripherals (keyboards, mice, headsets and headphones, speakers, webcams, "
          "microphones, mouse pads, controllers, racing wheels and cockpits), monitors (mostly gaming) "
@@ -96,7 +96,7 @@ SELLS = ("Gaming and PC specialist (~2,450 products, nearly all English titles):
          "UPS, a few printers, projectors and presenters, smartwatches, e-scooters, action cameras, "
          "drones, power banks, cables and adapters. No phones, no TVs, no home appliances.")
 NOTES = ("price_mkd = the current WooCommerce price (Store API minor units / 100), incl. VAT. "
-         "Almost every product (2437 of 2446) shows a struck-through 'regular' price ~8-25% higher: "
+         "Almost every product shows a struck-through 'regular' price ~8-25% higher: "
          "a permanent list price, not a real promotion. 4 variable laptops: in listings price_mkd is "
          "the lowest variant ('from'); detail prices every variant and honours a variant link or "
          "variation id. Stock is one yes/no web flag: no quantities, no per-store split. No EAN "
@@ -994,7 +994,7 @@ class Hivetec:
                 "variations": variations or None,
                 "selected_variation": selected["id"] if selected else None,
                 "strike_through_note": ("the struck-through 'regular' price is a near-permanent list "
-                                        "price on this shop (2437 of 2446 products), not a time-limited sale"
+                                        "price on this shop (almost every product has one), not a time-limited sale"
                                         if rec["regular_price_mkd"] else None),
                 "category_ids": [c["id"] for c in p.get("categories") or []],
                 "slug": p.get("slug"),

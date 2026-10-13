@@ -73,7 +73,7 @@ DELIVERY_POLICY = ("standard delivery within 7 working days, 300 MKD (store poli
 INACTIVE_NOTE = ("inactive: sold out or delisted (hidden from listings and search; the product page "
                  "is a soft 404)")
 
-SELLS = ("Consumer-electronics and appliance chain (~5,600 products online in 12 departments): "
+SELLS = ("Consumer-electronics and appliance chain (several thousand products online): "
          "TVs, home and personal audio, car gadgets, smart-home devices; gaming (consoles, games, "
          "gaming laptops, monitors and peripherals); computers (laptops, desktops, PC components, "
          "monitors, projectors, printers, tablets, software, Starlink); phones, smartwatches and "

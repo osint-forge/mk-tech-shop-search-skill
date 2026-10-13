@@ -66,7 +66,7 @@ ORDER_PRICE_ASC = 7     # 7 price asc, 8 price desc, 9 name A-Z, 10 name Z-A
 STOCK_ALL, STOCK_IN_STOCK_ONLY = 1, 2
 DELIVERY_POLICY = "up to 72 h (working days) after order confirmation (store policy)"
 
-SELLS = ("IT distributor's webshop (~4,300 products): peripherals (keyboards, mice, headsets, speakers, "
+SELLS = ("IT distributor's webshop (a few thousand products): peripherals (keyboards, mice, headsets, speakers, "
          "webcams, microphones, barcode scanners), PC components (coolers, cases, PSUs, RAM, HDD/SSD, GPUs, "
          "CPUs, motherboards), monitors and monitor arms, cables/adapters/converters/KVM, networking "
          "(routers, switches, access points, passive), gaming gear (chairs, desks, consoles, controllers, "

@@ -60,7 +60,7 @@ SITES = {
         "has_totals": True,          # category XHR shows "вкупно N"
         "flags": {"in-stock": "is", "local-stock": "hls"},
         "capabilities": CAPABILITIES_COMMON,
-        "sells": ("Large online electronics shop (department totals sum to ~104,000 listings, ~69,000 "
+        "sells": ("Large online electronics shop (about a hundred thousand listings, roughly two thirds "
                   "orderable; some products are filed in two trees): laptops, "
                   "desktops, monitors, servers/NAS, phones, tablets, e-readers, GPS, TVs, projectors, "
                   "audio/hi-fi, cameras, dashcams, consoles and games, VR, gaming chairs, smart home, "
@@ -69,15 +69,16 @@ SITES = {
                   "CCTV, office equipment, memory cards, external drives, cables, UPS, solar (PV), "
                   "PC components (GPU, CPU, storage, motherboards, RAM, PSU, cooling, cases). "
                   "No large kitchen/laundry appliances."),
-        "notes": ("Most orderable items are supplier stock delivered in ~3-4 weeks; only '48h'-badge "
-                  "items (list --filter local-stock) are local. in_stock = orderable. price_mkd = "
+        "notes": ("Most orderable items are supplier stock delivered in ~3-4 weeks (as of "
+                  "2026-10-03); only '48h'-badge items (list --filter local-stock) are local. "
+                  "in_stock = orderable. price_mkd = "
                   "card price incl. VAT; almost every card shows a struck-through 'was' price. "
                   "Search is fuzzy AND-matching (typo tolerant) and silently drops words that match "
                   "nothing; EAN, Код (sku) and model codes are searchable. Listing brand is inferred "
                   "from the title against the category's manufacturer filter (null in search). "
                   "Two parallel monitor trees exist (Додатоци > Монитор is the full one). Listings "
                   "over 10,000 (the search engine's window) are walked as price slices. "
-                  "Warranty: 1 year store-wide. ~95% of SKUs are mirrored on ZirafaMall at the same "
+                  "Warranty: 1 year store-wide. Most SKUs are mirrored on ZirafaMall at the same "
                   "price (join on sku)."),
     },
     "zirafamall": {

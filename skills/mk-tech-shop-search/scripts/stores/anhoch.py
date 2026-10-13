@@ -62,7 +62,7 @@ TREE_SOURCES = ("monitori", "site-laptopi", "vouchers")
 # 230 MKD per order up to 5,000 MKD, 179 MKD above; pickup in any Anhoch store free
 SHIP_LOW, SHIP_HIGH, SHIP_THRESHOLD = 230, 179, 5000
 
-SELLS = ("IT and consumer-electronics chain (~9,970 products): laptops, desktops, monitors, "
+SELLS = ("IT and consumer-electronics chain (about ten thousand products): laptops, desktops, monitors, "
          "tablets, PC components (CPU, GPU, RAM, SSD/HDD, motherboards, cases, PSUs, cooling), "
          "keyboards/mice/headsets, gaming (consoles, games, chairs, controllers), phones, "
          "smartwatches, chargers/power banks, TVs, soundbars/speakers/headphones, projectors, "
