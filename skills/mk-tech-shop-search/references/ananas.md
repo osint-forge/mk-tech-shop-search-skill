@@ -4,18 +4,19 @@ Client: `scripts/stores/ananas.py` (key `ananas`). Verified live 2026-10-03.
 
 ## What it sells and when it is useful
 
-Ananas is a multi-seller marketplace (the MK branch of ananas.rs): **~285,000 listings from ~650 sellers**
-in 24 departments. Listings by department (incl. size/colour variants): home and garden 102,895; fashion
-44,953; car/moto 22,547 (tyres 5,871); DIY tools 17,903; toys 13,658 (LEGO 798); beauty 13,316 (perfume
-1,071); baby 12,281; IT 9,567 (laptops 79); office/school 8,894; health 6,015; pet 6,014; sport 5,238;
-books 4,155; phones/photo 3,847 (smartphones only 45); large appliances 3,511; small appliances 3,102;
-food 2,496; TV/audio/video 2,193 (TVs 225); cleaning 1,359; gaming 1,323; personal-care appliances 1,010.
+Ananas is a multi-seller marketplace (the MK branch of ananas.rs): **hundreds of thousands of listings
+from hundreds of sellers**. Departments, largest first: home and garden (by far the largest); fashion;
+car/moto (incl. tyres); DIY tools; toys (incl. LEGO); beauty (incl. perfume); baby; IT; office/school;
+health; pet; sport; books; phones/photo; large appliances; small appliances; food; TV/audio/video;
+cleaning; gaming; personal-care appliances. Tech is a small share: only dozens of laptops and
+smartphones, and a couple of hundred TVs.
 
 Use it for breadth (home, toys, beauty, tyres, DIY, small appliances) and as a second channel for big
 chains. **Many listings mirror shops covered here, usually at the same price**: ТЕХНОМАРКЕТ, "Сетек Се од
 Техника" (= Setec; its `extra.seller_sku` is Setec's own `sku`, e.g. 79269, same price), Нептун, Нексио,
-Setra, PC MARKET (= Anhoch). Ananas' own shop ("АНАНАС ШОП", merchant 776) has ~96,000 listings, mostly
-home and garden. TVs on 2026-10-03: ТЕХНОМАРКЕТ 90, Сетек 38, Бител 21, own shop 18, ELIPSO 13, Maximum 12.
+Setra, PC MARKET (= Anhoch). Ananas' own shop ("АНАНАС ШОП", merchant 776) has tens of thousands of
+listings, mostly home and garden. TVs on 2026-10-03 came most often from ТЕХНОМАРКЕТ, then Сетек, Бител, the
+own shop, ELIPSO and Maximum.
 
 ## Access
 
@@ -25,48 +26,49 @@ All public, no cookies or tokens. The client needs ~2–4 requests per `list`/`f
   with headers `x-algolia-application-id: Y1BSBVJ7AC`, `x-algolia-api-key: 78d3f4f3befb3c4a68f4ebbf8c38fd81`
   (the public search-only key in `pages/_app-*.js`; re-read from the bundle on 401/403). Body:
   `{query, filters, page, hitsPerPage<=1000, attributesToRetrieve, facets, distinct:false}`.
-  `facets:["*"]` returns every facetable attribute (384 index-wide). **Pagination stops at hit 30,000**;
-  the client splits bigger walks into price ranges (Мода: 9 ranges, 44,953 listings, 72 requests, 28 s).
+  `facets:["*"]` returns every facetable attribute (hundreds index-wide). **Pagination stops at hit 30,000**;
+  the client splits bigger walks into price ranges (the fashion department, tens of thousands of listings,
+  takes under a minute).
 - **Category tree**: `POST https://api.ananas.rs/graphql-gateway/public`, headers `x-ananas-market: MK`,
-  operation `Categories` (`getCategories(rootOnly:false)` with nested `children{id name slug}`): 2,247 nodes
-  in one 300 KB response. Counts come from Algolia facets `product.categories.lvl0..lvl3` (lvl2 has >1,000
+  operation `Categories` (`getCategories(rootOnly:false)` with nested `children{id name slug}`): the whole
+  tree in one response. Counts come from Algolia facets `product.categories.lvl0..lvl3` (lvl2 has >1,000
   values, so it is re-queried per group of departments, keeping only paths under that group's own
-  departments: a listing filed in two departments otherwise overwrote counts, e.g. Кадифени играчки 1
-  instead of 847; fixed 2026-10-03, all 2,247 counts now equal a per-department walk). If GraphQL fails,
-  the tree is rebuilt from facets (paths only; no ids or slugs). Ids then exit 3 if the gateway blocked
-  us, and 2 otherwise. Slugs and paths keep working.
+  departments, since a listing filed in two departments would otherwise overwrite counts; the counts
+  equal a per-department walk). If GraphQL fails, the tree is rebuilt from facets (paths only; no ids or
+  slugs). Ids then exit 3 if the gateway blocked us, and 2 otherwise. Slugs and paths keep working.
 - **Detail**: the product page `GET /proizvod/<slug>/<id>` (React flight data holds the merchant-inventory
   object), the Algolia hit by `objectID`, and the guest delivery promise via GraphQL
   `GetCalculateGuestDeliveryPromise`. 3 requests, ~2 s per item (2 for an out-of-stock listing). Input:
   product URL (query/fragment ignored), listing id, or Шифра (any case). `/proizvod/x/<id>` 308-redirects
   to the listing's own slug, and `url` is that URL. The page's `canonicalId` / `<link rel=canonical>` is
-  the product's SEO-canonical offer, often **another seller's listing** (ТЕХНОМАРКЕТ 3929700 at 5,499 →
-  King Soft 3409583 at 4,990). It goes only to `extra.canonical_offer_url`; before 2026-10-03 the client
-  wrongly used it as `url`.
+  the product's SEO-canonical offer, often **another seller's listing** (a ТЕХНОМАРКЕТ listing pointed to a
+  King Soft one). It goes only to `extra.canonical_offer_url`.
 - **Category pages** `/kategorii/<slug>` are read only by `list --check-site` or for slugs not in the tree.
 
 ## Category model
 
 - **Ids** are integers (`48397` TVs, `48508` smartphones, `49122` small kitchen appliances, `48602`
-  perfume, `48038` LEGO). **Slugs** are Latin slash paths (`tv-audio-video/tv/televizori`). Depth ≤ 4
-  (24 / 201 / 1,380 / 642 nodes per level). `list` accepts id, slug path, unique last slug segment
+  perfume, `48038` LEGO). **Slugs** are Latin slash paths (`tv-audio-video/tv/televizori`). Depth ≤ 4.
+  `list` accepts id, slug path, unique last slug segment
   (`televizori`), URL (`/kategorii/...`, `?page=` ignored), `A > B > C` path or a unique exact name.
-  16 names are duplicated (Слушалки, Звучници, ...): exit 2 lists the ids.
+  Some names are duplicated (Слушалки, Звучници, ...): exit 2 lists the ids.
 - **Filter** = `product.categories.lvl<depth>:"<path>"`. Algolia values are the raw names joined with
   `" > "` and stripped; a few DIY/office names end in a space, which survives inside deeper paths.
 - **Parents include all descendants** (hierarchical facets). Departments and some parents (LEGO) render
   as tiles with no product grid, so `--check-site` cannot read a total there.
 - **Variants.** The index folds a seller's size/colour/volume variants into one hit (Algolia `distinct`
   on `group` = merchant + product group + colour). `list`/`search` turn that off and return every
-  orderable listing; `--group-variants` reproduces the site's cards. Perfume: 1,071 listings vs 1,003
-  cards; fashion 44,953 vs 23,977; electronics ≈1:1. `categories` counts are listings incl. variants.
-- **Cross-checked 2026-10-03** (page total = Algolia cards = fetched): TVs 225, smartphones 45, small
-  kitchen 815, perfume 1,003 cards (1,071 listings), LEGO City 78; tyres 5,871 over 6 pages. Independent
+  orderable listing; `--group-variants` reproduces the site's cards. Fashion has nearly twice as many
+  listings as cards, perfume a few percent more; electronics ≈1:1. `categories` counts are listings incl.
+  variants.
+- **Cross-checked 2026-10-03** (page total = Algolia cards = fetched): TVs, smartphones, small kitchen,
+  perfume (cards; its listings are a few more), LEGO City, and tyres over several pages. Independent
   verifier pass (the page's own "N производи", `--group-variants` count, default listing count): ТВ parent
-  982/982/982 (= union of its 8 children), Мобилни телефони 55/55/56 (= smartphones + feature phones),
-  Блендери 250, Робот правосмукалки 74, Машини за перење алишта 202, Монитори 266, Кадифени играчки
-  844/844/847, Препарати за сончање 387/387/388. A price-split walk with the cap forced to 300 returned
-  the same 847-id set. `--limit` 1000/1001/1500 on a 1,789-listing category returned exactly that many.
+  (= union of its children), Мобилни телефони (= smartphones + feature phones), Блендери, Робот
+  правосмукалки, Машини за перење алишта, Монитори, Кадифени играчки and Препарати за сончање; the page
+  total and the `--group-variants` count always agreed, and the listing count was equal or a few higher.
+  A price-split walk with the cap forced to 300 returned the same Кадифени играчки id set. `--limit`
+  1000/1001/1500 on a category with more listings than that returned exactly that many.
 - `categories --grep` matches name, path, slug, a Latin transliteration and English/colloquial tags:
   `monitor` = `монитор`, `washing` and `перални` find "Машини за перење алишта", `сушара` finds dryers,
   `судомашина` finds dishwashers, and `фритез` also finds the Latin-named "Air fryer ..." node.
@@ -81,33 +83,33 @@ All public, no cookies or tokens. The client needs ~2–4 requests per `list`/`f
   776), `in_stock`, `on_sale`, `fulfilled_by_ananas`, `free_shipping`, and `<group>.<Key>=<value>` with
   group `select|bool|measure|color|text` (e.g. `select.DisplayDiagonal=55"`, `measure.Power=1500|W`,
   `color.Color=Црна|#000000|false`). A bare `Key=value` is resolved with one extra request. `||` ORs
-  values inside a token; repeated `--filter` ANDs (TVs 55"||65": 104; + Samsung, ≤40,000, in stock: 12).
-  Every token's facet count equals what `list --filter` returns (14 tokens of every type, monitors and
-  washing machines, once `on_sale` used the numeric form below).
+  values inside a token; repeated `--filter` ANDs (TVs 55"||65", then + Samsung, ≤40,000, in stock).
+  Every token's facet count equals what `list --filter` returns (checked on tokens of every type in
+  monitors and washing machines, once `on_sale` used the numeric form below).
 - **The flags `on_sale`, `in_stock`, `fulfilled_by_ananas` and `free_shipping` filter numerically**
   (`onSale=1`). Algolia's facet form `onSale:true` (what InstantSearch widgets send, so probably the
-  site's own toggle too; not observed) misses many on-sale listings: kitchenware 676 against 1,139 with
-  `onSale` true, monitors 53 against 56, and every out-of-stock one. The numeric form matches the
-  attribute and the facet count exactly.
-- **Attributes are seller-entered and sparse**: Model on 37 of 225 TVs; DisplayDiagonal on 221 of 225.
+  site's own toggle too; not observed) misses many on-sale listings (about 40% of them in kitchenware, a
+  few in monitors) and every out-of-stock one. The numeric form matches the attribute and the facet count
+  exactly.
+- **Attributes are seller-entered and sparse**: Model on only about 15% of TVs; DisplayDiagonal on almost all.
   Listing records carry them as `attributes` (select/bool/measure/colour), so you can filter locally.
 
 ## Search semantics
 
 - Algolia relevance search over the whole marketplace: typo-tolerant and prefix-matching. **Latin
   spellings of Macedonian words are mapped only for some words** (store-defined synonyms, not general
-  transliteration). Pairs on 2026-10-03, Latin vs Cyrillic: `televizor` 3,397 = `телевизор` 3,397;
-  `toster` 232 = `тостер`; `laptop` 650 vs `лаптоп` 651; `frizider` 463 vs `фрижидер` 470; `tastatura` 586
-  vs 601; `monitor` 366 vs `монитор` 501; `mikser` 302 vs `миксер` 604; `blender` 303 vs `блендер` 680 (a
-  strict subset); `igracka` **3** vs `играчка` **18,688**; and the other way round, `kafemat` 1,539 vs
-  `кафемат` 259; `lego technic` 53 vs `лего техник` 6. **Search product words in Macedonian Cyrillic and
+  transliteration). Latin vs Cyrillic on 2026-10-03: `televizor` and `toster` matched their Cyrillic
+  forms exactly, and `laptop`, `frizider` and `tastatura` nearly; `monitor`, `mikser` and `blender` found
+  only half to three quarters as many (`blender` a strict subset); `igracka` found **almost nothing**
+  against **thousands** for `играчка`; and the other way round, `kafemat` and `lego technic` found
+  several times as many as `кафемат` and `лего техник`. **Search product words in Macedonian Cyrillic and
   brands/models in Latin**, and union both when unsure. The client logs a reminder for all-Latin queries.
-- Synonyms exist (`air fryer` 190 = `фритеза` 190). An **EAN**, the site's **Шифра** (`apId`,
+- Synonyms exist (`air fryer` = `фритеза`). An **EAN**, the site's **Шифра** (`apId`,
   e.g. `R3XJP34XIC`) or a **model code** (`QE55Q7FAAUXXH`, prefix `QE55Q7F`) finds the listing(s).
-- **All words must match; when nothing does, Algolia drops words** (`samsung qwxzvbn` → 680 Samsung
+- **All words must match; when nothing does, Algolia drops words** (`samsung qwxzvbn` → hundreds of Samsung
   hits). The client warns on stderr; `--strict` returns 0 instead. Cap 30,000 per query. Pure nonsense
   (`zxqvjkwpt`, `qwzx vbnmk`) returns 0 and exits 0. EAN `6941812768556`, Шифра `20NGLN7JFH` and model
-  codes `65C61K` and `MP225V` each find their listing(s) (MP225V: 2 sellers, 4,990 and 5,499).
+  codes `65C61K` and `MP225V` each find their listing(s) (MP225V: 2 sellers).
 
 ## Price semantics
 
@@ -115,22 +117,21 @@ All public, no cookies or tokens. The client needs ~2–4 requests per `list`/`f
   (`extra.vat_percent`, 18 on most goods). No card, club or login price. Whole MKD.
 - `regular_price_mkd` = `basePrice` when higher: the top struck-through figure during a seller's SALE
   (~half of all listings). Some show a second struck-through `regularDiscountPrice` (`extra.
-  regular_discount_price_mkd`; FOX AC: 21,170 → 17,990 → **12,990**). `detail` `extra.price_note` gives the
-  sale window (e.g. `SALE -32% ..., valid 2026-10-01..2026-10-05`). Reference prices are seller-set.
-- **Promo codes** (`extra.promo_note`, e.g. abrzo10 = extra 10% on "ā брзо" items) need a logged-in
+  regular_discount_price_mkd`; seen on FOX ACs). `detail` `extra.price_note` gives the
+  sale window (e.g. `SALE -32% ..., valid <from>..<to>`). Reference prices are seller-set.
+- **Promo codes** (`extra.promo_note`, e.g. a code for an extra discount on "ā брзо" items) need a logged-in
   checkout and are never applied to `price_mkd`.
-- **Delivery is per listing** for guests/non-Ananas+ buyers: `shipping_mkd` 0, 190, 250/500/700 (bulky,
-  TVs by size), up to 1,200–6,000 for furniture or 98" TVs; null for a few sellers (SuperMart). The mix
-  depends on the category: 0 for 74% and 190 for 24% of the builder's 8,825-listing sample, but 190 for
-  54%, 0 for 20% and 250–700 for 25% of 6,051 TV/phone/appliance/kitchenware/toy listings.
-  `extra.shipping_mkd_ananas_plus` is the member fee. The page renders the fee client-side; the flight
-  `shippingCost.price` matches `shipping_mkd`.
+- **Delivery is per listing** for guests/non-Ananas+ buyers (fees as of 2026-10-03): `shipping_mkd` 0, 190,
+  250/500/700 (bulky, TVs by size), up to 1,200–6,000 for furniture or 98" TVs; null for a few sellers
+  (SuperMart). The mix depends on the category: most listings overall ship free and nearly all the rest
+  cost 190, but in TVs, phones, appliances, kitchenware and toys 190 is the most common fee and many cost
+  250–700. `extra.shipping_mkd_ananas_plus` is the member fee. The page renders the fee client-side; the
+  flight `shippingCost.price` matches `shipping_mkd`.
 - Verified 2026-10-03 against 11 live product pages (visible `text-2xl` price, `line-through` prices,
-  JSON-LD price/availability, `<h1>`, flight `ean`), all matching: an 86" display at 187,849, an OOS TCL TV,
-  a discounted Redmi phone (17,890, was 29,000), a 699 blender, a 190 plush toy, a robot vacuum with two
-  struck prices (43,250 → 29,990 → 25,550), sunscreen, a washing machine and an OOS monitor.
-- `price_note` sale windows can lag: 548835 showed "valid ..2026-10-02T23:59:59" on 2026-10-03 while the
-  page still charged the sale price. Trust `price_mkd`.
+  JSON-LD price/availability, `<h1>`, flight `ean`), all matching, from a large display to a plush toy,
+  including discounted and out-of-stock listings and a robot vacuum with two struck prices.
+- `price_note` sale windows can lag: on 2026-10-03 a listing whose note said the sale had ended the day
+  before still charged the sale price. Trust `price_mkd`.
 - `price_valid_until` = the SALE's end: `detail` reads page `priceV2.dateTo` (null when priceV2 shows no
   running sale; key absent when the page has no priceV2 or the sale has no readable end); listings read Algolia
   `discountEndTime`, which only ~3% of sale hits carry (key absent on the others, null when not on sale).
@@ -138,10 +139,10 @@ All public, no cookies or tokens. The client needs ~2–4 requests per `list`/`f
 
 ## Stock semantics
 
-- `in_stock` = `onStock` = `available > 0`. The index holds almost only orderable listings (~1.2% out of
-  stock), so `--in-stock` rarely changes much (TVs 225 → 218).
+- `in_stock` = `onStock` = `available > 0`. The index holds almost only orderable listings (about 1% out of
+  stock), so `--in-stock` rarely changes much.
 - `stock_note` "има на залиха (available N)" is the seller's unit count (`extra.available_units`;
-  `detail` adds `stockLevel`). **200 is a default** on ~77,000 own-shop listings, not a real count.
+  `detail` adds `stockLevel`). **200 is a default** on most own-shop listings, not a real count.
 - No per-location stock (`per_location_stock` null). `detail.delivery_estimate` is the guest delivery
   promise computed today: 3–5 days for Ananas-fulfilled (`fulfilled_by_ananas`, "брзо"), 4–6 days for
   seller-shipped items (2026-10-03 samples). It is null for out-of-stock listings: the gateway quotes
@@ -151,12 +152,13 @@ All public, no cookies or tokens. The client needs ~2–4 requests per `list`/`f
 
 Only when stated: a listing badge ("Гаранција 1 година" on own-shop items, "2+3 Години гаранција со
 регистрација..." on FOX ACs) or a "Гаранција: N год." phrase in the description (Сетек TV: "2 + 3 години").
-Otherwise null; Ananas does not show the selling chain's own terms (Нексио's 360 days are absent).
+Otherwise null; Ananas does not show the selling chain's own terms (Нексио's are absent).
 
 ## Data-quality traps
 
-- **One product, many listings**: compare by `ean` (74% filled in TVs/phones/kitchen/toys/perfume, 21% in
-  tyres). `extra.seller_sku` is the seller's code (seen: Setec sku, Neksio Шифра, an MPN, an EAN).
+- **One product, many listings**: compare by `ean` (about three quarters filled in
+  TVs/phones/kitchen/toys/perfume, about a fifth in tyres). `extra.seller_sku` is the seller's code
+  (seen: Setec sku, Neksio Шифра, an MPN, an EAN).
 - **Homoglyphs**: own shop is "AНАНАС ШОП" with a Latin A (records show the Cyrillic form); category names
   like "Авто Mото", "Aпарати за нега". The client folds these for grep and name matching.
 - **Machine-translated attribute values**: DisplayType `ДЛЕД`/`ТФТ`, OS `Тизен`/`Вида У`, plus duplicates
@@ -183,7 +185,7 @@ Otherwise null; Ananas does not show the selling chain's own terms (Нексио
 | symptom | cause and fix |
 |---|---|
 | Search returns unrelated items | Algolia dropped a word (stderr warning). Rephrase, or `--strict`. |
-| Search misses items | Latin spellings of Macedonian words map only partly (`igracka` 3 vs `играчка` 18,688). Search the Cyrillic word, Latin brand/model, an EAN, or `list` the category. |
+| Search misses items | Latin spellings of Macedonian words map only partly (`igracka` finds almost nothing, `играчка` thousands). Search the Cyrillic word, Latin brand/model, an EAN, or `list` the category. |
 | An "on sale" count elsewhere is smaller than ours | Facet-style `onSale:true` misses listings; the client's numeric `onSale=1` is complete. |
 | detail `url` ≠ the page's canonical link | Intended: `url` is this seller's listing; the canonical offer (maybe another seller) is `extra.canonical_offer_url`. |
 | `list` exit 2 "ambiguous" | Duplicate category names. Pass the id from `categories --grep`. |

@@ -189,11 +189,11 @@ uv run scripts/mkshop.py group <out>/sweep.json <out>/<key>_list.json ...   # on
 ```
 
 `match` searches every shop for one product by EAN, model code / MPN and
-title (30–60 s) and labels each candidate `exact` (same EAN), `model` (same
-model code / MPN) or `likely` (title overlap and the same brand: a lead to
-confirm, not a match). Rows that differ in colour, capacity, size, tier,
-version, part number or EAN go to VARIANTS. `--near` shows the near misses
-it rejected, and `--also "<other name>"` adds a marketing name or code.
+title (up to a minute) and labels each candidate `exact` (same EAN), `model`
+(same model code / MPN) or `likely` (title overlap and the same brand: a lead
+to confirm, not a match). Rows that differ in colour, capacity, size, tier,
+version, part number or EAN go to VARIANTS. `--near` shows the near misses it
+rejected, and `--also "<other name>"` adds a marketing name or code.
 
 `group` turns saved `search` / `list` / `match` / `detail` runs into one
 row per product, offline: by EAN, then by model codes and part numbers. Use
@@ -251,7 +251,7 @@ dropped before reporting.
 `price_mkd` is what an ordinary online buyer pays today, VAT included,
 before delivery fees and without any membership. `regular_price_mkd` is the
 struck-through figure, when a shop shows one. Shops differ widely in what
-that figure means:
+that figure means (fees and card costs as of 2026-10-03):
 
 | shop | `price_mkd` is | a struck-through price means | also watch |
 |---|---|---|---|
@@ -311,7 +311,7 @@ Rules of thumb:
 ## Reading stock and delivery
 
 "In stock" means different things in different shops, and buyers often care
-more about *when* than *where*:
+more about *when* than *where* (shop terms and thresholds as of 2026-10-03):
 
 | shop | `in_stock` true means | how much / where | when |
 |---|---|---|---|

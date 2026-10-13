@@ -4,14 +4,13 @@ Client: `scripts/stores/anhoch.py` (key `anhoch`). Verified live 2026-10-03.
 
 ## What it sells and when it is useful
 
-Anhoch is a Macedonian IT and electronics chain with about 20 locations and a webshop of about
-9,970 products in 11 departments: gaming & streaming (consoles, games, chairs, gaming peripherals) 1,963;
-computers, laptops & tablets 1,770; TV/audio/video (TVs, soundbars, headphones, projectors) 1,543;
-phones & watches 1,427; networking, tools, cables & adapters 891; PC components 795; home, business &
-outdoor (smart home, air conditioners, UPS, e-scooters, power stations) 627; printers & scanners (incl.
-toners, 3D printers) 458; portable storage 284; photo/video/drones 203; vouchers 10.
-It sells **no fridges, washing machines or kitchen appliances** (a title scan of all 9,971 products found
-none; the nearest is a car vacuum cleaner). It is strong on laptops,
+Anhoch is a Macedonian IT and electronics chain with stores in Skopje and other towns, and a webshop
+whose departments are: gaming & streaming (consoles, games, chairs, gaming peripherals); computers, laptops
+& tablets; TV/audio/video (TVs, soundbars, headphones, projectors); phones & watches; networking, tools,
+cables & adapters; PC components; home, business & outdoor (smart home, air conditioners, UPS, e-scooters,
+power stations); printers & scanners (incl. toners, 3D printers); portable storage; photo/video/drones; vouchers.
+It sells **no fridges, washing machines or kitchen appliances** (a title scan of the whole catalogue on
+2026-10-03 found none; the nearest is a car vacuum cleaner). It is strong on laptops,
 monitors, PC parts, phones (Samsung, Xiaomi, Apple), peripherals and gaming.
 
 ## Access
@@ -27,27 +26,26 @@ Everything goes through FleetCart's own storefront JSON, so no HTML scraping is 
 - **Rows** carry `id`, `name`, `slug`, `price`, `selling_price`, `special_price*`, `qty`, `is_in_stock`,
   `in_stock_date`, `installments` and `actions` (campaign badges), but **no brand, MPN or EAN**.
 - **Category tree:** `:initial-categories` JSON embedded in any `/categories/<slug>/products`
-  page (about 840 KB). It holds every node's id, slug and name, but no counts.
-- **Detail:** `GET /products/<slug>` (HTML, about 440 KB) embeds the whole product model in
+  page (several hundred KB). It holds every node's id, slug and name, but no counts.
+- **Detail:** `GET /products/<slug>` (HTML, several hundred KB) embeds the whole product model in
   `<product-show :product="...">`. It also has a breadcrumb, `li.sku` "Шифра" and JSON-LD.
   An unknown slug returns 404.
 - **Detail by id:** no id route exists and search does not index ids, so the client uses the anonymous
   compare list (`GET /compare` for the CSRF token, `POST /compare productId=<id>`, `GET /compare`): 3 requests
   for the first id, 2 for each later one. An unknown id gets a 404 on the POST.
 
-Typical cost: `list monitori` (275 rows, brands filled) 17 requests, about 20 s;
-`list laptopi` (parent, 464 rows, 34 brands filled) 37 requests, about 40 s;
-`list gaming-and-streaming` (1,963 rows, brand skipped) 9 requests, about 20 s; `detail <url>` 1 request.
+Typical cost: a category `list` with brands filled takes tens of requests and under a minute; a
+department-sized `list` (brand skipped) needs little more than one request per 250 rows; `detail <url>` 1 request.
 Brand enrichment is most of the cost (one request per brand, even with `--limit`); add `--no-brands`
 when the brand is not needed.
 
 ## Category model
 
-- 211 nodes in 3 levels: 11 roots and 164 leaves. Ids are 6–7 digit numbers (`590814`). Slugs are
+- The tree has 3 levels. Ids are 6–7 digit numbers (`590814`). Slugs are
   transliterated Macedonian (`monitori`); some carry capitals or spaces (`Televisions`, `bluetooth adapteri`),
   which the client URL-quotes. `list` accepts an id, a slug, a category URL or an exact Cyrillic name.
-- A parent includes all its descendants (the `printeri-i-skeneri` leaves sum exactly to its 458), and the
-  11 root counts sum to the catalogue total (9,971), so each product has one home tree.
+- A parent includes all its descendants (the `printeri-i-skeneri` leaves sum exactly to its total), and the
+  root counts sum to the catalogue total, so each product has one home tree.
 - `categories` returns `count: null` because the tree has no counts. `categories --grep X --counts`
   fetches them (one request per category, at most 40).
 - `--grep` is a case-insensitive regex over name, path, slug and a Latin transliteration (`monitor`, `Монитор`,
@@ -56,46 +54,47 @@ when the brand is not needed.
 - Category names are Macedonian, so **English words mostly miss** (`headphone` 0; use `slushalki`/`слушалки`),
   and short Latin terms can hit transliterations (`tv` also matches Софтвер = "softver"). `washing`, `перални`,
   `frizider` match nothing because the store sells no such appliances.
-- Sample sizes (products / in stock / brands): `monitori` 275/197/14, `interni-ssd` 56/32/8,
-  `site-laptopi` 156/127/8, `mobilni-telefoni` 288/213/9, `laserski-printeri` 29/26/2,
-  `monitori-i-oprema` (parent) 393/270/23 = 275 + 55 + 63 from its three leaves, `laptopi` (parent) 464/374,
-  `Televisions` 111/74/11, `eksterni-ssd` 36/18. Each matched an independent walk id for id.
+- `list` matched an independent walk id for id on `monitori`, `interni-ssd`, `site-laptopi`,
+  `mobilni-telefoni`, `laserski-printeri`, `Televisions`, `eksterni-ssd` and the parents `laptopi` and
+  `monitori-i-oprema` (exactly the sum of its three leaves).
 
 ## Facets and filters
 
-- The only layered navigation is **brand**: `attributes` is `[]` in all 11 roots, so there is no spec facet
+- The only layered navigation is **brand**: `attributes` is `[]` in every root, so there is no spec facet
   (size, capacity, refresh rate). Parse the spec-dense English titles (`Monitor 27" ... 240Hz QHD`) or detail `specs`.
 - `facets <cat>` returns `{name:"brand", value, count, token:"brand=<slug>"}` (one request per brand); the
-  counts partition the category (SSD: 22+16+10+3+2+1+1+1 = 56). `list <cat> --filter brand=samsung` filters
-  server-side; `brand=samsung,kingston` means either. Two `brand=` flags would AND to nothing, so exit 2.
+  counts partition the category (on SSDs they sum exactly to its total). `list <cat> --filter brand=samsung`
+  filters server-side; `brand=samsung,kingston` means either. Two `brand=` flags would AND to nothing, so exit 2.
 
 ## Search semantics (verified)
 
 - The query is matched as an **ordered phrase of word prefixes** over the title and the description
   (not the MPN, see below).
-  - Order matters: `1tb ssd` returns 34 hits and `ssd 1tb` returns 5; `rtx 5070` 34, `5070 rtx` 1.
+  - Order matters: `1tb ssd` returns several times as many hits as `ssd 1tb`, and `rtx 5070` dozens
+    where `5070 rtx` finds almost nothing.
   - Prefixes match (`keychro` returns the same as `keychron`), but mid-word fragments do not (`ychron` returns 0).
-  - Words are split on **every non-alphanumeric character**, not only spaces: `backlitkb` matches the 25 laptop
+  - Words are split on **every non-alphanumeric character**, not only spaces: `backlitkb` matches the laptop
     titles that contain `.../BacklitKB`, and `EP-T4511XBEGEU` is searched as `ep t4511xbegeu`.
-- **If the phrase matches nothing, the site silently ORs the words** (`nvme samsung` 810, `dark project`
-  1000 unrelated items). The client splits the query the same way, fetches each 3+ character word's own
-  count (one request per word, up to 5) and prints `WARNING: ... fell back to OR-matching` when the total
-  exceeds the rarest word's count. That also catches hyphenated codes, where only a short fragment matched.
+- **If the phrase matches nothing, the site silently ORs the words** (`nvme samsung` and `dark project`
+  return hundreds of unrelated items). The client splits the query the same way, fetches each 3+ character
+  word's own count (one request per word, up to 5) and prints `WARNING: ... fell back to OR-matching` when the
+  total exceeds the rarest word's count. That also catches hyphenated codes, where only a short fragment matched.
 - **`--all-words`** (client feature): products whose **title** contains every word in any order,
-  built from the rarest word's hits plus the phrase hits. In-stock `ssd 1tb` gives 2 hits by phrase
-  and 53 with `--all-words`. Use it for multi-word spec queries.
+  built from the rarest word's hits plus the phrase hits. In-stock `ssd 1tb` gives a couple of hits by phrase
+  and dozens with `--all-words`. Use it for multi-word spec queries.
 - **Totals cap at 1000** (`монитор`, `usb`), and the client warns when this happens. Narrow the search with `--category` or use `list`.
 - A whole query **under 3 characters returns 0** (`4k`, `27`), and the client rejects it (exit 2).
-  Short words inside a longer phrase still filter: `monitor 27` returns 87 hits, every one containing "27".
-- Cyrillic works against descriptions (`телевизор` returns 363, mostly TVs and mounts). Titles are English,
-  so the Latin form usually gives cleaner hits. There is no stemming.
+  Short words inside a longer phrase still filter: every hit for `monitor 27` contains "27".
+- Cyrillic works against descriptions (`телевизор` returns a few hundred hits, mostly TVs and mounts). Titles
+  are English, so the Latin form usually gives cleaner hits. There is no stemming.
 - Code lookup: **the MPN is not indexed.** A code only matches when it is part of the title (`P2425H`
   finds the Dell P2425H/P2425HE because both titles contain it; `DS-610` finds the Sbox stand). Part
   numbers that appear only in detail `mpn` return 0 (`83DM0006US` Lenovo Yoga 7, `VOA150K001` Nikon Z50 II,
   `9H.FC2TC.DE1` BenQ, `JBLGO4PUR`, `SENIOR10PLUSBLACK`, `BZHC6EED65SP`, all verified 2026-10-03).
-  Hyphenated ones are worse: `EP-T4511XBEGEU` (a Samsung 45W charger) returns 14 unrelated "EP-" earphones
-  and `TS-507NQ` 7 unrelated items (a TS-PC racing wheel, DJ controllers) through the OR fallback. The client warns on those and adds a hint on
-  0-hit code queries. Search by model name instead (`yoga 7`, `super fast charger 45w`).
+  Hyphenated ones are worse: `EP-T4511XBEGEU` (a Samsung 45W charger) returns unrelated "EP-" earphones
+  and `TS-507NQ` unrelated items (a TS-PC racing wheel, DJ controllers) through the OR fallback. The client
+  warns on those and adds a hint on 0-hit code queries. Search by model name instead (`yoga 7`,
+  `super fast charger 45w`).
   The internal id/Шифра is **not** indexed either, so use `detail <id>`. **No EAN exists anywhere**, so `ean` is always null.
 - Warnings that change how to read the result (`search cap`, `OR-matching`, shared slugs) are printed as
   unindented `WARNING:` lines, which `mkshop.py` copies into its envelope; indented lines are progress only.
@@ -105,56 +104,57 @@ when the brand is not needed.
 - `price_mkd` = `selling_price`, the price the buyer pays, VAT included, in whole MKD (the API sends `"8980.0000"`).
   It equals JSON-LD `offers.price` and the visible `.product-price`.
 - `regular_price_mkd` = `price`, set only when it is higher than the selling price. That is the struck-through
-  `.previous-price` while a special price runs (JBL Quantum 100 M2: 1,990, was 2,490; Nikon Z50 II kit:
-  59,980, was 65,980). Discounts are rare: 43 of 9,971 products sitewide on 2026-10-03, almost all JBL
-  audio plus two Nikon items, and none in monitors, laptops, TVs or SSDs. A "was" price here is a real,
-  temporary markdown. No product has a non-integer price, and there is no club or web-only price.
+  `.previous-price` while a special price runs. Discounts are rare (well under 1% of products sitewide on
+  2026-10-03). A "was" price here is a real, temporary markdown. No product has a non-integer price, and
+  there is no club or web-only price.
 - `price_valid_until` (listing and detail) comes from FleetCart's `special_price_end`, which both the `/products`
   rows and the detail model carry: the special price runs while today <= that date, so the value is the end of that
   day in Skopje (`2099-10-31T23:59:59+01:00`). It is null for an unmarked list price and for an open-ended special
-  (the charged price is the special price and it has no end date); on 2026-10-03 none of the 43 specials had an end
-  date (the JBL markdowns sit in the "JBL Promo | Oktomvri" campaign, but campaign windows are not linked to the
-  price and are not used). The key is left out (unknown) when a markdown is not the special price (no special price,
-  or another amount) or the end date is unreadable.
-- `extra.installments` ("24 рати x 396") and `extra.campaigns` ("Rati - Laptopi (2026-09-21 00:00:00 .. 2026-10-08
-  23:59:59)", "Понуда 24/0 ...") are badge campaigns (FleetCart flash-sale records with no price) with their own
-  windows. They do not change the cash price.
-- Delivery (from the FAQ and the terms): **230 MKD per order up to 5,000 MKD, 179 MKD above**, and pickup in any
-  Anhoch store is **free**. `shipping_mkd` is that fee for a one-item order. Skopje deliveries
-  usually arrive the same day (about 5 h if ordered by 11:00); other towns take about 24 h. Ordering requires an account;
-  browsing does not.
+  (the charged price is the special price and it has no end date); on 2026-10-03 no special had an end date
+  (markdowns can sit in a named campaign, but campaign windows are not linked to the price and are not used).
+  The key is left out (unknown) when a markdown is not the special price (no special price, or another amount)
+  or the end date is unreadable.
+- `extra.installments` (`{months, per_month_mkd}`, the "24 рати x N" badge) and `extra.campaigns` (name and window,
+  e.g. "Rati - Laptopi (<start> .. <end>)", "Понуда 24/0 ...") are badge campaigns (FleetCart flash-sale records with
+  no price) with their own windows. They do not change the cash price.
+- Delivery (from the FAQ and the terms, as of 2026-10-03): **230 MKD per order up to 5,000 MKD, 179 MKD above**,
+  and pickup in any Anhoch store is **free**. `shipping_mkd` is that fee for a one-item order. Skopje deliveries
+  usually arrive the same day (about 5 h if ordered by 11:00); other towns take about 24 h. Ordering requires an
+  account; browsing does not.
 
 ## Stock
 
-- `in_stock` = `is_in_stock`, the online flag. It agreed with `qty > 0` for all 9,971 products on
-  2026-10-03 (7,709 in stock). The `--in-stock` server filter returned the same set as the flag
-  (SSD: 32 = 32; `monitori-i-oprema` 270 = 270; TVs 74 = 74).
-- `qty` is **capped at 10** (`stock_note` "qty 10+"). It can be negative, usually −1…−9 but down to −3,977,
-  which means out of stock. `in_stock_date`, when set, appears as "expected <date>" (no product had one).
+- `in_stock` = `is_in_stock`, the online flag. It agreed with `qty > 0` for every product on 2026-10-03.
+  The `--in-stock` server filter returned the same set as the flag (checked on SSDs, `monitori-i-oprema`
+  and TVs).
+- `qty` is **capped at 10** (`stock_note` "qty 10+"). It can be negative (usually by a few units, sometimes by
+  thousands), which means out of stock. `in_stock_date`, when set, appears as "expected <date>" (no product
+  had one on 2026-10-03).
 - `detail.per_location_stock`: `[{location, in_stock, region: Скопје|Македонија, walk_in}]`, yes/no
-  only with no per-store quantities. It covers only the stores the product is attached to (up to 21).
+  only with no per-store quantities. It covers only the stores the product is attached to.
   "Главен магацин" is the central warehouse (`walk_in: false`): stock there can be ordered online but
-  not picked up. Example: the Brother HL-L2442 had qty 1 with 1 of 12 stores in stock. The in-stock store
-  sets matched the page's "Достапност по салони" modal on 5 of 5 in-stock products checked.
-  Out-of-stock pages hide that modal, but the model can still mark a store in stock: the Samsung 45W
-  charger (qty −210, online out of stock) listed "Анхоч Дирекција" as in stock. Trust `in_stock` for
+  not picked up. The in-stock store sets matched the page's "Достапност по салони" modal on every
+  in-stock product checked.
+  Out-of-stock pages hide that modal, but the model can still mark a store in stock: an out-of-stock
+  Samsung 45W charger listed "Анхоч Дирекција" as in stock. Trust `in_stock` for
   ordering online and phone the store before relying on such a row.
-- Stock was stable on 2026-10-03 (monitors 197 → 197 over 10 min), but on 2026-10-01 6 of 193 keyboards
-  flipped out and back within about 20 minutes (an ERP sync), and the online and per-store flags can
-  disagree. Re-check a shortlist with `detail` just before recommending.
+- Stock is mostly stable, but on 2026-10-01 a few keyboards flipped out and back within minutes (an ERP
+  sync), and the online and per-store flags can disagree. Re-check a shortlist with `detail` just before
+  recommending.
 
 ## Warranty
 
 `detail.warranty` is the page text ("36 месеци"), and `extra.warranty_months` is the integer.
-Seen: laptops 12 (Gigabyte AORUS 24), phones 24 (MeanIT 12), monitors, printers and Verbatim SSDs 36,
-TVs and cameras 24, a Samsung charger 6. Some accessories have none (Sbox monitor stand), so `warranty` is null.
+Seen on 2026-10-03: laptops 12 (Gigabyte AORUS 24), phones 24 (MeanIT 12), monitors, printers and Verbatim
+SSDs 36, TVs and cameras 24, a Samsung charger 6. Some accessories have none (Sbox monitor stand), so
+`warranty` is null.
 
 ## Data-quality traps
 
-- **Duplicate slug `oprema-i-dodatoci`.** Two categories share it: 590914 (drawing-tablet accessories, 25 products)
-  and 590966 (photo/drone accessories, 122). The endpoint filters by slug, so the slug and the
-  site's own page return the union (147). `list 590914` / `list 590966` separate them by intersecting
-  with the nearest ancestor that has a unique slug (verified disjoint: 25 + 122 = 147).
+- **Duplicate slug `oprema-i-dodatoci`.** Two categories share it: 590914 (drawing-tablet accessories)
+  and 590966 (photo/drone accessories). The endpoint filters by slug, so the slug and the
+  site's own page return the union. `list 590914` / `list 590966` separate them by intersecting
+  with the nearest ancestor that has a unique slug (verified disjoint, together equal to the union).
 - **Brand is store-assigned and sometimes a distributor or placeholder.** `Other` (generic SSDs, desktop PCs);
   White Shark/Baracuda filed as `SBOX`; Fury as `Natec`. Prefer the title for model matching.
 - **No brand in listings.** The client fills it with one query per brand. It skips this above 60 brands
@@ -171,9 +171,9 @@ TVs and cameras 24, a Samsung charger 6. Some accessories have none (Sbox monito
   3 with `BLOCKED: HTTP 403 ...` naming the layer.
 - No CAPTCHA, Turnstile, JS challenge, rate-limit headers or login wall on any route used. The word "captcha"
   appears in every page (a route name), so it is not a block marker.
-- **The origin queues concurrency**: 6 parallel requests took up to 2.65 s each, against about 0.5 s alone. Keep
+- **The origin queues concurrency**: parallel requests each took several times as long as one alone. Keep
   requests sequential; the client paces them 0.5 s apart and exits 3 if a 429 persists through 6 attempts.
-- `robots.txt` allows everything. About 300 requests on 2026-10-03 got no 429 or 5xx.
+- `robots.txt` allows everything. Paced requests got no 429 or 5xx.
 
 ## Troubleshooting
 
